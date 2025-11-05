@@ -38,12 +38,16 @@
             box-sizing: border-box;
         }
 
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            /* overflow: hidden; <--- Eliminado para permitir scroll interno */
+        }
+
         html {
-            /* Configuración de Scroll Snapping */
-            scroll-snap-type: y mandatory;
             scroll-behavior: smooth;
-            /* Espacio para el header fijo */
-            scroll-padding-top: var(--header-height);
         }
 
         body {
@@ -52,7 +56,11 @@
             color: var(--text-dark);
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
-            /* body ya no necesita padding inferior */
+            padding-top: var(--header-height); /* Añade espacio para el header fijo */
+        }
+
+        main {
+            height: 100%; /* Ocupa el espacio restante del body */
         }
 
         /* --- 2. Componentes Reutilizables --- */
@@ -122,9 +130,10 @@
             background-color: var(--white);
             box-shadow: var(--shadow-light);
             padding: 0 1rem; /* Padding horizontal en lugar de vertical */
-            position: sticky; /* Sticky para que funcione con scroll-padding */
+            position: fixed; /* Cambiado a fixed para que siempre esté visible */
             top: 0;
-            z-index: 100;
+            left: 0; /* Asegura que se alinee a la izquierda */
+            z-index: 1000; /* Aumentado para estar sobre todo */
             width: 100%;
             height: var(--header-height); /* Altura fija */
             display: flex; /* Para centrar contenido verticalmente */
@@ -182,21 +191,40 @@
             display: inline-block; 
             padding: 0.6rem 1.2rem;
             font-size: 0.9rem;
+            background: linear-gradient(135deg, var(--secondary-rose), var(--danger));
+            box-shadow: 0 4px 15px rgba(224, 192, 195, 0.4);
+            animation: pulse 2.5s infinite; /* Animación de pulso */
         }
+        
+        .header .btn-primary:hover {
+            transform: translateY(-2px) scale(1.05); /* Efecto más pronunciado al pasar el ratón */
+            box-shadow: 0 6px 20px rgba(224, 192, 195, 0.6);
+        }
+
 
         /* --- 4. Menú Inferior Fijo (Mobile) --- */
         .bottom-nav {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: var(--white);
-            box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
+            bottom: 1rem; /* Separación del borde inferior */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px; /* Ancho máximo para el menú */
+            
+            /* Efecto Glassmorphism */
+            background: rgba(255, 255, 255, 0.2); /* Fondo semitransparente */
+            backdrop-filter: blur(15px); /* El desenfoque clave del efecto */
+            -webkit-backdrop-filter: blur(15px); /* Para Safari */
+            border-radius: 50px; /* Bordes redondeados */
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+
             display: flex;
             justify-content: space-around;
             align-items: center;
             height: var(--nav-height);
             z-index: 1000;
+            overflow: hidden; /* Para que el indicador no se salga */
         }
 
         .bottom-nav-item {
@@ -216,25 +244,46 @@
         }
 
         .bottom-nav-item i {
-            font-size: 1.4rem;
-            margin-bottom: 3px;
+            font-size: 1.6rem; /* Iconos un poco más grandes */
+            margin-bottom: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        /* Efecto de icono metálico degradado */
+        .bottom-nav-item.active i {
+            background: linear-gradient(45deg, #e7c8a0, #cda683, #b88a6b, #cda683, #e7c8a0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            transform: scale(1.1); /* Efecto de selección */
         }
 
-        .bottom-nav-item.active,
-        .bottom-nav-item:hover {
-            color: var(--primary-gold);
+        .bottom-nav-item span {
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .bottom-nav-item.active span {
+            color: #5a4b3a; /* Un color oscuro y elegante para el texto */
+            font-weight: 600;
+        }
+        
+        .bottom-nav-item:hover i {
+            color: #8a6d50;
         }
 
         .bottom-nav-item.active::after {
             content: '';
             position: absolute;
-            top: 0;
+            bottom: 6px; /* Posicionado en la parte inferior */
             left: 50%;
             transform: translateX(-50%);
-            width: 30px;
-            height: 3px;
-            background-color: var(--primary-gold);
-            border-radius: 0 0 5px 5px;
+            width: 8px; /* Un punto sutil */
+            height: 8px;
+            background-color: #5a4b3a; /* Mismo color que el texto activo */
+            border-radius: 50%;
+            animation: popIn 0.3s ease;
         }
         
         /* Oculta los iconos de Font Awesome si no están cargados */
@@ -250,13 +299,16 @@
         /* --- 5. Estructura de Pantalla Completa --- */
         
         .fullscreen-section {
-            height: 100vh; /* Cada sección ocupa la pantalla completa */
-            min-height: 100vh;
-            scroll-snap-align: start; /* Se "engancha" por arriba */
+            display: none; /* Oculto por defecto */
+            height: 100%; /* Ocupa la altura del contenedor 'main' */
             position: relative;
-            overflow: hidden; /* Oculta el overflow de la sección */
-            display: flex;
+            /* overflow: hidden; <--- Eliminado para permitir scroll del container hijo */
             flex-direction: column;
+        }
+
+        .fullscreen-section.active {
+            display: flex; /* Se muestra la sección activa */
+            animation: fadeIn 0.5s ease;
         }
         
         /* El container dentro de una sección de pantalla completa */
@@ -271,7 +323,6 @@
 
         /* --- 5.1 Sección Principal (Hero) --- */
         .hero {
-            display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
@@ -293,7 +344,7 @@
 
 
         .hero h1 {
-            animation: fadeInDown 1s ease-out;
+            animation: blurIn 0.8s ease-out forwards;
             color: #5a4b3a; 
         }
         
@@ -301,12 +352,12 @@
             font-size: 1.2rem;
             margin: 1rem 0 2rem;
             max-width: 600px;
-            animation: fadeInUp 1s ease-out 0.5s;
+            animation: blurIn 0.8s ease-out 0.4s forwards;
             animation-fill-mode: backwards;
         }
 
         .hero .btn {
-            animation: fadeInUp 1s ease-out 1s;
+            animation: blurIn 0.8s ease-out 0.8s forwards;
             animation-fill-mode: backwards;
         }
 
@@ -320,49 +371,6 @@
              padding-bottom: 2rem;
         }
         
-        /* Pestañas para info */
-        .info-tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 2rem;
-            border-bottom: 2px solid #eee;
-        }
-
-        .tab-btn {
-            padding: 0.8rem 1.5rem;
-            cursor: pointer;
-            border: none;
-            background: none;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #aaa;
-            position: relative;
-            transition: color 0.3s ease;
-        }
-
-        .tab-btn.active {
-            color: var(--primary-gold);
-        }
-
-        .tab-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background-color: var(--primary-gold);
-            animation: slideIn 0.3s ease;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
 
         .info-section ul, .info-section ol {
             padding-left: 1.5rem;
@@ -370,6 +378,42 @@
 
         .info-section li {
             margin-bottom: 0.75rem;
+        }
+
+        /* --- 6.1 Tarjetas de Información --- */
+        .info-cards-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .info-card {
+            background: linear-gradient(145deg, #fcefee, #f8d7da);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(224, 192, 195, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .info-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(224, 192, 195, 0.4);
+        }
+
+        .info-card i {
+            font-size: 3rem;
+            color: #b76e79;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .info-card h3 {
+            font-size: 1.5rem;
+            color: #8a6d50;
         }
 
         /* --- 7. Galería (Transformaciones) --- */
@@ -679,6 +723,28 @@
             margin-bottom: 0.75rem;
         }
         
+        #info-modal .modal-content {
+            background-color: #fdfaf9 !important; /* Fondo rosa pálido, forzado para evitar conflictos */
+        }
+
+        #info-modal-content h3 {
+            font-size: 1.8rem;
+            color: var(--accent-dark);
+            margin-bottom: 1.5rem;
+        }
+
+        #info-modal-content p, 
+        #info-modal-content li {
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+        
+        #info-modal-content ol,
+        #info-modal-content ul {
+            padding-left: 1.5rem;
+            margin-top: 1rem;
+        }
+
         .confirmation-actions {
             display: flex;
             gap: 1rem;
@@ -698,7 +764,12 @@
         }
         
         /* Estilos para desktop */
+        
         @media (min-width: 768px) {
+            .info-cards-container {
+                grid-template-columns: repeat(3, 1fr); /* 3 tarjetas en desktop */
+            }
+            
             body {
                 padding-bottom: 0; /* No hay menú inferior en desktop */
             }
@@ -809,6 +880,34 @@
             80% { transform: scale(1.1); opacity: 1; }
             100% { transform: scale(1); }
         }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 4px 15px rgba(224, 192, 195, 0.3);
+            }
+            70% {
+                transform: scale(1.03);
+                box-shadow: 0 6px 25px rgba(224, 192, 195, 0.5);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 4px 15px rgba(224, 192, 195, 0.3);
+            }
+        }
+        
+        @keyframes blurIn {
+            from {
+                opacity: 0;
+                filter: blur(5px);
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                filter: blur(0);
+                transform: translateY(0);
+            }
+        }
 
     </style>
     <!-- Font Awesome para los iconos del menú inferior -->
@@ -833,11 +932,11 @@
     <main>
 
         <!-- ==== SECCIÓN HERO ==== -->
-        <section class="hero fullscreen-section" id="home">
+        <section class="hero fullscreen-section active" id="home">
             <div class="container">
-                <h1>Viarmoni: Descubre tu mejor versión</h1>
-                <p>Valoraciones profesionales para procedimientos estéticos. Agenda tu cita hoy mismo y da el primer paso hacia la confianza que mereces.</p>
-                <button class="btn btn-primary btn-lg" id="hero-book-btn">Agendar Valoración</button>
+                <h1>Armonización Facial: Belleza que Resalta, no Transforma.</h1>
+                <p>En Viarmoni, esculpimos tu belleza natural con procedimientos de armonización facial mínimamente invasivos. Redescubre tus rasgos y proyecta la mejor versión de ti. ¿Lista para empezar?</p>
+                <button class="btn btn-primary btn-lg" id="hero-book-btn">Iniciar mi Transformación</button>
             </div>
         </section>
 
@@ -846,47 +945,54 @@
             <div class="container">
                 <h2>Información Importante</h2>
                 
-                <div class="info-tabs">
-                    <button class="tab-btn active" data-tab="instructions">Instrucciones</button>
-                    <button class="tab-btn" data-tab="pre-op">Cuidados Previos</button>
-                    <button class="tab-btn" data-tab="post-op">Cuidados Post</button>
+                <div class="info-cards-container">
+                    <div class="info-card" data-content-id="info-instructions">
+                        <i class="fas fa-list-ol"></i>
+                        <h3>Instrucciones</h3>
+                    </div>
+                    <div class="info-card" data-content-id="info-pre-op">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>Cuidados Previos</h3>
+                    </div>
+                    <div class="info-card" data-content-id="info-post-op">
+                        <i class="fas fa-heartbeat"></i>
+                        <h3>Cuidados Post</h3>
+                    </div>
                 </div>
 
-                <div id="tab-instructions" class="tab-content active card">
-                    <h3>Instrucciones para tu Valoración</h3>
-                    <p>Para asegurar una valoración precisa y cómoda, te recomendamos:</p>
-                    <br>
-                    <ol>
-                        <li>Asistir con el rostro limpio, sin maquillaje en la zona a evaluar.</li>
-                        <li>Traer una lista de medicamentos o suplementos que estés tomando actualmente.</li>
-                        <li>Evitar consumir alcohol o antiinflamatorios (como aspirina) 24 horas antes, especialmente si se considera una rinomodelación o labios.</li>
-                        <li>Tener claras tus expectativas y preparar cualquier pregunta que tengas para el especialista.</li>
-                    </ol>
-                </div>
-
-                <div id="tab-pre-op" class="tab-content card">
-                    <h3>Cuidados Prequirúrgicos</h3>
-                    <p>Si tu procedimiento es aprobado y agendado, generalmente deberás:</p>
-                    <br>
-                    <ul>
-                        <li>Realizar ayuno de 8 horas antes del procedimiento.</li>
-                        <li>Suspender el consumo de tabaco al menos 2 semanas antes.</li>
-                        <li>Hidratarte bien los días previos.</li>
-                        <li>Coordinar quién te acompañará y te llevará a casa después del procedimiento.</li>
-                    </ul>
-                </div>
-
-                <div id="tab-post-op" class="tab-content card">
-                    <h3>Cuidados Postquirúrgicos</h3>
-                    <p>La recuperación es clave para un resultado exitoso:</p>
-                    <br>
-                    <ul>
-                        <li>Seguir al pie de la letra la medicación (antibióticos, analgésicos) recetada.</li>
-                        <li>Aplicar compresas frías en la zona para reducir la inflamación.</li>
-                        <li>Dormir con la cabeza elevada (semi-sentado) los primeros días (para bichectomía o lipopapada).</li>
-                        <li>Evitar la exposición directa al sol y usar protector solar rigurosamente.</li>
-                        <li>Asistir a todos los controles postoperatorios programados.</li>
-                    </ul>
+                <!-- Contenido oculto que se mostrará en el modal -->
+                <div class="hidden-content" style="display: none;">
+                    <div id="info-instructions">
+                        <h3>Instrucciones para tu Valoración</h3>
+                        <p>Para asegurar una valoración precisa y cómoda, te recomendamos:</p>
+                        <ol>
+                            <li>Asistir con el rostro limpio, sin maquillaje en la zona a evaluar.</li>
+                            <li>Traer una lista de medicamentos o suplementos que estés tomando actualmente.</li>
+                            <li>Evitar consumir alcohol o antiinflamatorios (como aspirina) 24 horas antes, especialmente si se considera una rinomodelación o labios.</li>
+                            <li>Tener claras tus expectativas y preparar cualquier pregunta que tengas para el especialista.</li>
+                        </ol>
+                    </div>
+                    <div id="info-pre-op">
+                        <h3>Cuidados Prequirúrgicos</h3>
+                        <p>Si tu procedimiento es aprobado y agendado, generalmente deberás:</p>
+                        <ul>
+                            <li>Realizar ayuno de 8 horas antes del procedimiento.</li>
+                            <li>Suspender el consumo de tabaco al menos 2 semanas antes.</li>
+                            <li>Hidratarte bien los días previos.</li>
+                            <li>Coordinar quién te acompañará y te llevará a casa después del procedimiento.</li>
+                        </ul>
+                    </div>
+                    <div id="info-post-op">
+                        <h3>Cuidados Postquirúrgicos</h3>
+                        <p>La recuperación es clave para un resultado exitoso:</p>
+                        <ul>
+                            <li>Seguir al pie de la letra la medicación (antibióticos, analgésicos) recetada.</li>
+                            <li>Aplicar compresas frías en la zona para reducir la inflamación.</li>
+                            <li>Dormir con la cabeza elevada (semi-sentado) los primeros días (para bichectomía o lipopapada).</li>
+                            <li>Evitar la exposición directa al sol y usar protector solar rigurosamente.</li>
+                            <li>Asistir a todos los controles postoperatorios programados.</li>
+                        </ul>
+                    </div>
                 </div>
 
             </div>
@@ -1065,6 +1171,16 @@
         </div>
     </div>
 
+    <!-- ==== MODAL DE INFORMACIÓN INMERSIVA ==== -->
+    <div class="modal-overlay" id="info-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="close-info-modal">&times;</button>
+            <div id="info-modal-content">
+                <!-- El contenido se inyectará aquí con JS -->
+            </div>
+        </div>
+    </div>
+
 
     <!-- ==== SCRIPT PRINCIPAL ==== -->
     <script>
@@ -1107,12 +1223,13 @@
             const printBtn = document.getElementById('print-btn');
             const confirmationDetails = document.getElementById('confirmation-details');
             
-            // Pestañas Info
-            const tabsContainer = document.querySelector('.info-tabs');
-            const tabButtons = document.querySelectorAll('.tab-btn');
-            const tabContents = document.querySelectorAll('.tab-content');
+            // Tarjetas Info
+            const infoCards = document.querySelectorAll('.info-card');
+            const infoModal = document.getElementById('info-modal');
+            const infoModalContent = document.getElementById('info-modal-content');
+            const closeInfoModalBtn = document.getElementById('close-info-modal');
 
-            // Navegación Activa (Observer)
+            // Navegación
             const sections = document.querySelectorAll('.fullscreen-section');
             const bottomNavItems = document.querySelectorAll('.bottom-nav-item');
             const desktopNavLinks = document.querySelectorAll('.nav-links a');
@@ -1380,75 +1497,65 @@
             };
             
             /**
-             * Maneja el cambio de pestañas en la sección de info
+             * Maneja el clic en una tarjeta de información, mostrando su contenido en un modal.
              */
-            const handleTabClick = (e) => {
-                const clickedTab = e.target.closest('.tab-btn');
-                if (!clickedTab) return;
-                
-                // Desactivar todas
-                tabButtons.forEach(btn => btn.classList.remove('active'));
-                tabContents.forEach(content => content.classList.remove('active'));
-                
-                // Activar la seleccionada
-                clickedTab.classList.add('active');
-                const tabData = clickedTab.dataset.tab;
-                document.getElementById(`tab-${tabData}`).classList.add('active');
-            };
+            const handleInfoCardClick = (e) => {
+                const card = e.currentTarget;
+                const contentId = card.dataset.contentId;
+                const contentSource = document.getElementById(contentId);
 
-            
-            /**
-             * Maneja el clic en los enlaces de navegación (superior e inferior)
-             * para asegurar el scroll suave a la sección.
-             */
-            const handleNavClick = (e) => {
-                e.preventDefault(); // Previene el salto brusco del ancla
-                const targetId = e.currentTarget.getAttribute('href');
-                const targetSection = document.querySelector(targetId);
-                
-                if (targetSection) {
-                    targetSection.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start' // Asegura que se alinee por arriba
-                    });
+                if (contentSource) {
+                    infoModalContent.innerHTML = contentSource.innerHTML;
+                    openModal(infoModal);
                 }
             };
 
             
-            // --- 4. Lógica de Navegación Activa (IntersectionObserver) ---
-            
-            const observerOptions = {
-                root: null, // Observa en relación al viewport
-                rootMargin: '0px',
-                threshold: 0.5 // Se activa cuando el 50% de la sección está visible
-            };
+            /**
+             * Muestra la sección correspondiente al ID y actualiza el estado activo de los menús.
+             * @param {string} targetId - El ID de la sección a mostrar (ej: "#home")
+             */
+            const showSection = (targetId) => {
+                // Ocultar todas las secciones
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                });
 
-            const observerCallback = (entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        const targetId = `#${entry.target.id}`;
-                        
-                        // Actualizar menú inferior (móvil)
-                        bottomNavItems.forEach(link => {
-                            link.classList.remove('active');
-                            if (link.getAttribute('href') === targetId) {
-                                link.classList.add('active');
-                            }
-                        });
+                // Mostrar la sección correcta
+                const targetSection = document.querySelector(targetId);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                }
 
-                        // Actualizar menú superior (desktop)
-                        desktopNavLinks.forEach(link => {
-                            link.classList.remove('active');
-                            if (link.getAttribute('href') === targetId) {
-                                link.classList.add('active');
-                            }
-                        });
+                // Actualizar el estado activo del menú inferior
+                bottomNavItems.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === targetId) {
+                        link.classList.add('active');
+                    }
+                });
+
+                // Actualizar el estado activo del menú superior
+                desktopNavLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === targetId) {
+                        link.classList.add('active');
                     }
                 });
             };
 
-            const observer = new IntersectionObserver(observerCallback, observerOptions);
-            sections.forEach(section => observer.observe(section));
+            /**
+             * Maneja el clic en los enlaces de navegación (superior e inferior)
+             * para mostrar la sección correcta.
+             */
+            const handleNavClick = (e) => {
+                e.preventDefault(); // Previene el comportamiento por defecto del ancla
+                const targetId = e.currentTarget.getAttribute('href');
+                showSection(targetId);
+                
+                // Opcional: Volver al inicio de la página en cada cambio de sección
+                window.scrollTo(0, 0);
+            };
 
 
             // --- 5. Inicialización y Event Listeners ---
@@ -1474,8 +1581,9 @@
                 window.print();
             });
             
-            // Pestañas
-            tabsContainer.addEventListener('click', handleTabClick);
+            // Tarjetas de Info
+            infoCards.forEach(card => card.addEventListener('click', handleInfoCardClick));
+            closeInfoModalBtn.addEventListener('click', () => closeModal(infoModal));
 
             // Listeners para la navegación (superior e inferior)
             desktopNavLinks.forEach(link => {
@@ -1494,6 +1602,3 @@
 
 </body>
 </html>
-
-
-
