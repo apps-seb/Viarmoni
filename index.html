@@ -115,9 +115,9 @@
         }
 
         h1, h2, h3 {
-            font-family: var(--font-elegant);
+            font-family: "Montserrat", var(--font-main);
             color: var(--text-dark);
-            font-weight: 600;
+            font-weight: 700; /* Bold */
             line-height: 1.2;
         }
 
@@ -143,6 +143,8 @@
             bottom: 2rem;
             right: 2rem;
             z-index: 10;
+            padding: 0.6rem 1.2rem; /* Match header button */
+            font-size: 0.9rem; /* Match header button */
             background: linear-gradient(135deg, var(--secondary-rose), var(--danger));
             box-shadow: 0 4px 15px rgba(224, 192, 195, 0.4);
         }
@@ -351,28 +353,35 @@
             padding-top: 2rem;
             padding-bottom: 2rem;
             /* Para que el scroll interno respete los paddings */
-            height: 100%; 
         }
 
         /* --- 5.1 Sección Principal (Hero) --- */
         .hero {
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start; /* Align content to the top */
             align-items: center;
             text-align: center;
-            background: linear-gradient(rgba(255, 255, 255, 0.8), rgba(253, 250, 249, 1)), 
-                        url(https://placehold.co/1200x800/e0c0c3/ffffff?text=Viarmoni+Est%C3%A9tica) center/cover no-repeat;
+        }
+
+        .hero #main-carousel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1; /* Behind hero text */
         }
         
         /* Caso especial: El container del hero no debe tener scroll */
         .hero > .container {
-            overflow-y: visible;
-            flex-grow: 0; /* No crece, solo se centra */
-            height: auto;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            position: relative;
+            z-index: 2; /* In front of carousel */
+            background: rgba(255, 255, 255, 0.7);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            margin-top: 2rem;
+            backdrop-filter: blur(5px);
+            max-width: 600px;
         }
 
 
@@ -470,52 +479,6 @@
             height: 100%;
             object-fit: cover;
             display: block;
-            transition: opacity 0.4s ease;
-        }
-
-        .img-before {
-            position: relative;
-        }
-
-        .img-after {
-            position: absolute;
-            top: 0;
-            left: 0;
-            opacity: 0;
-        }
-
-        .transform-card:hover .img-after {
-            opacity: 1;
-        }
-        
-        .transform-card .label {
-            position: absolute;
-            top: 1rem;
-            font-size: 0.9rem;
-            padding: 0.3rem 0.8rem;
-            border-radius: 20px;
-            color: var(--white);
-            font-weight: 600;
-        }
-        
-        .label-before {
-            left: 1rem;
-            background-color: rgba(183, 110, 121, 0.8); /* Rosa */
-        }
-
-        .label-after {
-            right: 1rem;
-            background-color: rgba(197, 169, 132, 0.8); /* Oro */
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-        
-        .transform-card:hover .label-after {
-            opacity: 1;
-        }
-        
-        .transform-card:hover .label-before {
-            opacity: 0;
         }
 
         .transform-card h4 {
@@ -1015,6 +978,10 @@
     <!-- Splide.js Carousel -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+
+    <!-- Image Comparison Slider -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8.0.6/dist/styles.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8.0.6/dist/index.js"></script>
 </head>
 <body>
 
@@ -1033,8 +1000,12 @@
         </div>
     </header>
 
-    <!-- ==== SECCIÓN CAROUSEL ==== -->
-    <section id="main-carousel" class="splide" aria-label="Beautiful-Viarmoni">
+
+    <main>
+
+        <!-- ==== SECCIÓN HERO ==== -->
+        <section class="hero fullscreen-section active" id="home">
+             <section id="main-carousel" class="splide" aria-label="Beautiful-Viarmoni">
         <div class="splide__track">
             <ul class="splide__list">
                 <li class="splide__slide">
@@ -1052,11 +1023,6 @@
             </ul>
         </div>
     </section>
-
-    <main>
-
-        <!-- ==== SECCIÓN HERO ==== -->
-        <section class="hero fullscreen-section active" id="home">
             <div class="container">
                 <h1>Armonización Facial: Belleza que Resalta, no Transforma.</h1>
                 <p>En Viarmoni, esculpimos tu belleza natural con procedimientos de armonización facial mínimamente invasivos. Redescubre tus rasgos y proyecta la mejor versión de ti. ¿Lista para empezar?</p>
@@ -1129,26 +1095,26 @@
                 <div class="gallery-grid">
                     
                     <div class="transform-card">
-                        <img src="https://placehold.co/400x500/d6b4b8/ffffff?text=Antes" alt="Antes Rinomodelación" class="img-before">
-                        <img src="https://placehold.co/400x500/c5a984/ffffff?text=Despu%C3%A9s" alt="Después Rinomodelación" class="img-after">
-                        <span class="label label-before">Antes</span>
-                        <span class="label label-after">Después</span>
+                        <img-comparison-slider>
+                            <img slot="first" src="https://placehold.co/400x500/d6b4b8/ffffff?text=Antes" alt="Antes Rinomodelación">
+                            <img slot="second" src="https://placehold.co/400x500/c5a984/ffffff?text=Despu%C3%A9s" alt="Después Rinomodelación">
+                        </img-comparison-slider>
                         <h4>Rinomodelación</h4>
                     </div>
                     
                     <div class="transform-card">
-                        <img src="https://placehold.co/400x500/d6b4b8/ffffff?text=Antes" alt="Antes Labios" class="img-before">
-                        <img src="https://placehold.co/400x500/c5a984/ffffff?text=Despu%C3%A9s" alt="Después Labios" class="img-after">
-                        <span class="label label-before">Antes</span>
-                        <span class="label label-after">Después</span>
+                        <img-comparison-slider>
+                            <img slot="first" src="https://placehold.co/400x500/d6b4b8/ffffff?text=Antes" alt="Antes Labios">
+                            <img slot="second" src="https://placehold.co/400x500/c5a984/ffffff?text=Despu%C3%A9s" alt="Después Labios">
+                        </img-comparison-slider>
                         <h4>Aumento de Labios</h4>
                     </div>
 
                     <div class="transform-card">
-                        <img src="https://placehold.co/400x500/d6b4b8/ffffff?text=Antes" alt="Antes Lipopapada" class="img-before">
-                        <img src="https://placehold.co/400x500/c5a984/ffffff?text=Despu%C3%A9s" alt="Después Lipopapada" class="img-after">
-                        <span class="label label-before">Antes</span>
-                        <span class="label label-after">Después</span>
+                        <img-comparison-slider>
+                            <img slot="first" src="https://placehold.co/400x500/d6b4b8/ffffff?text=Antes" alt="Antes Lipopapada">
+                            <img slot="second" src="https://placehold.co/400x500/c5a984/ffffff?text=Despu%C3%A9s" alt="Después Lipopapada">
+                        </img-comparison-slider>
                         <h4>Lipopapada</h4>
                     </div>
                 </div>
