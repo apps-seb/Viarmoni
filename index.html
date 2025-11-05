@@ -121,6 +121,19 @@
             line-height: 1.2;
         }
 
+        /* --- 3.1 Carousel Section --- */
+        #main-carousel {
+            width: 100%;
+            height: 50vh; /* Adjust height as needed */
+            overflow: hidden;
+        }
+
+        #main-carousel .splide__slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
         h1 { font-size: 2.5rem; }
         h2 { font-size: 2rem; margin-bottom: 1.5rem; color: var(--accent-dark); text-align: center; }
         h3 { font-size: 1.4rem; margin-bottom: 1rem; color: var(--primary-gold); }
@@ -148,11 +161,17 @@
         }
 
         .logo {
+            display: flex;
+            align-items: center;
             font-family: var(--font-elegant);
             font-size: 1.8rem;
             font-weight: bold;
             color: var(--primary-gold);
             text-decoration: none;
+        }
+
+        .logo img {
+            max-height: 40px;
         }
 
         .nav-links {
@@ -247,16 +266,17 @@
             font-size: 1.6rem; /* Iconos un poco más grandes */
             margin-bottom: 4px;
             transition: all 0.3s ease;
-        }
-        
-        /* Efecto de icono metálico degradado */
-        .bottom-nav-item.active i {
-            background: linear-gradient(45deg, #e7c8a0, #cda683, #b88a6b, #cda683, #e7c8a0);
+            background: linear-gradient(135deg, var(--secondary-rose), var(--danger));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             text-fill-color: transparent;
-            transform: scale(1.1); /* Efecto de selección */
+        }
+
+        /* Efecto de icono metálico degradado */
+        .bottom-nav-item.active i {
+            transform: scale(1.2); /* Efecto de selección más pronunciado */
+            filter: brightness(1.1);
         }
 
         .bottom-nav-item span {
@@ -389,14 +409,16 @@
         }
 
         .info-card {
-            background: linear-gradient(145deg, #fcefee, #f8d7da);
-            padding: 2rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 2rem;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(224, 192, 195, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
         }
 
         .info-card:hover {
@@ -912,13 +934,17 @@
     </style>
     <!-- Font Awesome para los iconos del menú inferior -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" xintegrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Splide.js Carousel -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
 </head>
 <body>
 
     <!-- ==== ENCABEZADO FIJO ==== -->
     <header class="header">
         <div class="container">
-            <a href="#home" class="logo">Viarmoni</a>
+            <a href="#home" class="logo"><img src="https://viarmoni.com/wp-content/uploads/2025/11/cropped-logo-horizontal-25-scaled-1.png" alt="Viarmoni Logo"></a>
             <nav class="nav-links">
                 <a href="#home">Inicio</a>
                 <a href="#info-section">Cuidados</a>
@@ -928,6 +954,17 @@
             <button class="btn btn-primary" id="header-book-btn">Agendar</button>
         </div>
     </header>
+
+    <!-- ==== SECCIÓN CAROUSEL ==== -->
+    <section id="main-carousel" class="splide" aria-label="Beautiful-Viarmoni">
+        <div class="splide__track">
+            <ul class="splide__list">
+                <li class="splide__slide"><img src="https://viarmoni.com/wp-content/uploads/2025/11/2-Rinomodelacion.jpeg" alt="Rinomodelacion"></li>
+                <li class="splide__slide"><img src="https://viarmoni.com/wp-content/uploads/2025/11/calvo_de_mora_bichectomia_1-768x554-1.jpg" alt="Bichectomia"></li>
+                <li class="splide__slide"><img src="https://viarmoni.com/wp-content/uploads/2025/11/calvo_de_mora_bichectomia_2.jpg" alt="Bichectomia 2"></li>
+            </ul>
+        </div>
+    </section>
 
     <main>
 
@@ -1072,15 +1109,15 @@
             <span>Inicio</span>
         </a>
         <a href="#info-section" class="bottom-nav-item" data-icon="info">
-            <i class="fas fa-info-circle"></i>
-            <span>Info</span>
+            <i class="fas fa-spa"></i>
+            <span>Cuidados</span>
         </a>
         <a href="#gallery-section" class="bottom-nav-item" data-icon="images">
-            <i class="fas fa-images"></i>
-            <span>Galería</span>
+            <i class="fas fa-magic"></i>
+            <span>Cambios</span>
         </a>
         <a href="#admin-section" class="bottom-nav-item" data-icon="clipboard-list">
-            <i class="fas fa-clipboard-list"></i>
+            <i class="fas fa-calendar-alt"></i>
             <span>Citas</span>
         </a>
     </nav>
@@ -1597,6 +1634,21 @@
             setMinDate();
             loadBookings();
             renderBookings();
+
+            // Inicializar Carousel
+            if (document.getElementById('main-carousel')) {
+                new Splide('#main-carousel', {
+                    type: 'fade',
+                    rewind: true,
+                    heightRatio: 0.4,
+                    pagination: false,
+                    arrows: true,
+                    cover: true,
+                    autoplay: true,
+                    interval: 4000,
+                    pauseOnHover: false,
+                }).mount();
+            }
         });
     </script>
 
