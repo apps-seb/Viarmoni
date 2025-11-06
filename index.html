@@ -142,7 +142,7 @@
             position: absolute;
             bottom: 2rem;
             right: 2rem;
-            z-index: 10;
+            z-index: 100; /* Aumentado para asegurar visibilidad sobre el carrusel */
             padding: 0.6rem 1.2rem; /* Match header button */
             font-size: 0.9rem; /* Match header button */
             background: var(--primary-gold);
@@ -265,62 +265,51 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center; /* Centra el contenido verticalmente */
             text-decoration: none;
             color: var(--text-dark);
             font-size: 0.75rem;
             font-weight: 500;
             transition: color 0.3s ease;
             position: relative;
-            flex: 1; /* Para que ocupen el mismo espacio */
-            padding-top: 5px; /* Pequeño ajuste visual */
-            height: 100%; /* Ocupar altura */
-            justify-content: center; /* Centrar contenido */
+            flex: 1;
+            height: 100%;
         }
 
         .bottom-nav-item i {
-            font-size: 1.8rem; /* Make icons larger */
-            margin-bottom: 0; /* Remove margin as text is hidden */
+            font-size: 1.6rem; /* Ligeramente más pequeño para dar espacio al texto */
+            margin-bottom: 4px; /* Espacio entre el icono y el texto */
             transition: all 0.3s ease;
-            color: var(--text-dark); /* Default color */
+            /* Color por defecto: Gradiente Rosa-Gold */
+            background: linear-gradient(135deg, var(--secondary-rose), var(--danger));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
         
-        /* Gold color for the active icon */
+        /* Estilo para el ícono del item activo */
         .bottom-nav-item.active i {
             color: var(--primary-gold);
-            transform: scale(1.2);
+            transform: scale(1.15);
+            background: none; /* Quitar gradiente para mostrar color sólido */
+            -webkit-background-clip: initial; /* Resetear clip */
+            background-clip: initial;
         }
 
         .bottom-nav-item span {
-            font-size: 0.75rem;
+            font-size: 0.7rem; /* Texto un poco más pequeño */
             font-weight: 600;
-            color: var(--primary-gold);
-            position: absolute;
-            bottom: 8px; /* Position it nicely */
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0; /* Hidden by default */
-            transition: opacity 0.3s ease;
-        }
-        
-        .bottom-nav-item.active span {
-            opacity: 1; /* Show when active */
+            color: var(--accent-dark);
+            /* Ya no es absoluto, así que fluye normalmente debajo del icono */
         }
         
         .bottom-nav-item:hover i {
-            color: #8a6d50;
+            filter: brightness(1.2); /* Efecto sutil al pasar el ratón */
         }
 
+        /* Eliminamos el punto decorativo para un diseño más limpio */
         .bottom-nav-item.active::after {
-            content: '';
-            position: absolute;
-            bottom: 6px; /* Posicionado en la parte inferior */
-            left: 50%;
-            transform: translateX(-50%);
-            width: 8px; /* Un punto sutil */
-            height: 8px;
-            background-color: #5a4b3a; /* Mismo color que el texto activo */
-            border-radius: 50%;
-            animation: popIn 0.3s ease;
+            content: none;
         }
         
         /* Oculta los iconos de Font Awesome si no están cargados */
@@ -337,9 +326,8 @@
         
         .fullscreen-section {
             display: none; /* Oculto por defecto */
-            height: 100%; /* Ocupa la altura del contenedor 'main' */
+            /* height: 100%; /* <-- Eliminado para permitir que el contenido defina la altura */
             position: relative;
-            /* overflow: hidden; <--- Eliminado para permitir scroll del container hijo */
             flex-direction: column;
         }
 
@@ -350,11 +338,10 @@
         
         /* El container dentro de una sección de pantalla completa */
         .fullscreen-section > .container {
-            overflow-y: auto; /* Permite scroll INTERNO si el contenido es muy largo */
-            flex-grow: 1; /* Ocupa el espacio restante */
+            /* overflow-y: auto; /* <-- Eliminado para usar el scroll principal de la página */
+            /* flex-grow: 1; /* <-- Eliminado */
             padding-top: 2rem;
             padding-bottom: 2rem;
-            /* Para que el scroll interno respete los paddings */
         }
 
         /* --- 5.1 Sección Principal (Hero) --- */
