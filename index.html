@@ -1216,64 +1216,9 @@
 
     <!-- ==== MODAL DE RESERVA ==== -->
     <div class="modal-overlay" id="booking-modal">
-        <div class="modal-content">
-            <button class="modal-close" id="close-booking-modal">&times;</button>
-            <h2>Agendar Valoración</h2>
-            <form id="booking-form" novalidate>
-                
-                <div id="form-error"></div>
-
-                <div class="form-group">
-                    <label for="name">Nombre Completo</label>
-                    <input type="text" id="name" name="name" placeholder="Escribe tu nombre" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="email">Correo Electrónico</label>
-                    <input type="email" id="email" name="email" placeholder="tu@correo.com" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="phone">Teléfono (WhatsApp)</label>
-                    <input type="tel" id="phone" name="phone" placeholder="Ej: 3001234567" pattern="[0-9]{10}" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="city">Ciudad de Valoración</label>
-                    <select id="city" name="city" required>
-                        <option value="" disabled selected>Selecciona una ciudad</option>
-                        <option value="Popayán">Popayán</option>
-                        <option value="Cali">Cali</option>
-                        <option value="Pereira">Pereira</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="procedure">Procedimiento de Interés</label>
-                    <select id="procedure" name="procedure" required>
-                        <option value="" disabled selected>Selecciona un procedimiento</option>
-                        <option value="Lipopapada">Lipopapada</option>
-                        <option value="Bichectomía">Bichectomía</option>
-                        <option value="Labios">Aumento de Labios</option>
-                        <option value="Rinomodelación">Rinomodelación</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="date">Fecha</label>
-                    <input type="date" id="date" name="date" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="time">Hora</label>
-                    <select id="time" name="time" required>
-                        <option value="" disabled selected>Selecciona primero una fecha</option>
-                        <!-- Horarios se generan con JS -->
-                    </select>
-                </div>
-
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Confirmar Cita</button>
-            </form>
+        <div class="modal-content" style="padding: 0; overflow: hidden;">
+            <button class="modal-close" id="close-booking-modal" style="z-index: 10; color: #000; opacity: 0.8; text-shadow: 0 1px 0 #fff;">&times;</button>
+            <iframe src="https://viarmoni.com/agendar_cita/" style="width: 100%; height: 85vh; border: none;"></iframe>
         </div>
     </div>
     
@@ -1545,12 +1490,6 @@
                 document.getElementById('finish-btn')
             ];
 
-            // Formulario
-            const bookingForm = document.getElementById('booking-form');
-            const dateInput = document.getElementById('date');
-            const timeSelect = document.getElementById('time');
-            const formError = document.getElementById('form-error');
-
             // Panel Admin
             const bookingList = document.getElementById('booking-list');
             const filterCity = document.getElementById('filter-city');
@@ -1661,128 +1600,6 @@
                 });
             };
 
-            /**
-             * Puebla las horas disponibles basadas en la fecha seleccionada
-             */
-            const populateTimeSlots = () => {
-                const selectedDate = dateInput.value;
-                if (!selectedDate) return;
-
-                // Obtener horas ya reservadas para esa fecha
-                const reservedSlots = bookings
-                    .filter(b => b.date === selectedDate)
-                    .map(b => b.time);
-
-                timeSelect.innerHTML = '<option value="" disabled selected>Selecciona una hora</option>';
-
-                HORARIOS.forEach(time => {
-                    const isReserved = reservedSlots.includes(time);
-                    const option = document.createElement('option');
-                    option.value = time;
-                    option.textContent = time;
-                    option.disabled = isReserved;
-                    if (isReserved) {
-                        option.textContent += ' (Reservado)';
-                    }
-                    timeSelect.appendChild(option);
-                });
-            };
-
-            /**
-             * Valida el formulario
-             * @returns {string|null} - Mensaje de error o null si es válido
-             */
-            const validateForm = (formData) => {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                const phoneRegex = /^\d{10}$/; // Asume 10 dígitos
-
-                if (!formData.get('name') || !formData.get('email') || !formData.get('phone') || 
-                    !formData.get('city') || !formData.get('procedure') || !formData.get('date') || !formData.get('time')) {
-                    return 'Todos los campos son obligatorios.';
-                }
-                if (!emailRegex.test(formData.get('email'))) {
-                    return 'El formato del correo no es válido.';
-                }
-                if (!phoneRegex.test(formData.get('phone'))) {
-                    return 'El teléfono debe contener 10 dígitos numéricos.';
-                }
-                return null;
-            };
-
-            /**
-             * Muestra el mensaje de error del formulario
-             * @param {string} message - Mensaje a mostrar
-             */
-            const showFormError = (message) => {
-                formError.textContent = message;
-                formError.style.display = 'block';
-            };
-            
-            /**
-             * Oculta el mensaje de error del formulario
-             */
-            const hideFormError = () => {
-                formError.textContent = '';
-                formError.style.display = 'none';
-            };
-
-            /**
-             * Maneja el envío del formulario de reserva
-             */
-            const handleFormSubmit = (e) => {
-                e.preventDefault();
-                hideFormError();
-                
-                const formData = new FormData(bookingForm);
-                const validationError = validateForm(formData);
-
-                if (validationError) {
-                    showFormError(validationError);
-                    return;
-                }
-
-                const newBooking = {
-                    id: Date.now().toString(),
-                    name: formData.get('name'),
-                    email: formData.get('email'),
-                    phone: formData.get('phone'),
-                    city: formData.get('city'),
-                    procedure: formData.get('procedure'),
-                    date: formData.get('date'),
-                    time: formData.get('time'),
-                    status: 'confirmada' // Estado inicial
-                };
-
-                // Guardar
-                bookings.push(newBooking);
-                saveBookings();
-                
-                // Actualizar UI
-                renderBookings();
-                
-                // Mostrar confirmación
-                showConfirmation(newBooking);
-
-                // Limpiar y cerrar
-                bookingForm.reset();
-                timeSelect.innerHTML = '<option value="" disabled selected>Selecciona primero una fecha</option>';
-                closeModal(bookingModal);
-            };
-
-            /**
-             * Muestra el modal de confirmación con los datos de la reserva
-             * @param {object} booking - El objeto de la reserva
-             */
-            const showConfirmation = (booking) => {
-                confirmationDetails.innerHTML = `
-                    <p><strong>Nombre:</strong> ${booking.name}</p>
-                    <p><strong>Procedimiento:</strong> ${booking.procedure}</p>
-                    <p><strong>Ciudad:</strong> ${booking.city}</p>
-                    <p><strong>Fecha:</strong> ${booking.date}</p>
-                    <p><strong>Hora:</strong> ${booking.time}</p>
-                `;
-                openModal(confirmModal);
-            };
 
             /**
              * Actualiza el estado de una reserva
@@ -1810,14 +1627,6 @@
                 }
             };
 
-            /**
-             * Configura la fecha mínima en el input de fecha (hoy)
-             */
-            const setMinDate = () => {
-                const today = new Date().toISOString().split('T')[0];
-                dateInput.setAttribute('min', today);
-            };
-            
             /**
              * Maneja el clic en el panel de administración (delegación de eventos)
              */
@@ -1898,13 +1707,6 @@
             };
 
             const handleJornadaBookClick = (e) => {
-                const city = e.currentTarget.dataset.city;
-                const citySelect = bookingForm.querySelector('#city');
-                
-                if (citySelect) {
-                    citySelect.value = city;
-                }
-                
                 openModal(bookingModal);
             };
 
@@ -1918,10 +1720,6 @@
                 closeModal(confirmModal);
             }));
 
-            // Formulario
-            bookingForm.addEventListener('submit', handleFormSubmit);
-            dateInput.addEventListener('change', populateTimeSlots);
-            
             // Admin Panel
             filterCity.addEventListener('change', renderBookings);
             filterProcedure.addEventListener('change', renderBookings);
@@ -1949,7 +1747,6 @@
             });
 
             // Carga inicial
-            setMinDate();
             loadBookings();
             renderBookings();
 
