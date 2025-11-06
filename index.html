@@ -327,6 +327,16 @@
 
         /* --- 5. Estructura de Pantalla Completa --- */
         
+        body.booking-active .header,
+        body.booking-active .bottom-nav {
+            display: none;
+        }
+
+        body.booking-active {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
         .fullscreen-section {
             display: none; /* Oculto por defecto */
             /* height: 100%; /* <-- Eliminado para permitir que el contenido defina la altura */
@@ -1154,6 +1164,11 @@
             </div>
         </section>
 
+        <!-- ==== SECCIÓN DE RESERVA (IFRAME) ==== -->
+        <section class="fullscreen-section" id="booking-section" style="padding:0; overflow: hidden;">
+           <iframe src="https://viarmoni.com/agendar_cita/" style="width: 100%; height: 100%; border: none; flex-grow: 1;"></iframe>
+        </section>
+
         <!-- ==== PANEL DE ADMINISTRACIÓN (Y FOOTER) ==== -->
         <section class="admin-section fullscreen-section" id="admin-section">
             <div class="container">
@@ -1207,20 +1222,13 @@
             <i class="fas fa-map-marked-alt"></i> <!-- Se mantiene por ser claro -->
             <span>Jornadas</span>
         </a>
-        <a href="#admin-section" class="bottom-nav-item" data-icon="clipboard-list">
-            <i class="fas fa-calendar-check"></i> <!-- Icono premium para Citas -->
-            <span>Citas</span>
+        <a href="#booking-section" class="bottom-nav-item" data-icon="calendar-plus">
+            <i class="fas fa-calendar-plus"></i> <!-- Icono para Agendar Cita -->
+            <span>Agendar</span>
         </a>
     </nav>
 
 
-    <!-- ==== MODAL DE RESERVA ==== -->
-    <div class="modal-overlay" id="booking-modal">
-        <div class="modal-content" style="padding: 0; overflow: hidden;">
-            <button class="modal-close" id="close-booking-modal" style="z-index: 10; color: #000; opacity: 0.8; text-shadow: 0 1px 0 #fff;">&times;</button>
-            <iframe src="https://viarmoni.com/agendar_cita/" style="width: 100%; height: 85vh; border: none;"></iframe>
-        </div>
-    </div>
     
     <!-- ==== MODAL DE CONFIRMACIÓN ==== -->
     <div class="modal-overlay" id="confirm-modal">
@@ -1478,14 +1486,12 @@
 
             // --- 2. Selectores del DOM ---
             // Modales
-            const bookingModal = document.getElementById('booking-modal');
             const confirmModal = document.getElementById('confirm-modal');
             const openModalBtns = [
                 document.getElementById('header-book-btn'), // Desktop y Mobile
                 document.getElementById('hero-book-btn')
             ];
             const closeModalBtns = [
-                document.getElementById('close-booking-modal'),
                 document.getElementById('close-confirm-modal'),
                 document.getElementById('finish-btn')
             ];
@@ -1676,6 +1682,12 @@
                     targetSection.classList.add('active');
                 }
 
+                if (targetId === '#booking-section') {
+                    document.body.classList.add('booking-active');
+                } else {
+                    document.body.classList.remove('booking-active');
+                }
+
                 // Actualizar el estado activo del menú inferior
                 bottomNavItems.forEach(link => {
                     link.classList.remove('active');
@@ -1707,16 +1719,15 @@
             };
 
             const handleJornadaBookClick = (e) => {
-                openModal(bookingModal);
+                showSection('#booking-section');
             };
 
 
             // --- 5. Inicialización y Event Listeners ---
 
             // Modales
-            openModalBtns.forEach(btn => btn.addEventListener('click', () => openModal(bookingModal)));
+            openModalBtns.forEach(btn => btn.addEventListener('click', () => showSection('#booking-section')));
             closeModalBtns.forEach(btn => btn.addEventListener('click', () => {
-                closeModal(bookingModal);
                 closeModal(confirmModal);
             }));
 
