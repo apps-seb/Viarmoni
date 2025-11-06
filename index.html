@@ -328,13 +328,26 @@
         /* --- 5. Estructura de Pantalla Completa --- */
         
         body.booking-active .header,
-        body.booking-active .bottom-nav {
+        body.booking-active .bottom-nav,
+        body.booking-active .footer {
             display: none;
         }
 
         body.booking-active {
             padding-top: 0;
             padding-bottom: 0;
+            overflow: hidden; /* Prevent scrolling of the page behind the iframe */
+        }
+
+        body.booking-active main {
+            padding-bottom: 0; /* Remove footer padding */
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body.booking-active #booking-section {
+            flex-grow: 1;
         }
 
         .fullscreen-section {
