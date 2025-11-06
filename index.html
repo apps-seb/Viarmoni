@@ -108,6 +108,19 @@
             color: var(--white);
         }
 
+        .btn-back {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            z-index: 10;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
         .card {
             background: var(--white);
             border-radius: var(--border-radius);
@@ -1154,6 +1167,12 @@
             </div>
         </section>
 
+        <!-- ==== SECCIÓN DE RESERVA (NUEVA) ==== -->
+        <section class="fullscreen-section" id="booking-section" style="padding: 0; overflow: hidden;">
+            <button class="btn btn-secondary btn-back" id="back-to-jornadas-btn"><i class="fas fa-arrow-left"></i> Volver</button>
+            <iframe src="https://viarmoni.com/agendar_cita/" style="width: 100%; height: 100%; border: none;"></iframe>
+        </section>
+
         <!-- ==== PANEL DE ADMINISTRACIÓN (Y FOOTER) ==== -->
         <section class="admin-section fullscreen-section" id="admin-section">
             <div class="container">
@@ -1176,8 +1195,6 @@
                 
                 <div id="booking-list">
                     <!-- Las tarjetas de reserva se insertarán aquí con JS -->
-                </div>
-
                 </div>
             </div>
         </section>
@@ -1212,15 +1229,6 @@
             <span>Citas</span>
         </a>
     </nav>
-
-
-    <!-- ==== MODAL DE RESERVA ==== -->
-    <div class="modal-overlay" id="booking-modal">
-        <div class="modal-content" style="padding: 0; overflow: hidden;">
-            <button class="modal-close" id="close-booking-modal" style="z-index: 10; color: #000; opacity: 0.8; text-shadow: 0 1px 0 #fff;">&times;</button>
-            <iframe src="https://viarmoni.com/agendar_cita/" style="width: 100%; height: 85vh; border: none;"></iframe>
-        </div>
-    </div>
     
     <!-- ==== MODAL DE CONFIRMACIÓN ==== -->
     <div class="modal-overlay" id="confirm-modal">
@@ -1478,14 +1486,12 @@
 
             // --- 2. Selectores del DOM ---
             // Modales
-            const bookingModal = document.getElementById('booking-modal');
             const confirmModal = document.getElementById('confirm-modal');
             const openModalBtns = [
                 document.getElementById('header-book-btn'), // Desktop y Mobile
                 document.getElementById('hero-book-btn')
             ];
             const closeModalBtns = [
-                document.getElementById('close-booking-modal'),
                 document.getElementById('close-confirm-modal'),
                 document.getElementById('finish-btn')
             ];
@@ -1707,16 +1713,15 @@
             };
 
             const handleJornadaBookClick = (e) => {
-                openModal(bookingModal);
+                showSection('#booking-section');
             };
 
 
             // --- 5. Inicialización y Event Listeners ---
 
             // Modales
-            openModalBtns.forEach(btn => btn.addEventListener('click', () => openModal(bookingModal)));
+            openModalBtns.forEach(btn => btn.addEventListener('click', () => showSection('#booking-section')));
             closeModalBtns.forEach(btn => btn.addEventListener('click', () => {
-                closeModal(bookingModal);
                 closeModal(confirmModal);
             }));
 
@@ -1745,6 +1750,11 @@
             jornadaBookBtns.forEach(btn => {
                 btn.addEventListener('click', handleJornadaBookClick);
             });
+
+            document.getElementById('back-to-jornadas-btn').addEventListener('click', () => {
+                showSection('#jornadas-section');
+            });
+
 
             // Carga inicial
             loadBookings();
