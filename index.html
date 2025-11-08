@@ -1,0 +1,1767 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservas de Valoraciones Estéticas Viarmoni</title>
+    
+    <!-- 
+      APLICACIÓN DE RESERVAS EN UN SOLO ARCHIVO
+      HTML, CSS y JavaScript nativo (sin frameworks)
+      Almacenamiento: localStorage
+    -->
+    <style>
+        /* --- 1. Variables de Diseño y Reseteo --- */
+        :root {
+            --white: #ffffff;
+            --bg-light: #fdfaf9; /* Un blanco muy suave con tono rosa */
+            --text-dark: #4a4a4a;
+            --primary-gold: #c5a984; /* Oro suave */
+            --secondary-rose: #e0c0c3; /* Rosa pálido */
+            --accent-dark: #a1886b; /* Oro más oscuro para hover */
+            --danger: #b76e79;
+            --success: #6ba18b;
+            
+            --font-main: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-elegant: "Times New Roman", Times, serif; /* Tipografía elegante simple */
+
+            --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.06);
+            --shadow-medium: 0 6px 25px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+            --header-height: 60px; /* Altura fija para el header */
+            --nav-height: 60px; /* Altura fija para el nav inferior */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            /* overflow: hidden; <--- Eliminado para permitir scroll interno */
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            padding-top: var(--header-height); /* Añade espacio para el header fijo */
+            padding-bottom: calc(var(--nav-height) + 2rem); /* Espacio para el menú de navegación inferior en móviles */
+        }
+
+        main {
+            min-height: calc(100% - var(--header-height));
+            padding-bottom: 150px; /* Espacio para el footer */
+            position: relative;
+        }
+
+        /* --- 2. Componentes Reutilizables --- */
+        .container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.8rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(145deg, var(--primary-gold), var(--accent-dark));
+            color: var(--white);
+            box-shadow: 0 4px 15px rgba(197, 169, 132, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(197, 169, 132, 0.5);
+        }
+
+        .btn-secondary {
+            background-color: var(--white);
+            color: var(--primary-gold);
+            border: 2px solid var(--primary-gold);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--primary-gold);
+            color: var(--white);
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        h1, h2, h3 {
+            font-family: "Montserrat", var(--font-main);
+            color: var(--text-dark);
+            font-weight: 700; /* Bold */
+            line-height: 1.2;
+        }
+
+        /* --- 3.1 Carousel Section --- */
+        #main-carousel {
+            width: 100%;
+            height: 60vh; /* Taller on mobile */
+            overflow: hidden;
+        }
+
+        #main-carousel .splide__slide {
+            position: relative; /* For button positioning */
+        }
+
+        #main-carousel .splide__slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .btn-jornadas-carousel {
+            position: absolute;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 100; /* Aumentado para asegurar visibilidad sobre el carrusel */
+            padding: 0.6rem 1.2rem; /* Match header button */
+            font-size: 0.9rem; /* Match header button */
+            background: var(--primary-gold);
+            box-shadow: 0 4px 15px rgba(197, 169, 132, 0.3);
+        }
+
+        h1 { font-size: 2.5rem; }
+        h2 { font-size: 2rem; margin-bottom: 1.5rem; color: var(--accent-dark); text-align: center; }
+        h3 { font-size: 1.4rem; margin-bottom: 1rem; color: var(--primary-gold); }
+
+        /* --- 3. Encabezado y Navegación (Desktop) --- */
+        .header {
+            background-color: var(--white);
+            box-shadow: var(--shadow-light);
+            padding: 0 1rem; /* Padding horizontal en lugar de vertical */
+            position: fixed; /* Cambiado a fixed para que siempre esté visible */
+            top: 0;
+            left: 0; /* Asegura que se alinee a la izquierda */
+            z-index: 1000; /* Aumentado para estar sobre todo */
+            width: 100%;
+            height: var(--header-height); /* Altura fija */
+            display: flex; /* Para centrar contenido verticalmente */
+            align-items: center; /* Centrar contenido verticalmente */
+        }
+
+        .header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%; /* Asegura que el container ocupe todo el espacio */
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-family: var(--font-elegant);
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary-gold);
+            text-decoration: none;
+        }
+
+        .logo img {
+            max-height: 40px;
+        }
+
+        .nav-links {
+            display: none; /* Oculto por defecto en móvil */
+        }
+
+        .nav-links a {
+            margin-left: 1.5rem;
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative; /* Para el indicador ::after */
+            padding: 0.5rem 0;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary-gold);
+        }
+        
+        /* Indicador activo para el menú de escritorio */
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px; /* Ajustar posición */
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary-gold);
+            animation: slideIn 0.3s ease;
+        }
+        
+        /* Botón de agendar principal - Visible en todas las vistas */
+        .header .btn-primary {
+            display: inline-block; 
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            background: linear-gradient(135deg, var(--secondary-rose), var(--danger));
+            box-shadow: 0 4px 15px rgba(224, 192, 195, 0.4);
+            animation: pulse 2.5s infinite; /* Animación de pulso */
+        }
+        
+        .header .btn-primary:hover {
+            transform: translateY(-2px) scale(1.05); /* Efecto más pronunciado al pasar el ratón */
+            box-shadow: 0 6px 20px rgba(224, 192, 195, 0.6);
+        }
+
+
+        /* --- 4. Menú Inferior Fijo (Mobile) --- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 1rem; /* Separación del borde inferior */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px; /* Ancho máximo para el menú */
+            
+            /* Efecto Glassmorphism */
+            background: rgba(255, 255, 255, 0.2); /* Fondo semitransparente */
+            backdrop-filter: blur(15px); /* El desenfoque clave del efecto */
+            -webkit-backdrop-filter: blur(15px); /* Para Safari */
+            border-radius: 50px; /* Bordes redondeados */
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: var(--nav-height);
+            z-index: 1000;
+            overflow: hidden; /* Para que el indicador no se salga */
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Centra el contenido verticalmente */
+            text-decoration: none;
+            color: var(--text-dark);
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+            flex: 1;
+            height: 100%;
+        }
+
+        .bottom-nav-item i {
+            font-size: 1.6rem; /* Ligeramente más pequeño para dar espacio al texto */
+            margin-bottom: 4px; /* Espacio entre el icono y el texto */
+            transition: all 0.3s ease;
+            /* Color por defecto: Gradiente Rosa-Gold */
+            background: linear-gradient(135deg, var(--secondary-rose), var(--danger));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        /* Estilo para el ícono del item activo */
+        .bottom-nav-item.active i {
+            color: var(--primary-gold);
+            transform: scale(1.15);
+            background: none; /* Quitar gradiente para mostrar color sólido */
+            -webkit-background-clip: initial; /* Resetear clip */
+            background-clip: initial;
+        }
+
+        .bottom-nav-item span {
+            font-size: 0.7rem; /* Texto un poco más pequeño */
+            font-weight: 600;
+            color: var(--accent-dark);
+            /* Ya no es absoluto, así que fluye normalmente debajo del icono */
+        }
+        
+        .bottom-nav-item:hover i {
+            filter: brightness(1.2); /* Efecto sutil al pasar el ratón */
+        }
+
+        /* Eliminamos el punto decorativo para un diseño más limpio */
+        .bottom-nav-item.active::after {
+            content: none;
+        }
+        
+        /* Oculta los iconos de Font Awesome si no están cargados */
+        .bottom-nav-item i:before {
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+        }
+        .bottom-nav-item[data-icon="home"] i::before { content: "\f015"; }
+        .bottom-nav-item[data-icon="info"] i::before { content: "\f129"; }
+        .bottom-nav-item[data-icon="images"] i::before { content: "\f03e"; }
+        .bottom-nav-item[data-icon="clipboard-list"] i::before { content: "\f46d"; }
+
+        /* --- 5. Estructura de Pantalla Completa --- */
+
+        .fullscreen-section {
+            display: none; /* Oculto por defecto */
+            /* height: 100%; /* <-- Eliminado para permitir que el contenido defina la altura */
+            position: relative;
+            flex-direction: column;
+        }
+
+        .fullscreen-section.active {
+            display: flex; /* Se muestra la sección activa */
+            animation: fadeIn 0.5s ease;
+        }
+        
+        /* El container dentro de una sección de pantalla completa */
+        .fullscreen-section > .container {
+            /* overflow-y: auto; /* <-- Eliminado para usar el scroll principal de la página */
+            /* flex-grow: 1; /* <-- Eliminado */
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+
+        /* --- 5.1 Sección Principal (Hero) --- */
+        .hero {
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            text-align: center;
+        }
+
+        .hero #main-carousel {
+            /* No longer absolute */
+            width: 100%;
+            height: auto; /* Adjust height as needed or let content define it */
+        }
+        
+        .hero-text-container {
+            padding: 2rem;
+            max-width: 800px; /* Wider for better text flow */
+            margin: 0 auto; /* Center the container */
+        }
+
+
+        .hero h1 {
+            animation: blurIn 0.8s ease-out forwards;
+            color: #5a4b3a; 
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin: 1rem 0 2rem;
+            max-width: 600px;
+            animation: blurIn 0.8s ease-out 0.4s forwards;
+            animation-fill-mode: backwards;
+        }
+
+        .hero .btn {
+            animation: blurIn 0.8s ease-out 0.8s forwards;
+            animation-fill-mode: backwards;
+        }
+
+        /* --- 6. Secciones Informativas --- */
+        .info-section > .container,
+        .gallery-section > .container,
+        .admin-section > .container {
+             /* El padding-top y bottom se maneja en el scroll-padding del html */
+             /* Se re-añade padding para el contenido interno */
+             padding-top: 2rem;
+             padding-bottom: 2rem;
+        }
+        
+
+        .info-section ul, .info-section ol {
+            padding-left: 1.5rem;
+        }
+
+        .info-section li {
+            margin-bottom: 0.75rem;
+        }
+
+        /* --- 6.1 Tarjetas de Información --- */
+        .info-cards-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .info-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(224, 192, 195, 0.4);
+        }
+
+        .info-card i {
+            font-size: 3rem;
+            color: #b76e79;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .info-card h3 {
+            font-size: 1.5rem;
+            color: #8a6d50;
+        }
+
+        /* --- 7. Galería (Transformaciones) --- */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: 1fr; /* 1 columna en móvil */
+            gap: 1.5rem;
+        }
+
+        .transform-card {
+            position: relative;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+        }
+
+        .transform-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .transform-card h4 {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            color: var(--white);
+            padding: 2rem 1rem 1rem;
+            font-size: 1.3rem;
+            font-family: var(--font-main);
+        }
+        /* --- 7.1 Sección Jornadas --- */
+        .jornadas-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .jornada-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .jornada-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .jornada-card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .jornada-card-header h3 {
+            color: var(--accent-dark);
+            font-size: 1.5rem;
+            margin-bottom: 0;
+        }
+
+        .jornada-card-body {
+            padding: 1.5rem;
+            flex-grow: 1; /* Para que ocupe el espacio disponible */
+        }
+        
+        .jornada-date {
+            font-weight: 600;
+            color: var(--primary-gold);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .jornada-date i {
+            margin-right: 0.5rem;
+        }
+
+        .jornada-card-footer {
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .jornada-book-btn {
+            width: 100%;
+        }
+
+        /* --- 8. Panel de Administración --- */
+        .admin-section {
+            background-color: var(--white);
+        }
+
+        .filters {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .filters select {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: var(--bg-light);
+            font-size: 1rem;
+        }
+
+        #booking-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .booking-card {
+            border-left: 5px solid var(--secondary-rose);
+        }
+
+        .booking-card.status-confirmada { border-color: var(--success); }
+        .booking-card.status-atendida { border-color: var(--primary-gold); }
+        .booking-card.status-cancelada { border-color: var(--danger); }
+        
+        .booking-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .booking-card-header h4 {
+            font-family: var(--font-main);
+            font-size: 1.2rem;
+            color: var(--text-dark);
+        }
+        
+        .booking-card-body p {
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+        .booking-card-body p strong {
+            color: var(--accent-dark);
+        }
+        
+        .booking-card-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .booking-card-actions select {
+            flex-grow: 1;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .delete-btn {
+            padding: 0.5rem 1rem;
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .delete-btn:hover {
+            background-color: #a15a65;
+        }
+        
+
+        /* --- 9. Pie de Página --- */
+        .footer {
+            background-color: #333;
+            color: #f0f0f0;
+            text-align: center;
+            padding: 2rem 1rem;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            border-top: 1px solid #444;
+        }
+        
+        .footer p {
+            margin-bottom: 1rem;
+        }
+
+        .footer .nav-admin a {
+            color: var(--primary-gold);
+            text-decoration: none;
+        }
+
+        /* --- 10. Modal de Reserva --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none; /* Se activa con JS */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 1rem;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-medium);
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideInUp 0.4s ease-out;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+        .modal-close:hover {
+            color: var(--danger);
+        }
+        
+        .modal-content h2 {
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+        
+        /* Formulario */
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.85rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: var(--font-main);
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-gold);
+            box-shadow: 0 0 8px rgba(197, 169, 132, 0.3);
+        }
+        
+        .form-group input::placeholder {
+            color: #aaa;
+        }
+
+        #form-error {
+            color: var(--danger);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: none; /* Oculto por defecto */
+        }
+        
+        /* Modal de Confirmación */
+        #confirmation-content {
+            text-align: center;
+        }
+
+        #confirmation-content .icon {
+            font-size: 4rem;
+            color: var(--success);
+            animation: popIn 0.5s ease;
+        }
+        
+        #confirmation-content h3 {
+            margin-top: 1rem;
+            color: var(--success);
+        }
+        
+        #confirmation-details {
+            text-align: left;
+            margin: 2rem 0;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+        
+        #confirmation-details p {
+            margin-bottom: 0.75rem;
+        }
+        
+        #info-modal .modal-content {
+            background-color: #fdfaf9 !important; /* Fondo rosa pálido, forzado para evitar conflictos */
+        }
+
+        #info-modal-content h3 {
+            font-size: 1.8rem;
+            color: var(--accent-dark);
+            margin-bottom: 1.5rem;
+        }
+
+        #info-modal-content p, 
+        #info-modal-content li {
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+        
+        #info-modal-content ol,
+        #info-modal-content ul {
+            padding-left: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .confirmation-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+
+        /* --- 11. Media Queries (Desktop) --- */
+        
+        /* Estilos para móvil (por defecto) */
+        @media (max-width: 767px) {
+            html {
+                /* Espacio para el nav inferior fijo en móvil */
+                scroll-padding-bottom: var(--nav-height);
+            }
+        }
+        
+        /* Estilos para desktop */
+        
+        @media (min-width: 768px) {
+             .jornadas-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .info-cards-container {
+                grid-template-columns: repeat(3, 1fr); /* 3 tarjetas en desktop */
+            }
+            
+            body {
+                padding-bottom: 0; /* No hay menú inferior en desktop */
+            }
+
+            .nav-links {
+                display: block; /* Muestra nav en desktop */
+            }
+
+            .header .btn-primary {
+                display: inline-block; /* Muestra botón de agendar en header */
+            }
+
+            .bottom-nav {
+                display: none; /* Oculta menú inferior */
+            }
+            
+            .hero h1 {
+                font-size: 3.5rem;
+            }
+            
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .filters {
+                flex-direction: row;
+            }
+            
+            .filters select {
+                min-width: 200px;
+                flex-grow: 0;
+            }
+
+            #booking-list {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .gallery-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            #booking-list {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* --- 12. Estilos de Impresión --- */
+        @media print {
+            body * {
+                visibility: hidden; /* Oculta todo */
+            }
+
+            /* Muestra solo el contenido de la confirmación */
+            #confirmation-content, #confirmation-content * {
+                visibility: visible;
+            }
+            
+            #confirm-modal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                max-width: 100%;
+                box-shadow: none;
+                border: 1px solid #666;
+            }
+            
+            .modal-overlay {
+                background: none;
+            }
+
+            /* Oculta botones en la impresión */
+            .confirmation-actions, .modal-close {
+                display: none;
+            }
+        }
+
+
+        /* --- 13. Animaciones --- */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0.5; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideIn {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 4px 15px rgba(224, 192, 195, 0.3);
+            }
+            70% {
+                transform: scale(1.03);
+                box-shadow: 0 6px 25px rgba(224, 192, 195, 0.5);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 4px 15px rgba(224, 192, 195, 0.3);
+            }
+        }
+        
+        @keyframes blurIn {
+            from {
+                opacity: 0;
+                filter: blur(5px);
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                filter: blur(0);
+                transform: translateY(0);
+            }
+        }
+
+    </style>
+    <!-- Google Fonts: Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome para los iconos del menú inferior -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" xintegrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <!-- Splide.js Carousel -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+
+    <!-- Image Comparison Slider -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8.0.6/dist/styles.css" />
+    <script defer src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8.0.6/dist/index.js"></script>
+</head>
+<body>
+
+    <!-- ==== ENCABEZADO FIJO ==== -->
+    <header class="header">
+        <div class="container">
+            <a href="#home" class="logo"><img src="https://viarmoni.com/wp-content/uploads/2025/11/cropped-logo-horizontal-25-scaled-1.png" alt="Viarmoni Logo"></a>
+            <nav class="nav-links">
+                <a href="#home">Inicio</a>
+                <a href="#info-section">Cuidados</a>
+                <a href="#gallery-section">Galería</a>
+                <a href="#jornadas-section">Jornadas</a>
+                <a href="#admin-section">Admin Citas</a>
+            </nav>
+            <a href="https://viarmoni.com/agendar_cita/" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Agendar</a>
+        </div>
+    </header>
+
+
+    <main>
+
+        <!-- ==== SECCIÓN HERO ==== -->
+        <section class="hero fullscreen-section active" id="home">
+            <section id="main-carousel" class="splide" aria-label="Beautiful-Viarmoni">
+                <div class="splide__track">
+                    <ul class="splide__list">
+                        <li class="splide__slide">
+                            <img src="https://viarmoni.com/wp-content/uploads/2025/11/2-Rinomodelacion.jpeg" alt="Rinomodelacion">
+                            <a href="#jornadas-section" class="btn btn-primary btn-jornadas-carousel">Ver Jornadas</a>
+                        </li>
+                        <li class="splide__slide">
+                            <img src="https://viarmoni.com/wp-content/uploads/2025/11/calvo_de_mora_bichectomia_1-768x554-1.jpg" alt="Bichectomia">
+                            <a href="#jornadas-section" class="btn btn-primary btn-jornadas-carousel">Ver Jornadas</a>
+                        </li>
+                        <li class="splide__slide">
+                            <img src="https://viarmoni.com/wp-content/uploads/2025/11/calvo_de_mora_bichectomia_2.jpg" alt="Bichectomia 2">
+                            <a href="#jornadas-section" class="btn btn-primary btn-jornadas-carousel">Ver Jornadas</a>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+            <div class="container hero-text-container">
+                <h1>Armonización Facial: Belleza que Resalta, no Transforma.</h1>
+                <p>En Viarmoni, esculpimos tu belleza natural con procedimientos de armonización facial mínimamente invasivos. Redescubre tus rasgos y proyecta la mejor versión de ti. ¿Lista para empezar?</p>
+                <a href="https://viarmoni.com/agendar_cita/" class="btn btn-primary btn-lg" target="_blank" rel="noopener noreferrer">Iniciar mi Transformación</a>
+            </div>
+        </section>
+
+        <!-- ==== SECCIÓN INFORMATIVA (Pestañas) ==== -->
+        <section class="info-section fullscreen-section" id="info-section">
+            <div class="container">
+                <h2>Información Importante</h2>
+                
+                <div class="info-cards-container">
+                    <div class="info-card" data-content-id="info-instructions">
+                        <i class="fas fa-list-ol"></i>
+                        <h3>Instrucciones</h3>
+                    </div>
+                    <div class="info-card" data-content-id="info-pre-op">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>Cuidados Previos</h3>
+                    </div>
+                    <div class="info-card" data-content-id="info-post-op">
+                        <i class="fas fa-heartbeat"></i>
+                        <h3>Cuidados Post</h3>
+                    </div>
+                </div>
+
+                <!-- Contenido oculto que se mostrará en el modal -->
+                <div class="hidden-content" style="display: none;">
+                    <div id="info-instructions">
+                        <h3>Instrucciones para tu Valoración</h3>
+                        <p>Para asegurar una valoración precisa y cómoda, te recomendamos:</p>
+                        <ol>
+                            <li>Asistir con el rostro limpio, sin maquillaje en la zona a evaluar.</li>
+                            <li>Traer una lista de medicamentos o suplementos que estés tomando actualmente.</li>
+                            <li>Evitar consumir alcohol o antiinflamatorios (como aspirina) 24 horas antes, especialmente si se considera una rinomodelación o labios.</li>
+                            <li>Tener claras tus expectativas y preparar cualquier pregunta que tengas para el especialista.</li>
+                        </ol>
+                    </div>
+                    <div id="info-pre-op">
+                        <h3>Cuidados Prequirúrgicos</h3>
+                        <p>Si tu procedimiento es aprobado y agendado, generalmente deberás:</p>
+                        <ul>
+                            <li>Realizar ayuno de 8 horas antes del procedimiento.</li>
+                            <li>Suspender el consumo de tabaco al menos 2 semanas antes.</li>
+                            <li>Hidratarte bien los días previos.</li>
+                            <li>Coordinar quién te acompañará y te llevará a casa después del procedimiento.</li>
+                        </ul>
+                    </div>
+                    <div id="info-post-op">
+                        <h3>Cuidados Postquirúrgicos</h3>
+                        <p>La recuperación es clave para un resultado exitoso:</p>
+                        <ul>
+                            <li>Seguir al pie de la letra la medicación (antibióticos, analgésicos) recetada.</li>
+                            <li>Aplicar compresas frías en la zona para reducir la inflamación.</li>
+                            <li>Dormir con la cabeza elevada (semi-sentado) los primeros días (para bichectomía o lipopapada).</li>
+                            <li>Evitar la exposición directa al sol y usar protector solar rigurosamente.</li>
+                            <li>Asistir a todos los controles postoperatorios programados.</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ==== SECCIÓN GALERÍA ==== -->
+        <section class="gallery-section fullscreen-section" id="gallery-section">
+            <div class="container">
+                <h2>Nuestras Transformaciones</h2>
+                <div class="gallery-grid">
+                    
+                    <div class="transform-card">
+                        <img-comparison-slider>
+                            <img slot="first" src="https://placehold.co/400x500/d6b4b8/ffffff?text=Antes" alt="Antes Rinomodelación">
+                            <img slot="second" src="https://placehold.co/400x500/c5a984/ffffff?text=Despu%C3%A9s" alt="Después Rinomodelación">
+                        </img-comparison-slider>
+                        <h4>Rinomodelación</h4>
+                    </div>
+                    
+                    <div class="transform-card">
+                        <img-comparison-slider>
+                            <img slot="first" src="https://placehold.co/400x500/d6b4b8/ffffff?text=Antes" alt="Antes Labios">
+                            <img slot="second" src="https://placehold.co/400x500/c5a984/ffffff?text=Despu%C3%A9s" alt="Después Labios">
+                        </img-comparison-slider>
+                        <h4>Aumento de Labios</h4>
+                    </div>
+
+                    <div class="transform-card">
+                        <img-comparison-slider>
+                            <img slot="first" src="https://placehold.co/400x500/d6b4b8/ffffff?text=Antes" alt="Antes Lipopapada">
+                            <img slot="second" src="https://placehold.co/400x500/c5a984/ffffff?text=Despu%C3%A9s" alt="Después Lipopapada">
+                        </img-comparison-slider>
+                        <h4>Lipopapada</h4>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==== SECCIÓN JORNADAS ==== -->
+        <section class="fullscreen-section" id="jornadas-section">
+            <div class="container">
+                <h2>Próximas Jornadas de Valoración</h2>
+                <div class="jornadas-grid">
+                    <!-- Jornada 1: Cali -->
+                    <div class="jornada-card">
+                        <div class="jornada-card-header">
+                            <h3>Cali, Valle del Cauca</h3>
+                        </div>
+                        <div class="jornada-card-body">
+                            <p class="jornada-date"><i class="fas fa-calendar-alt"></i> 15 y 16 de Diciembre</p>
+                            <p>¡Últimos cupos disponibles! No te pierdas la oportunidad de una valoración exclusiva en la capital de la salsa.</p>
+                        </div>
+                        <div class="jornada-card-footer">
+                            <a href="https://viarmoni.com/agendar_cita/" class="btn btn-primary jornada-book-btn" target="_blank" rel="noopener noreferrer">Agendar en Cali</a>
+                        </div>
+                    </div>
+
+                    <!-- Jornada 2: Pereira -->
+                    <div class="jornada-card">
+                        <div class="jornada-card-header">
+                            <h3>Pereira, Risaralda</h3>
+                        </div>
+                        <div class="jornada-card-body">
+                            <p class="jornada-date"><i class="fas fa-calendar-alt"></i> 22 y 23 de Diciembre</p>
+                            <p>El eje cafetero nos recibe. Agenda tu cita y prepárate para resaltar tu belleza natural en un entorno único.</p>
+                        </div>
+                        <div class="jornada-card-footer">
+                           <a href="https://viarmoni.com/agendar_cita/" class="btn btn-primary jornada-book-btn" target="_blank" rel="noopener noreferrer">Agendar en Pereira</a>
+                        </div>
+                    </div>
+                    
+                     <!-- Jornada 3: Popayán -->
+                    <div class="jornada-card">
+                        <div class="jornada-card-header">
+                            <h3>Popayán, Cauca</h3>
+                        </div>
+                        <div class="jornada-card-body">
+                            <p class="jornada-date"><i class="fas fa-calendar-alt"></i> Atendiendo ahora</p>
+                            <p>Nuestra sede principal siempre está abierta para ti. Agenda tu valoración en la 'Ciudad Blanca' cualquier día.</p>
+                        </div>
+                        <div class="jornada-card-footer">
+                           <a href="https://viarmoni.com/agendar_cita/" class="btn btn-primary jornada-book-btn" target="_blank" rel="noopener noreferrer">Agendar en Popayán</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==== PANEL DE ADMINISTRACIÓN (Y FOOTER) ==== -->
+        <section class="admin-section fullscreen-section" id="admin-section">
+            <div class="container">
+                <h2>Panel de Reservas</h2>
+                <div class="filters">
+                    <select id="filter-city">
+                        <option value="">Filtrar por Ciudad</option>
+                        <option value="Popayán">Popayán</option>
+                        <option value="Cali">Cali</option>
+                        <option value="Pereira">Pereira</option>
+                    </select>
+                    <select id="filter-procedure">
+                        <option value="">Filtrar por Procedimiento</option>
+                        <option value="Lipopapada">Lipopapada</option>
+                        <option value="Bichectomía">Bichectomía</option>
+                        <option value="Labios">Labios</option>
+                        <option value="Rinomodelación">Rinomodelación</option>
+                    </select>
+                </div>
+                
+                <div id="booking-list">
+                    <!-- Las tarjetas de reserva se insertarán aquí con JS -->
+                </div>
+
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+             <p>© 2025 Viarmoni. Todos los derechos reservados.</p>
+             <p class="nav-admin">Estás en el <a href="#admin-section">Panel de Citas</a>.</p>
+        </footer>
+
+    </main>
+
+    <!-- ==== MENÚ INFERIOR FIJO (Mobile Only) ==== -->
+    <nav class="bottom-nav">
+        <a href="#home" class="bottom-nav-item active" data-icon="home">
+            <i class="fas fa-gem"></i> <!-- Icono premium para Inicio -->
+            <span>Inicio</span>
+        </a>
+        <a href="#info-section" class="bottom-nav-item" data-icon="info">
+            <i class="fas fa-book-open"></i> <!-- Icono premium para Cuidados -->
+            <span>Cuidados</span>
+        </a>
+        <a href="#gallery-section" class="bottom-nav-item" data-icon="images">
+            <i class="fas fa-camera-retro"></i> <!-- Icono premium para Cambios -->
+            <span>Cambios</span>
+        </a>
+        <a href="#jornadas-section" class="bottom-nav-item" data-icon="map-marked-alt">
+            <i class="fas fa-map-marked-alt"></i> <!-- Se mantiene por ser claro -->
+            <span>Jornadas</span>
+        </a>
+        <a href="https://viarmoni.com/agendar_cita/" class="bottom-nav-item" data-icon="calendar-plus" target="_blank" rel="noopener noreferrer">
+            <i class="fas fa-calendar-plus"></i> <!-- Icono para Agendar Cita -->
+            <span>Agendar</span>
+        </a>
+    </nav>
+
+
+    
+    <!-- ==== MODAL DE CONFIRMACIÓN ==== -->
+    <div class="modal-overlay" id="confirm-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="close-confirm-modal">&times;</button>
+            
+            <div id="confirmation-content">
+                <div class="icon">✓</div>
+                <h3>¡Cita Agendada!</h3>
+                <p>Tu valoración ha sido registrada con éxito. Te esperamos.</p>
+                
+                <div id="confirmation-details">
+                    <!-- Detalles de la cita se insertan aquí con JS -->
+                </div>
+            </div>
+
+            <div class="confirmation-actions">
+                <button class="btn btn-secondary" id="print-btn">Imprimir Comprobante</button>
+                <button class="btn btn-primary" id="finish-btn">Finalizar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==== MODAL DE INFORMACIÓN INMERSIVA ==== -->
+    <div class="modal-overlay" id="info-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="close-info-modal">&times;</button>
+            <div id="info-modal-content">
+                <!-- El contenido se inyectará aquí con JS -->
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==== SCRIPT PRINCIPAL ==== -->
+    <script>
+        /*
+    GUÍA DETALLADA PARA IMPLEMENTAR LA CONFIRMACIÓN DE CITAS POR CORREO ELECTRÓNICO
+
+    Objetivo: Enviar un correo de confirmación al cliente cuando agende una cita
+    y, opcionalmente, notificar al administrador.
+
+    Dado que esta es una aplicación de una sola página (HTML, CSS, JS) que se ejecuta
+    completamente en el navegador del cliente (frontend), no podemos enviar correos
+    directamente desde aquí de forma segura. El código del frontend es público y
+    expondría claves de servicios de correo, lo cual es un riesgo de seguridad grave.
+
+    La solución correcta es usar un servicio de backend (un pequeño servidor o una
+    función "serverless") que reciba la información de la cita y se encargue de
+    enviar el correo de forma segura.
+
+    Aquí tienes una guía paso a paso:
+
+    ---
+    Paso 1: Elegir un Servicio de Envío de Correos
+    ---
+    Necesitas un servicio que te permita enviar correos a través de una API.
+    Algunas opciones populares y con capas gratuitas generosas son:
+
+    1.  Resend (recomendado por su simplicidad):
+        -   Web: https://resend.com
+        -   Ofrece una API muy fácil de usar.
+        -   Ideal para empezar.
+
+    2.  SendGrid:
+        -   Web: https://sendgrid.com
+        -   Muy potente y escalable. Propiedad de Twilio.
+
+    3.  Mailgun:
+        -   Web: https://mailgun.com
+        -   Otra opción robusta y popular.
+
+    Para este ejemplo, usaremos **Resend**.
+
+    ---
+    Paso 2: Crear el Backend (Función Serverless)
+    ---
+    Usaremos una función "serverless" porque es económica (a menudo gratuita para
+    bajo tráfico) y fácil de desplegar. Vercel, Netlify o AWS Lambda son excelentes
+    opciones.
+
+    Ejemplo usando Vercel (que se integra perfectamente con proyectos frontend):
+
+    1.  **Estructura del Proyecto:**
+        Crea una carpeta `api` en la raíz de tu proyecto. Dentro, crea un archivo
+        llamado `send-confirmation.js`.
+
+        /
+        |-- index.html
+        |-- api/
+        |   |-- send-confirmation.js
+
+    2.  **Contenido de `api/send-confirmation.js` (usando Node.js):**
+
+        ```javascript
+        // Importar el SDK de Resend
+        import { Resend } from 'resend';
+
+        // Crear una instancia de Resend con tu clave API
+        // ¡IMPORTANTE! Guarda tu clave API como una variable de entorno, no en el código.
+        const resend = new Resend(process.env.RESEND_API_KEY);
+
+        // Esta es la función que se ejecutará cuando se llame a la API
+        export default async function handler(req, res) {
+          // Solo permitir peticiones POST
+          if (req.method !== 'POST') {
+            return res.status(405).json({ error: 'Method Not Allowed' });
+          }
+
+          try {
+            // Extraer los datos de la cita del cuerpo de la petición
+            const { name, email, procedure, date, time, city } = req.body;
+
+            // --- 1. Enviar correo de confirmación al CLIENTE ---
+            const { data: clientData, error: clientError } = await resend.emails.send({
+              from: 'Confirmacion ViArmoni <confirmacion@tu-dominio.com>', // Debes verificar este dominio en Resend
+              to: [email],
+              subject: `Confirmación de tu cita para ${procedure}`,
+              html: `
+                <h1>¡Hola ${name}, tu cita está confirmada!</h1>
+                <p>Gracias por agendar con ViArmoni. Aquí están los detalles de tu valoración:</p>
+                <ul>
+                  <li><strong>Procedimiento:</strong> ${procedure}</li>
+                  <li><strong>Ciudad:</strong> ${city}</li>
+                  <li><strong>Fecha:</strong> ${date}</li>
+                  <li><strong>Hora:</strong> ${time}</li>
+                </ul>
+                <p>Si necesitas reagendar o cancelar, por favor contáctanos.</p>
+                <p>¡Te esperamos!</p>
+              `,
+            });
+
+            if (clientError) {
+              console.error('Error enviando correo al cliente:', clientError);
+              // No detenemos el proceso aquí para intentar notificar al admin
+            }
+
+            // --- 2. Enviar correo de notificación al ADMINISTRADOR ---
+            const { data: adminData, error: adminError } = await resend.emails.send({
+              from: 'Nueva Cita <notificaciones@tu-dominio.com>',
+              to: ['correo-del-admin@viarmoni.com'], // El correo del administrador
+              subject: `¡Nueva cita agendada! - ${procedure} para ${name}`,
+              html: `
+                <h1>Nueva Cita Registrada</h1>
+                <p>Se ha agendado una nueva valoración a través de la web:</p>
+                <ul>
+                  <li><strong>Cliente:</strong> ${name}</li>
+                  <li><strong>Email:</strong> ${email}</li>
+                  <li><strong>Procedimiento:</strong> ${procedure}</li>
+                  <li><strong>Ciudad:</strong> ${city}</li>
+                  <li><strong>Fecha:</strong> ${date}</li>
+                  <li><strong>Hora:</strong> ${time}</li>
+                </ul>
+              `,
+            });
+
+            if (adminError) {
+              console.error('Error enviando correo al admin:', adminError);
+              return res.status(500).json({ error: 'Error al enviar notificación' });
+            }
+
+            // Si todo fue bien (o al menos la notificación al admin funcionó)
+            res.status(200).json({ message: 'Correos enviados exitosamente' });
+
+          } catch (error) {
+            console.error('Error en la función del servidor:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+          }
+        }
+        ```
+
+    ---
+    Paso 3: Modificar el Frontend para Llamar a la API
+    ---
+    Ahora, en tu `index.html`, necesitas modificar la función que maneja el envío
+    del formulario (`handleFormSubmit`) para que, además de guardar en `localStorage`,
+    envíe los datos a tu nueva API.
+
+    1.  **Localiza la función `handleFormSubmit` en tu `<script>`:**
+
+    2.  **Añade una llamada `fetch` después de guardar la reserva:**
+
+        ```javascript
+        // Dentro de la función handleFormSubmit, después de saveBookings();
+
+        // ... (código existente)
+        bookings.push(newBooking);
+        saveBookings();
+
+        // --- INICIO DE LA MODIFICACIÓN ---
+
+        // Enviar datos al backend para el correo de confirmación
+        fetch('/api/send-confirmation', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newBooking),
+        })
+        .then(response => {
+          if (!response.ok) {
+            // Si la respuesta no es exitosa, lanza un error para capturarlo después
+            return response.json().then(err => { throw new Error(err.error || 'Error en el servidor') });
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Respuesta del servidor:', data.message); // "Correos enviados exitosamente"
+        })
+        .catch(error => {
+          console.error('Error al enviar el correo de confirmación:', error);
+          // Opcional: Podrías mostrar un mensaje al usuario aquí, aunque la cita
+          // ya está guardada localmente. Por ejemplo:
+          // alert('Tu cita fue guardada, pero hubo un problema al enviar el correo de confirmación.');
+        });
+
+        // --- FIN DE LA MODIFICACIÓN ---
+
+        // El resto del código sigue igual
+        renderBookings();
+        showConfirmation(newBooking);
+        bookingForm.reset();
+        // ... (resto de la función)
+        ```
+
+    ---
+    Resumen del Flujo
+    ---
+    1.  **Usuario rellena el formulario:** El cliente completa sus datos en `index.html`.
+    2.  **Frontend (JS):**
+        -   Valida los datos.
+        -   Guarda la cita en `localStorage` (como ya lo hace).
+        -   Envía los datos de la cita (nombre, email, etc.) a `/api/send-confirmation` usando `fetch`.
+        -   Muestra el modal de confirmación al usuario inmediatamente, sin esperar la respuesta del servidor de correos.
+    3.  **Backend (Función Serverless en Vercel):**
+        -   La función en `api/send-confirmation.js` recibe la petición.
+        -   Usa la clave API de Resend (guardada de forma segura en variables de entorno) para conectarse al servicio.
+        -   Envía un correo de confirmación al cliente.
+        -   Envía un correo de notificación al administrador.
+        -   Devuelve una respuesta de éxito o error al frontend.
+    4.  **Frontend (JS):**
+        -   Recibe la respuesta y la registra en la consola. El usuario no nota nada a menos que haya un error.
+
+    Este enfoque es seguro, profesional y escalable.
+    */
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. Estado y Constantes ---
+            let bookings = [];
+            const STORAGE_KEY = 'aestheticBookingsViarmoni'; // Clave actualizada
+            const HORARIOS = [
+                "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+                "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"
+            ];
+
+            // --- 2. Selectores del DOM ---
+            // Modales
+            const confirmModal = document.getElementById('confirm-modal');
+            const closeModalBtns = [
+                document.getElementById('close-confirm-modal'),
+                document.getElementById('finish-btn')
+            ];
+
+            // Panel Admin
+            const bookingList = document.getElementById('booking-list');
+            const filterCity = document.getElementById('filter-city');
+            const filterProcedure = document.getElementById('filter-procedure');
+
+            // Confirmación e Impresión
+            const printBtn = document.getElementById('print-btn');
+            const confirmationDetails = document.getElementById('confirmation-details');
+            
+            // Tarjetas Info
+            const infoCards = document.querySelectorAll('.info-card');
+            const infoModal = document.getElementById('info-modal');
+            const infoModalContent = document.getElementById('info-modal-content');
+            const closeInfoModalBtn = document.getElementById('close-info-modal');
+
+            // Navegación
+            const sections = document.querySelectorAll('.fullscreen-section');
+            const bottomNavItems = document.querySelectorAll('.bottom-nav-item');
+            const desktopNavLinks = document.querySelectorAll('.nav-links a');
+
+            // Botón de Volver
+            const backToHomeBtn = document.getElementById('back-to-home-btn');
+
+
+            // --- 3. Funciones Principales ---
+
+            /**
+             * Abre un modal
+             * @param {HTMLElement} modal - El elemento modal a mostrar
+             */
+            const openModal = (modal) => {
+                if(modal) modal.classList.add('active');
+            };
+
+            /**
+             * Cierra un modal
+             * @param {HTMLElement} modal - El elemento modal a ocultar
+             */
+            const closeModal = (modal) => {
+                if(modal) modal.classList.remove('active');
+            };
+
+            /**
+             * Carga las reservas desde localStorage
+             */
+            const loadBookings = () => {
+                const data = localStorage.getItem(STORAGE_KEY);
+                bookings = data ? JSON.parse(data) : [];
+            };
+
+            /**
+             * Guarda las reservas en localStorage
+             */
+            const saveBookings = () => {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(bookings));
+            };
+
+            /**
+             * Renderiza la lista de reservas en el panel de admin
+             */
+            const renderBookings = () => {
+                const city = filterCity.value;
+                const procedure = filterProcedure.value;
+
+                // Filtrar reservas
+                const filteredBookings = bookings.filter(booking => {
+                    const cityMatch = !city || booking.city === city;
+                    const procedureMatch = !procedure || booking.procedure === procedure;
+                    return cityMatch && procedureMatch;
+                });
+                
+                // Ordenar por fecha
+                filteredBookings.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                // Limpiar lista
+                bookingList.innerHTML = '';
+
+                if (filteredBookings.length === 0) {
+                    bookingList.innerHTML = '<p>No hay reservas que coincidan con los filtros.</p>';
+                    return;
+                }
+
+                // Crear y añadir tarjetas de reserva
+                filteredBookings.forEach(booking => {
+                    const card = document.createElement('div');
+                    card.className = `card booking-card status-${booking.status}`;
+                    card.innerHTML = `
+                        <div class="booking-card-header">
+                            <h4>${booking.name}</h4>
+                            <span class="booking-date">${booking.date}</span>
+                        </div>
+                        <div class="booking-card-body">
+                            <p><strong>Proced:</strong> ${booking.procedure}</p>
+                            <p><strong>Hora:</strong> ${booking.time}</p>
+                            <p><strong>Ciudad:</strong> ${booking.city}</p>
+                            <p><strong>Tel:</strong> ${booking.phone}</p>
+                        </div>
+                        <div class="booking-card-actions">
+                            <select class="status-select" data-id="${booking.id}">
+                                <option value="confirmada" ${booking.status === 'confirmada' ? 'selected' : ''}>Confirmada</option>
+                                <option value="atendida" ${booking.status === 'atendida' ? 'selected' : ''}>Atendida</option>
+                                <option value="cancelada" ${booking.status === 'cancelada' ? 'selected' : ''}>Cancelada</option>
+                            </select>
+                            <button class="delete-btn" data-id="${booking.id}">Eliminar</button>
+                        </div>
+                    `;
+                    bookingList.appendChild(card);
+                });
+            };
+
+
+            /**
+             * Actualiza el estado de una reserva
+             * @param {string} id - ID de la reserva
+             * @param {string} newStatus - Nuevo estado (confirmada, atendida, cancelada)
+             */
+            const updateStatus = (id, newStatus) => {
+                const index = bookings.findIndex(b => b.id === id);
+                if (index !== -1) {
+                    bookings[index].status = newStatus;
+                    saveBookings();
+                    renderBookings(); // Re-renderizar para actualizar color de borde
+                }
+            };
+
+            /**
+             * Elimina una reserva
+             * @param {string} id - ID de la reserva a eliminar
+             */
+            const deleteBooking = (id) => {
+                if (confirm('¿Estás seguro de que deseas eliminar esta cita?')) {
+                    bookings = bookings.filter(b => b.id !== id);
+                    saveBookings();
+                    renderBookings();
+                }
+            };
+
+            /**
+             * Maneja el clic en el panel de administración (delegación de eventos)
+             */
+            const handleAdminListClick = (e) => {
+                const target = e.target;
+                
+                if (target.classList.contains('status-select')) {
+                    const id = target.dataset.id;
+                    const newStatus = target.value;
+                    updateStatus(id, newStatus);
+                }
+                
+                if (target.classList.contains('delete-btn')) {
+                    const id = target.dataset.id;
+                    deleteBooking(id);
+                }
+            };
+            
+            /**
+             * Maneja el clic en una tarjeta de información, mostrando su contenido en un modal.
+             */
+            const handleInfoCardClick = (e) => {
+                const card = e.currentTarget;
+                const contentId = card.dataset.contentId;
+                const contentSource = document.getElementById(contentId);
+
+                if (contentSource) {
+                    infoModalContent.innerHTML = contentSource.innerHTML;
+                    openModal(infoModal);
+                }
+            };
+
+            
+            /**
+             * Muestra la sección correspondiente al ID y actualiza el estado activo de los menús.
+             * @param {string} targetId - El ID de la sección a mostrar (ej: "#home")
+             */
+            const showSection = (targetId) => {
+                // Ocultar todas las secciones
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                });
+
+                // Mostrar la sección correcta
+                const targetSection = document.querySelector(targetId);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                }
+
+                if (targetId === '#booking-section') {
+                    document.body.classList.add('booking-active');
+                } else {
+                    document.body.classList.remove('booking-active');
+                }
+
+                // Actualizar el estado activo del menú inferior
+                bottomNavItems.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === targetId) {
+                        link.classList.add('active');
+                    }
+                });
+
+                // Actualizar el estado activo del menú superior
+                desktopNavLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === targetId) {
+                        link.classList.add('active');
+                    }
+                });
+            };
+
+            /**
+             * Maneja el clic en los enlaces de navegación (superior e inferior)
+             * para mostrar la sección correcta.
+             */
+            const handleNavClick = (e) => {
+                const targetHref = e.currentTarget.getAttribute('href');
+                // Only prevent default for internal links
+                if (targetHref.startsWith('#')) {
+                    e.preventDefault();
+                    showSection(targetHref);
+                    window.scrollTo(0, 0);
+                }
+                // External links will navigate automatically
+            };
+
+            // --- 5. Inicialización y Event Listeners ---
+
+            // Modales
+            closeModalBtns.forEach(btn => btn.addEventListener('click', () => {
+                closeModal(confirmModal);
+            }));
+
+            // Admin Panel
+            filterCity.addEventListener('change', renderBookings);
+            filterProcedure.addEventListener('change', renderBookings);
+            bookingList.addEventListener('click', handleAdminListClick);
+
+            // Imprimir
+            printBtn.addEventListener('click', () => {
+                window.print();
+            });
+            
+            // Tarjetas de Info
+            infoCards.forEach(card => card.addEventListener('click', handleInfoCardClick));
+            closeInfoModalBtn.addEventListener('click', () => closeModal(infoModal));
+
+            // Listeners para la navegación (superior e inferior)
+            desktopNavLinks.forEach(link => {
+                link.addEventListener('click', handleNavClick);
+            });
+            bottomNavItems.forEach(item => {
+                item.addEventListener('click', handleNavClick);
+            });
+
+            // Listener para el botón de volver
+            backToHomeBtn.addEventListener('click', () => {
+                showSection('#home');
+            });
+
+            // Carga inicial
+            loadBookings();
+            renderBookings();
+
+            // Inicializar Carousel
+            if (document.getElementById('main-carousel')) {
+                new Splide('#main-carousel', {
+                    type: 'fade',
+                    rewind: true,
+                    pagination: false,
+                    arrows: true,
+                    cover: true,
+                    autoplay: true,
+                    interval: 4000,
+                    pauseOnHover: false,
+                    breakpoints: {
+                        767: { // Mobile
+                            height: '60vh',
+                        },
+                        5000: { // Desktop
+                            height: '85vh',
+                        }
+                    }
+                }).mount();
+            }
+        });
+    </script>
+
+</body>
+</html>
