@@ -44,7 +44,7 @@
             font-weight: bold;
         }
         button:hover { background-color: #a1886b; }
-        .message { margin-top: 15px; font-size: 0.9rem; }
+        .message { margin-top: 15px; font-size: 0.9rem; word-wrap: break-word;}
         .success { color: green; }
         .error { color: #b76e79; }
     </style>
@@ -56,38 +56,74 @@
         <form id="setup-form">
             <input type="email" id="email" placeholder="Correo electrónico" required>
             <input type="password" id="password" placeholder="Contraseña (min 6 caracteres)" required minlength="6">
-            <button type="submit">Registrar Administrador</button>
+            <button type="submit" id="submit-btn">Registrar Administrador</button>
         </form>
         <div id="message" class="message"></div>
     </div>
 
     <script type="module">
-        import { auth } from './js/firebase-config.js';
-        import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        // Importar Firebase directamente para evitar errores de ruta
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyBkcFFE_E-GzSVVUdfCew4fscnV6PHkH0I",
+          authDomain: "viarmoni.firebaseapp.com",
+          projectId: "viarmoni",
+          storageBucket: "viarmoni.firebasestorage.app",
+          messagingSenderId: "765794389868",
+          appId: "1:765794389868:web:d7bedf9297d0458e616d49"
+        };
+
+        // Inicializar
+        let app, auth;
+        const messageDiv = document.getElementById('message');
+
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            console.log("Firebase inicializado correctamente en setup_admin");
+        } catch (e) {
+            console.error("Error inicializando Firebase:", e);
+            messageDiv.innerHTML = `<span class="error">Error de configuración: ${e.message}</span>`;
+        }
 
         const form = document.getElementById('setup-form');
-        const messageDiv = document.getElementById('message');
+        const submitBtn = document.getElementById('submit-btn');
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            if (!auth) {
+                 messageDiv.innerHTML = `<span class="error">Firebase no se cargó correctamente. Recarga la página.</span>`;
+                 return;
+            }
+
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
 
-            messageDiv.innerText = "Procesando...";
-            messageDiv.className = "message";
+            messageDiv.innerText = "Procesando... Por favor espera.";
+            submitBtn.disabled = true;
 
             try {
                 await createUserWithEmailAndPassword(auth, email, password);
-                messageDiv.innerHTML = `<span class="success">¡Administrador creado con éxito! <br> <a href="admin.html">Ir al Panel de Admin</a></span>`;
+                messageDiv.innerHTML = `<span class="success">¡Administrador creado con éxito! <br> <a href="admin.html"><b>Haz clic aquí para ir al Panel de Admin</b></a></span>`;
                 form.reset();
             } catch (error) {
+                console.error(error);
                 let msg = error.message;
                 if(error.code === 'auth/email-already-in-use') {
                     msg = "Este correo ya está registrado.";
                 } else if(error.code === 'auth/weak-password') {
                     msg = "La contraseña debe tener al menos 6 caracteres.";
+                } else if(error.code === 'auth/operation-not-allowed') {
+                    msg = "El registro con correo/contraseña no está habilitado en la consola de Firebase.";
+                } else if(error.code === 'auth/unauthorized-domain') {
+                    msg = "Dominio no autorizado. Debes agregar este dominio (github.io) en Firebase Console > Authentication > Settings.";
                 }
-                messageDiv.innerHTML = `<span class="error">${msg}</span>`;
+
+                messageDiv.innerHTML = `<span class="error">Error: ${msg}</span>`;
+                submitBtn.disabled = false;
             }
         });
     </script>
