@@ -6,7 +6,6 @@
     <title>Reservas de Valoraciones Estéticas Viarmoni</title>
     
     <style>
-        /* --- 1. Variables de Diseño y Reseteo --- */
         :root {
             --white: #ffffff;
             --bg-light: #fdfaf9;
@@ -16,363 +15,205 @@
             --accent-dark: #a1886b;
             --danger: #b76e79;
             --success: #6ba18b;
-            
-            --font-main: "Montserrat", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            --font-elegant: "Times New Roman", Times, serif;
-
+            --font-main: "Montserrat", sans-serif;
             --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.06);
-            --shadow-medium: 0 6px 25px rgba(0, 0, 0, 0.1);
             --border-radius: 12px;
             --header-height: 60px;
-            --nav-height: 60px;
+            --nav-height: 70px; /* Aumentado un poco para mejor toque */
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         html { scroll-behavior: smooth; }
 
         body {
             font-family: var(--font-main);
             background-color: var(--bg-light);
             color: var(--text-dark);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
             padding-top: var(--header-height);
-            padding-bottom: calc(var(--nav-height) + 2rem);
+            /* IMPORTANTE: Espacio abajo para el menú móvil */
+            padding-bottom: calc(var(--nav-height) + 40px); 
         }
 
-        main {
-            min-height: calc(100% - var(--header-height));
-            padding-bottom: 150px;
-            position: relative;
-        }
-
-        /* --- 2. Componentes Reutilizables --- */
         .container { width: 90%; max-width: 1100px; margin: 0 auto; }
+        
+        /* Botones */
+        .btn { display: inline-block; padding: 0.8rem 1.8rem; border: none; border-radius: 50px; cursor: pointer; font-size: 1rem; font-weight: 600; text-decoration: none; text-align: center; transition: all 0.3s ease; }
+        .btn-primary { background: linear-gradient(145deg, var(--primary-gold), var(--accent-dark)); color: var(--white); box-shadow: 0 4px 15px rgba(197, 169, 132, 0.3); }
+        .btn-primary:hover { transform: translateY(-3px); }
 
-        .btn {
-            display: inline-block; padding: 0.8rem 1.8rem; border: none; border-radius: 50px;
-            cursor: pointer; font-size: 1rem; font-weight: 600; text-decoration: none;
-            text-align: center; transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background: linear-gradient(145deg, var(--primary-gold), var(--accent-dark));
-            color: var(--white); box-shadow: 0 4px 15px rgba(197, 169, 132, 0.3);
-        }
-
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(197, 169, 132, 0.5); }
-
-        .btn-secondary {
-            background-color: var(--white); color: var(--primary-gold); border: 2px solid var(--primary-gold);
-        }
-
-        .btn-secondary:hover { background-color: var(--primary-gold); color: var(--white); }
-
-        .card {
-            background: var(--white); border-radius: var(--border-radius); box-shadow: var(--shadow-light);
-            padding: 1.5rem; margin-bottom: 1.5rem; overflow: hidden;
-        }
-
-        h1, h2, h3 { font-family: "Montserrat", var(--font-main); color: var(--text-dark); font-weight: 700; line-height: 1.2; }
-
-        /* --- 3. Header --- */
-        .header {
-            background-color: var(--white); box-shadow: var(--shadow-light); padding: 0 1rem;
-            position: fixed; top: 0; left: 0; z-index: 1000; width: 100%; height: var(--header-height);
-            display: flex; align-items: center;
-        }
-
+        /* Header */
+        .header { background-color: var(--white); box-shadow: var(--shadow-light); padding: 0 1rem; position: fixed; top: 0; left: 0; z-index: 1000; width: 100%; height: var(--header-height); display: flex; align-items: center; }
         .header .container { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-
         .logo img { max-height: 40px; }
-
         .nav-links { display: none; }
-        .nav-links a { margin-left: 1.5rem; text-decoration: none; color: var(--text-dark); font-weight: 500; transition: color 0.3s ease; position: relative; padding: 0.5rem 0; }
-        .nav-links a:hover, .nav-links a.active { color: var(--primary-gold); }
-        .nav-links a.active::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 100%; height: 3px; background-color: var(--primary-gold); animation: slideIn 0.3s ease; }
+        .nav-links a { margin-left: 1.5rem; text-decoration: none; color: var(--text-dark); font-weight: 500; }
+        .header .btn-primary { padding: 0.5rem 1rem; font-size: 0.85rem; background: linear-gradient(135deg, var(--secondary-rose), var(--danger)); }
 
-        .header .btn-primary {
-            display: inline-block; padding: 0.6rem 1.2rem; font-size: 0.9rem;
-            background: linear-gradient(135deg, var(--secondary-rose), var(--danger));
-            box-shadow: 0 4px 15px rgba(224, 192, 195, 0.4); animation: pulse 2.5s infinite;
-        }
-
-        /* --- 4. Hero --- */
-        #main-carousel { width: 100%; height: 60vh; overflow: hidden; }
+        /* Hero & Carousel */
+        #main-carousel { width: 100%; height: 50vh; overflow: hidden; margin-bottom: 20px; }
         #main-carousel .splide__slide img { width: 100%; height: 100%; object-fit: cover; }
-        .btn-jornadas-carousel { position: absolute; bottom: 2rem; right: 2rem; z-index: 100; font-size: 0.9rem; background: var(--primary-gold); }
+        .hero { text-align: center; }
+        .hero h1 { font-size: 2rem; color: #5a4b3a; margin-bottom: 10px; line-height: 1.2; }
         
-        .hero { flex-direction: column; justify-content: flex-start; align-items: center; text-align: center; }
-        .hero-text-container { padding: 2rem; max-width: 800px; margin: 0 auto; }
-        .hero h1 { animation: blurIn 0.8s ease-out forwards; color: #5a4b3a; font-size: 2.5rem; }
-        .hero p { font-size: 1.2rem; margin: 1rem 0 2rem; animation: blurIn 0.8s ease-out 0.4s forwards; }
+        /* Info Cards */
+        .info-cards-container { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 2rem; }
+        .info-card { background: white; border-radius: var(--border-radius); padding: 1.5rem; text-align: center; box-shadow: var(--shadow-light); cursor: pointer; border: 1px solid rgba(0,0,0,0.05); }
+        .info-card i { font-size: 2.5rem; color: var(--danger); margin-bottom: 10px; }
 
-        /* --- 5. Info Section --- */
-        .info-cards-container { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-top: 2rem; }
-        .info-card {
-            background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            border-radius: var(--border-radius); border: 1px solid rgba(255, 255, 255, 0.3); padding: 2rem;
-            text-align: center; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-        }
-        .info-card:hover { transform: translateY(-8px); box-shadow: 0 10px 25px rgba(224, 192, 195, 0.4); }
-        .info-card i { font-size: 3rem; color: #b76e79; margin-bottom: 1rem; display: block; }
+        /* Gallery */
+        .gallery-grid { display: grid; gap: 1.5rem; }
+        .transform-card { border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--shadow-light); height: 350px; position: relative; }
+        .transform-card h4 { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(0,0,0,0.6); color: white; padding: 10px; text-align: center; }
+        .filter-container { text-align: center; margin-bottom: 20px; }
+        select { padding: 10px; border-radius: 20px; border: 1px solid var(--primary-gold); font-family: inherit; }
 
-        /* --- 6. Gallery (Dynamic) --- */
-        .gallery-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
-        .transform-card { position: relative; border-radius: var(--border-radius); overflow: hidden; box-shadow: var(--shadow-light); height: 400px; }
-        .transform-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .transform-card h4 {
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
-            color: var(--white); padding: 2rem 1rem 1rem; font-size: 1.3rem; margin: 0;
-        }
+        /* Jornadas */
+        .jornadas-grid { display: grid; gap: 1.5rem; }
+        .jornada-card { background: white; border-radius: var(--border-radius); box-shadow: var(--shadow-light); padding: 1.5rem; display: flex; flex-direction: column; }
+        .jornada-badge { background: var(--secondary-rose); color: var(--white); padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; width: fit-content; margin-bottom: 10px; font-weight: bold; }
+        .jornada-city { font-size: 1.4rem; color: var(--accent-dark); font-weight: bold; }
+        .jornada-date { color: var(--primary-gold); font-weight: bold; margin: 5px 0 10px; }
         
-        /* Select de Filtro */
-        .filter-container { margin-bottom: 2rem; text-align: center; }
-        select#gallery-filter-public {
-            padding: 10px 20px; border-radius: 50px; border: 2px solid var(--primary-gold);
-            font-family: var(--font-main); font-size: 1rem; color: var(--text-dark);
-            background: white; cursor: pointer; outline: none;
-        }
+        /* Bottom Nav (Mobile) */
+        .bottom-nav { position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 400px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 50px; box-shadow: 0 5px 20px rgba(0,0,0,0.15); display: flex; justify-content: space-around; height: var(--nav-height); z-index: 2000; padding: 0 10px; }
+        .bottom-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-dark); text-decoration: none; flex: 1; }
+        .bottom-nav-item i { font-size: 1.3rem; margin-bottom: 3px; color: #888; transition: 0.3s; }
+        .bottom-nav-item.active i { color: var(--primary-gold); transform: scale(1.1); }
+        .bottom-nav-item span { font-size: 0.65rem; font-weight: bold; }
 
-        /* --- 7. Jornadas (Dynamic) --- */
-        .jornadas-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-top: 2rem; }
-        .jornada-card { background: var(--white); border-radius: var(--border-radius); box-shadow: var(--shadow-light); display: flex; flex-direction: column; transition: transform 0.3s ease; }
-        .jornada-card:hover { transform: translateY(-5px); }
-        .jornada-card-header { padding: 1rem 1.5rem; border-bottom: 1px solid #f0f0f0; }
-        .jornada-card-header h3 { color: var(--accent-dark); font-size: 1.5rem; margin: 0; }
-        .jornada-card-body { padding: 1.5rem; flex-grow: 1; }
-        .jornada-date { font-weight: 600; color: var(--primary-gold); margin-bottom: 1rem; font-size: 1.1rem; }
-        .jornada-card-footer { padding: 0 1.5rem 1.5rem; }
-        .jornada-book-btn { width: 100%; }
-
-        /* --- 8. Admin Panel (Booking) --- */
-        .admin-section { background-color: var(--white); }
-        .filters { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
-        #booking-list { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-        .booking-card { border-left: 5px solid var(--secondary-rose); }
-        .booking-card.status-confirmada { border-color: var(--success); }
-        .booking-card.status-atendida { border-color: var(--primary-gold); }
-        .booking-card.status-cancelada { border-color: var(--danger); }
-        .booking-card-actions { display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; }
-        .booking-card-actions select { flex-grow: 1; padding: 0.5rem; border-radius: 8px; }
-
-        /* --- 9. Booking Iframe --- */
-        #booking-section { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000; background-color: var(--bg-light); }
-        body.booking-active #booking-section { display: block; }
-        #back-to-home-btn {
-            position: absolute; top: 1.5rem; left: 1.5rem; z-index: 2010; width: 50px; height: 50px;
-            border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        /* --- 10. Modals --- */
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 3000; padding: 1rem; }
+        /* Modals & Loader */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 3000; padding: 20px; }
         .modal-overlay.active { display: flex; }
-        .modal-content { background: var(--white); padding: 2rem; border-radius: var(--border-radius); width: 100%; max-width: 500px; position: relative; max-height: 90vh; overflow-y: auto; }
-        .modal-close { position: absolute; top: 1rem; right: 1.5rem; font-size: 2rem; background: none; border: none; cursor: pointer; color: #aaa; }
+        .modal-content { background: white; padding: 25px; border-radius: 15px; width: 100%; max-width: 500px; max-height: 85vh; overflow-y: auto; position: relative; }
+        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--primary-gold); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- 11. Footer & Nav --- */
-        .footer { background-color: #333; color: #f0f0f0; text-align: center; padding: 2rem 1rem; position: absolute; bottom: 0; width: 100%; }
-        .bottom-nav {
-            position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px;
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(15px); border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
-            display: flex; justify-content: space-around; align-items: center; height: var(--nav-height); z-index: 1000;
-        }
-        .bottom-nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: var(--text-dark); flex: 1; height: 100%; }
-        .bottom-nav-item i { font-size: 1.4rem; margin-bottom: 2px; background: linear-gradient(135deg, var(--secondary-rose), var(--danger)); -webkit-background-clip: text; color: transparent; }
-        .bottom-nav-item.active i { color: var(--primary-gold); background: none; -webkit-background-clip: initial; transform: scale(1.15); }
-        .bottom-nav-item span { font-size: 0.7rem; font-weight: 600; color: var(--accent-dark); }
+        /* Sections */
+        .fullscreen-section { display: none; padding: 20px 0; }
+        .fullscreen-section.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- Media Queries --- */
+        /* Booking iframe */
+        #booking-section { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 2500; display: none; }
+        body.booking-active #booking-section { display: block; }
+
         @media (min-width: 768px) {
-            .jornadas-grid, .info-cards-container { grid-template-columns: repeat(3, 1fr); }
-            .gallery-grid { grid-template-columns: repeat(2, 1fr); }
             .nav-links { display: block; }
             .bottom-nav { display: none; }
+            .jornadas-grid, .info-cards-container, .gallery-grid { grid-template-columns: repeat(3, 1fr); }
             body { padding-bottom: 0; }
-            .filters { flex-direction: row; }
         }
-        @media (min-width: 1024px) {
-            .gallery-grid { grid-template-columns: repeat(3, 1fr); }
-        }
-
-        /* --- Animations --- */
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes pulse { 0% { transform: scale(1); } 70% { transform: scale(1.03); } 100% { transform: scale(1); } }
-        @keyframes blurIn { from { opacity: 0; filter: blur(5px); transform: translateY(10px); } to { opacity: 1; filter: blur(0); transform: translateY(0); } }
-        
-        .fullscreen-section { display: none; padding-top: 2rem; padding-bottom: 2rem; }
-        .fullscreen-section.active { display: flex; animation: fadeIn 0.5s ease; flex-direction: column; }
-        
-        .loader {
-            border: 4px solid #f3f3f3; border-top: 4px solid var(--primary-gold);
-            border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8.0.6/dist/styles.css" />
+    
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8.0.6/dist/index.js"></script>
 </head>
 <body>
 
     <header class="header">
         <div class="container">
-            <a href="#home" class="logo"><img src="https://viarmoni.com/wp-content/uploads/2025/11/cropped-logo-horizontal-25-scaled-1.png" alt="Viarmoni Logo"></a>
+            <a href="#home" class="logo">
+                <img src="https://placehold.co/200x50/ffffff/c5a984?text=VIARMONI+LOGO" alt="Viarmoni">
+            </a>
             <nav class="nav-links">
                 <a href="#home">Inicio</a>
                 <a href="#info-section">Cuidados</a>
                 <a href="#gallery-section">Galería</a>
                 <a href="#jornadas-section">Jornadas</a>
-                <a href="#admin-section">Admin Citas</a>
             </nav>
-            <button class="btn btn-primary" id="header-book-btn">Agendar</button>
+            <button class="btn btn-primary" onclick="openBooking()">Agendar</button>
         </div>
     </header>
 
     <main>
-        <section class="hero fullscreen-section active" id="home">
-            <section id="main-carousel" class="splide" aria-label="Beautiful-Viarmoni">
+        <section class="fullscreen-section active" id="home">
+            <section id="main-carousel" class="splide">
                 <div class="splide__track">
                     <ul class="splide__list">
-                        <li class="splide__slide">
-                            <img src="https://viarmoni.com/wp-content/uploads/2025/11/ChatGPT-Image-26-abr-2025-10_30_51-a.m_-e1762691277317.png" alt="Rinomodelacion">
-                            <a href="#jornadas-section" class="btn btn-primary btn-jornadas-carousel">Ver Jornadas</a>
-                        </li>
-                        <li class="splide__slide">
-                            <img src="https://viarmoni.com/wp-content/uploads/2025/11/FRENTE.png" alt="Bichectomia">
-                            <a href="#jornadas-section" class="btn btn-primary btn-jornadas-carousel">Ver Jornadas</a>
-                        </li>
+                        <li class="splide__slide"><img src="https://placehold.co/800x600/e0c0c3/ffffff?text=Rinomodelacion+Sin+Cirugia" alt="Slide 1"></li>
+                        <li class="splide__slide"><img src="https://placehold.co/800x600/c5a984/ffffff?text=Armonizacion+Facial+Premium" alt="Slide 2"></li>
                     </ul>
                 </div>
             </section>
-            <div class="container hero-text-container">
+            <div class="container hero">
                 <h1>Armonización Facial: Belleza que Resalta, no Transforma.</h1>
                 <p>En Viarmoni, esculpimos tu belleza natural con procedimientos mínimamente invasivos.</p>
-                <button class="btn btn-primary btn-lg" id="hero-book-btn">Iniciar mi Transformación</button>
+                <button class="btn btn-primary" onclick="openBooking()">Iniciar mi Transformación</button>
             </div>
         </section>
 
-        <section class="info-section fullscreen-section" id="info-section">
+        <section class="fullscreen-section" id="info-section">
             <div class="container">
-                <h2>Información Importante</h2>
+                <h2 style="text-align: center;">Información Importante</h2>
                 <div class="info-cards-container">
-                    <div class="info-card" data-content-id="info-instructions">
-                        <i class="fas fa-list-ol"></i>
-                        <h3>Instrucciones</h3>
+                    <div class="info-card" onclick="loadCareModal('instructions', 'Instrucciones')">
+                        <i class="fas fa-list-ol"></i><h3>Instrucciones</h3>
                     </div>
-                    <div class="info-card" data-content-id="info-pre-op">
-                        <i class="fas fa-shield-alt"></i>
-                        <h3>Cuidados Previos</h3>
+                    <div class="info-card" onclick="loadCareModal('pre_op', 'Cuidados Previos')">
+                        <i class="fas fa-shield-alt"></i><h3>Previos</h3>
                     </div>
-                    <div class="info-card" data-content-id="info-post-op">
-                        <i class="fas fa-heartbeat"></i>
-                        <h3>Cuidados Post</h3>
-                    </div>
-                </div>
-                <div class="hidden-content" style="display: none;">
-                    <div id="info-instructions">
-                        <h3>Instrucciones</h3>
-                        <ol><li>Rostro limpio sin maquillaje.</li><li>No consumir alcohol 24h antes.</li></ol>
-                    </div>
-                    <div id="info-pre-op">
-                        <h3>Cuidados Previos</h3>
-                        <ul><li>Ayuno 8 horas (según caso).</li><li>Hidratación constante.</li></ul>
-                    </div>
-                    <div id="info-post-op">
-                        <h3>Cuidados Post</h3>
-                        <ul><li>Evitar sol directo.</li><li>Seguir medicación.</li></ul>
+                    <div class="info-card" onclick="loadCareModal('post_op', 'Cuidados Post')">
+                        <i class="fas fa-heartbeat"></i><h3>Post-Operatorios</h3>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="gallery-section fullscreen-section" id="gallery-section">
+        <section class="fullscreen-section" id="gallery-section">
             <div class="container">
-                <h2>Nuestras Transformaciones</h2>
-                
+                <h2 style="text-align: center;">Nuestras Transformaciones</h2>
                 <div class="filter-container">
                     <select id="gallery-filter-public">
-                        <option value="all">Todas las categorías</option>
+                        <option value="all">Ver Todas</option>
                         <option value="Rinomodelación">Rinomodelación</option>
-                        <option value="Labios">Aumento de Labios</option>
+                        <option value="Labios">Labios</option>
                         <option value="Lipopapada">Lipopapada</option>
                         <option value="Bichectomía">Bichectomía</option>
-                        <option value="Otros">Otros</option>
                     </select>
                 </div>
-
-                <div class="gallery-grid" id="public-gallery-grid">
-                    <div class="loader"></div>
-                </div>
+                <div class="gallery-grid" id="public-gallery-grid"><div class="loader"></div></div>
             </div>
         </section>
 
         <section class="fullscreen-section" id="jornadas-section">
             <div class="container">
-                <h2>Próximas Jornadas de Valoración</h2>
-                <div class="jornadas-grid" id="public-journeys-grid">
-                    <div class="loader"></div>
-                </div>
+                <h2 style="text-align: center;">Próximas Jornadas</h2>
+                <div class="jornadas-grid" id="public-journeys-grid"><div class="loader"></div></div>
             </div>
         </section>
-
-        <section class="fullscreen-section" id="booking-section">
-            <button id="back-to-home-btn" aria-label="Volver al inicio"><i class="fas fa-arrow-left"></i></button>
-            <iframe src="https://viarmoni.com/agendar-cita/" style="width: 100%; height: 100%; border: none;"></iframe>
-        </section>
-
-        <section class="admin-section fullscreen-section" id="admin-section">
-            <div class="container">
-                <h2>Panel de Reservas (Local)</h2>
-                <div class="filters">
-                    <select id="filter-city"><option value="">Todas las Ciudades</option><option value="Cali">Cali</option><option value="Pereira">Pereira</option></select>
-                </div>
-                <div id="booking-list"></div>
-            </div>
-        </section>
-
-        <footer class="footer">
-            <p>© 2025 Viarmoni. Todos los derechos reservados.</p>
-            <p class="nav-admin">Gestión de Citas: <a href="#admin-section">Entrar</a> | Gestión de Contenido: <a href="admin.html" target="_blank">Ir al CMS</a></p>
-        </footer>
     </main>
 
+    <section id="booking-section">
+        <button onclick="closeBooking()" style="position:absolute;top:20px;left:20px;z-index:20;padding:10px;border-radius:50%;border:none;background:#eee"><i class="fas fa-arrow-left"></i></button>
+        <iframe src="https://viarmoni.com/agendar-cita/" style="width:100%;height:100%;border:none;"></iframe>
+    </section>
+
     <nav class="bottom-nav">
-        <a href="#home" class="bottom-nav-item active"><i class="fas fa-gem"></i><span>Inicio</span></a>
-        <a href="#info-section" class="bottom-nav-item"><i class="fas fa-book-open"></i><span>Cuidados</span></a>
-        <a href="#gallery-section" class="bottom-nav-item"><i class="fas fa-camera-retro"></i><span>Cambios</span></a>
-        <a href="#jornadas-section" class="bottom-nav-item"><i class="fas fa-map-marked-alt"></i><span>Jornadas</span></a>
-        <a href="#booking-section" class="bottom-nav-item"><i class="fas fa-calendar-plus"></i><span>Agendar</span></a>
+        <a href="#home" class="bottom-nav-item active"><i class="fas fa-home"></i><span>Inicio</span></a>
+        <a href="#info-section" class="bottom-nav-item"><i class="fas fa-book"></i><span>Cuidados</span></a>
+        <a href="#gallery-section" class="bottom-nav-item"><i class="fas fa-camera"></i><span>Cambios</span></a>
+        <a href="#jornadas-section" class="bottom-nav-item"><i class="fas fa-map-marker-alt"></i><span>Jornadas</span></a>
+        <a href="javascript:void(0)" onclick="openBooking()" class="bottom-nav-item"><i class="fas fa-calendar-check"></i><span>Agendar</span></a>
     </nav>
 
-    <div class="modal-overlay" id="info-modal">
+    <div class="modal-overlay" id="dynamic-modal">
         <div class="modal-content">
-            <button class="modal-close" id="close-info-modal">&times;</button>
-            <div id="info-modal-content"></div>
+            <button class="modal-close" onclick="document.getElementById('dynamic-modal').classList.remove('active')">&times;</button>
+            <h3 id="modal-title" style="color:var(--primary-gold); margin-bottom:15px;"></h3>
+            <div id="modal-body" style="white-space: pre-wrap;"></div>
         </div>
     </div>
 
     <script type="module">
-        // --- 1. Importar Firebase SDKs ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, getDoc, doc, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // --- 2. Configuración de Firebase ---
         const firebaseConfig = {
             apiKey: "AIzaSyBkcFFE_E-GzSVVUdfCew4fscnV6PHkH0I",
             authDomain: "viarmoni.firebaseapp.com",
@@ -382,177 +223,105 @@
             appId: "1:765794389868:web:d7bedf9297d0458e616d49"
         };
 
-        // Inicializar Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- 3. Lógica de Carga de Datos (Firebase) ---
+        // --- NAVEGACIÓN SPA ---
+        const sections = document.querySelectorAll('.fullscreen-section');
+        const navItems = document.querySelectorAll('.bottom-nav-item, .nav-links a');
 
-        // A) Cargar Galería
-        async function loadPublicGallery(categoryFilter = 'all') {
-            const grid = document.getElementById('public-gallery-grid');
-            grid.innerHTML = '<div class="loader"></div>'; 
-            
-            let q;
-            try {
-                if(categoryFilter === 'all') {
-                    q = query(collection(db, "gallery"), orderBy("timestamp", "desc"));
-                } else {
-                    // Nota: Si esto falla en la consola, sigue el enlace para crear el índice compuesto en Firebase
-                    q = query(collection(db, "gallery"), where("category", "==", categoryFilter));
-                }
-
-                const snapshot = await getDocs(q);
-                grid.innerHTML = "";
-
-                if(snapshot.empty) {
-                    grid.innerHTML = "<p style='text-align:center; width:100%'>No hay resultados para esta categoría aún.</p>";
-                    return;
-                }
-
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    const card = document.createElement('div');
-                    card.className = "transform-card";
-                    card.innerHTML = `
-                        <img-comparison-slider>
-                            <img slot="first" src="${data.beforeUrl}" alt="Antes" style="width:100%; height:100%; object-fit:cover;">
-                            <img slot="second" src="${data.afterUrl}" alt="Después" style="width:100%; height:100%; object-fit:cover;">
-                        </img-comparison-slider>
-                        <h4>${data.title}</h4>
-                    `;
-                    grid.appendChild(card);
-                });
-            } catch (error) {
-                console.error("Error cargando galería:", error);
-                grid.innerHTML = "<p>Error cargando imágenes. Revisa la consola si eres admin.</p>";
-            }
+        window.navigate = (id) => {
+            sections.forEach(s => s.classList.remove('active'));
+            document.getElementById(id.replace('#','')).classList.add('active');
+            navItems.forEach(n => {
+                n.classList.remove('active');
+                if(n.getAttribute('href') == id) n.classList.add('active');
+            });
+            window.scrollTo(0,0);
         }
 
-        // B) Cargar Jornadas
-        async function loadPublicJourneys() {
+        document.querySelectorAll('a[href^="#"]').forEach(a => {
+            a.addEventListener('click', e => { e.preventDefault(); navigate(a.getAttribute('href')); });
+        });
+
+        // --- BOOKING ---
+        window.openBooking = () => { document.body.classList.add('booking-active'); }
+        window.closeBooking = () => { document.body.classList.remove('booking-active'); }
+
+        // --- CARGAR CUIDADOS (DINÁMICO) ---
+        window.loadCareModal = async (docId, title) => {
+            const modal = document.getElementById('dynamic-modal');
+            const body = document.getElementById('modal-body');
+            document.getElementById('modal-title').innerText = title;
+            body.innerHTML = '<div class="loader"></div>';
+            modal.classList.add('active');
+
+            try {
+                const snap = await getDoc(doc(db, "care_info", docId));
+                if(snap.exists() && snap.data().content) {
+                    body.innerText = snap.data().content;
+                } else {
+                    body.innerText = "La información aún no ha sido cargada por el administrador.";
+                }
+            } catch(e) { body.innerText = "Error cargando información."; }
+        }
+
+        // --- CARGAR GALERÍA ---
+        async function loadGallery(cat = 'all') {
+            const grid = document.getElementById('public-gallery-grid');
+            grid.innerHTML = '<div class="loader"></div>';
+            try {
+                let q = cat === 'all' ? query(collection(db, "gallery"), orderBy("timestamp", "desc")) 
+                                      : query(collection(db, "gallery"), where("category", "==", cat));
+                const snap = await getDocs(q);
+                grid.innerHTML = "";
+                if(snap.empty) { grid.innerHTML = "<p>No hay fotos disponibles.</p>"; return; }
+
+                snap.forEach(d => {
+                    const data = d.data();
+                    grid.innerHTML += `
+                        <div class="transform-card">
+                            <img-comparison-slider>
+                                <img slot="first" src="${data.beforeUrl}" style="width:100%;height:100%;object-fit:cover">
+                                <img slot="second" src="${data.afterUrl}" style="width:100%;height:100%;object-fit:cover">
+                            </img-comparison-slider>
+                            <h4>${data.title}</h4>
+                        </div>`;
+                });
+            } catch(e) { console.error(e); }
+        }
+
+        // --- CARGAR JORNADAS (CON PROCEDIMIENTO) ---
+        async function loadJourneys() {
             const grid = document.getElementById('public-journeys-grid');
             try {
-                const q = query(collection(db, "journeys"), orderBy("timestamp", "desc"));
-                const snapshot = await getDocs(q);
-                
+                const snap = await getDocs(query(collection(db, "journeys"), orderBy("timestamp", "desc")));
                 grid.innerHTML = "";
+                if(snap.empty) { grid.innerHTML = "<p>Pronto nuevas fechas.</p>"; return; }
 
-                if(snapshot.empty) {
-                    grid.innerHTML = "<p style='text-align:center; width:100%'>Pronto anunciaremos nuevas fechas.</p>";
-                    return;
-                }
-
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    const card = document.createElement('div');
-                    card.className = "jornada-card";
-                    card.innerHTML = `
-                        <div class="jornada-card-header">
-                            <h3>${data.city}</h3>
-                        </div>
-                        <div class="jornada-card-body">
-                            <p class="jornada-date"><i class="fas fa-calendar-alt"></i> ${data.dateText}</p>
+                snap.forEach(d => {
+                    const data = d.data();
+                    // SE AGREGA LA ETIQUETA DE PROCEDIMIENTO
+                    const procedureBadge = data.procedure ? `<div class="jornada-badge">${data.procedure}</div>` : '';
+                    
+                    grid.innerHTML += `
+                        <div class="jornada-card">
+                            ${procedureBadge}
+                            <div class="jornada-city">${data.city}</div>
+                            <div class="jornada-date"><i class="fas fa-calendar"></i> ${data.dateText}</div>
                             <p>${data.desc}</p>
-                        </div>
-                        <div class="jornada-card-footer">
-                            <button class="btn btn-primary jornada-book-btn">Agendar en ${data.city}</button>
-                        </div>
-                    `;
-                    // Asignar evento al botón dinámico
-                    card.querySelector('.jornada-book-btn').addEventListener('click', () => {
-                        window.location.href = 'https://viarmoni.com/agendar-cita/';
-                    });
-                    grid.appendChild(card);
+                            <button class="btn btn-primary" onclick="openBooking()" style="margin-top:15px;width:100%">Agendar</button>
+                        </div>`;
                 });
-            } catch (error) {
-                console.error("Error cargando jornadas:", error);
-            }
+            } catch(e) { console.error(e); }
         }
 
-        // --- 4. Inicialización Global ---
+        // INIT
         document.addEventListener('DOMContentLoaded', () => {
-            
-            // Cargar datos de Firebase
-            loadPublicGallery();
-            loadPublicJourneys();
-
-            // Listener Filtro Galería
-            document.getElementById('gallery-filter-public').addEventListener('change', (e) => {
-                loadPublicGallery(e.target.value);
-            });
-
-            // --- Lógica Legacy (Local Storage, Navegación, Carousel) ---
-            
-            // Navegación SPA
-            const sections = document.querySelectorAll('.fullscreen-section');
-            const showSection = (targetId) => {
-                sections.forEach(s => s.classList.remove('active'));
-                const target = document.querySelector(targetId);
-                if(target) target.classList.add('active');
-                
-                if(targetId === '#booking-section') document.body.classList.add('booking-active');
-                else document.body.classList.remove('booking-active');
-
-                document.querySelectorAll('.nav-links a, .bottom-nav-item').forEach(el => {
-                    el.classList.remove('active');
-                    if(el.getAttribute('href') === targetId) el.classList.add('active');
-                });
-            };
-
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    const href = this.getAttribute('href');
-                    if(href === '#booking-section' || href === 'https://viarmoni.com/agendar-cita/') {
-                         // Manejo externo si es link absoluto, interno si es #booking
-                         if(href.includes('http')) return; 
-                    }
-                    e.preventDefault();
-                    showSection(href);
-                    window.scrollTo(0,0);
-                });
-            });
-
-            document.getElementById('back-to-home-btn').addEventListener('click', () => showSection('#home'));
-            document.getElementById('header-book-btn').addEventListener('click', () => window.location.href='https://viarmoni.com/agendar-cita/');
-            document.getElementById('hero-book-btn').addEventListener('click', () => window.location.href='https://viarmoni.com/agendar-cita/');
-
-            // Modales Informativos
-            const infoModal = document.getElementById('info-modal');
-            document.querySelectorAll('.info-card').forEach(card => {
-                card.addEventListener('click', () => {
-                    const contentId = card.dataset.contentId;
-                    const content = document.getElementById(contentId).innerHTML;
-                    document.getElementById('info-modal-content').innerHTML = content;
-                    infoModal.classList.add('active');
-                });
-            });
-            document.getElementById('close-info-modal').addEventListener('click', () => infoModal.classList.remove('active'));
-
-            // Panel Admin (Local Storage - Citas)
-            // Nota: Este panel es para ver citas guardadas localmente por el script anterior.
-            // La gestión de contenido (fotos) se hace en admin.html
-            const bookingList = document.getElementById('booking-list');
-            const bookings = JSON.parse(localStorage.getItem('aestheticBookingsViarmoni') || '[]');
-            
-            const renderLocalBookings = () => {
-                bookingList.innerHTML = bookings.length ? '' : '<p>No hay citas locales registradas.</p>';
-                bookings.forEach(b => {
-                    const div = document.createElement('div');
-                    div.className = `card booking-card status-${b.status}`;
-                    div.innerHTML = `<h4>${b.name}</h4><p>${b.procedure} - ${b.city}</p><p>${b.date} ${b.time}</p>`;
-                    bookingList.appendChild(div);
-                });
-            };
-            renderLocalBookings();
-
-            // Splide Carousel
-            if (document.getElementById('main-carousel')) {
-                new Splide('#main-carousel', {
-                    type: 'fade', rewind: true, arrows: true, cover: true, autoplay: true, interval: 4000,
-                    breakpoints: { 767: { height: '60vh' }, 5000: { height: '85vh' } }
-                }).mount();
-            }
+            loadGallery();
+            loadJourneys();
+            document.getElementById('gallery-filter-public').addEventListener('change', (e) => loadGallery(e.target.value));
+            new Splide('#main-carousel', { type:'fade', rewind:true, arrows:false, autoplay:true }).mount();
         });
     </script>
 </body>
