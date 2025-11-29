@@ -102,6 +102,24 @@
             color: var(--white);
         }
 
+        /* Filter Buttons Style */
+        .filter-btn {
+            background-color: transparent;
+            border: 2px solid var(--secondary-rose);
+            color: var(--text-dark);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            margin: 0 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background-color: var(--secondary-rose);
+            color: white;
+            border-color: var(--secondary-rose);
+        }
+
         .card {
             background: var(--white);
             border-radius: var(--border-radius);
@@ -1135,7 +1153,7 @@
             <div class="container">
                 <h2>Nuestras Transformaciones</h2>
                 <!-- Filter Controls can be added here if needed, now we have categories in DB -->
-                <div id="gallery-categories" style="margin-bottom: 1rem; text-align: center;"></div>
+                <div id="gallery-categories" style="margin-bottom: 2rem; text-align: center; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem;"></div>
                 <div class="gallery-grid" id="dynamic-gallery-grid">
                     <!-- Dynamic content will be loaded here -->
                     <p style="text-align: center; width: 100%;">Cargando transformaciones...</p>
@@ -1238,12 +1256,9 @@
         document.addEventListener('DOMContentLoaded', () => {
 
             // --- 1. Estado y Constantes ---
+            // Se restaura la variable bookings por si acaso, aunque la lógica principal se movió a admin.html.
+            // Si hay algun listener que dependa de esto, evitará errores.
             let bookings = [];
-            const STORAGE_KEY = 'aestheticBookingsViarmoni'; // Clave actualizada
-            const HORARIOS = [
-                "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
-                "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"
-            ];
 
             // --- 2. Selectores del DOM ---
             // Modales
@@ -1259,7 +1274,6 @@
 
             // Confirmación e Impresión
             const printBtn = document.getElementById('print-btn');
-            const confirmationDetails = document.getElementById('confirmation-details');
             
             // Tarjetas Info
             const infoCards = document.querySelectorAll('.info-card');
@@ -1372,6 +1386,10 @@
             };
 
             const handleJornadaBookClick = (e) => {
+                // El atributo data-city se puede usar aquí si se implementa lógica adicional
+                // Por ahora, redirigimos como antes
+                const city = e.currentTarget.dataset.city;
+                // console.log("Booking for city:", city); // Para debug
                 window.location.href = 'https://viarmoni.com/agendar-cita/';
             };
 
@@ -1381,27 +1399,73 @@
             // Load Transformations
             const loadTransformations = () => {
                 const galleryGrid = document.getElementById('dynamic-gallery-grid');
+                const categoriesContainer = document.getElementById('gallery-categories');
                 const q = query(collection(db, "transformations"), orderBy("createdAt", "desc"));
 
                 onSnapshot(q, (snapshot) => {
                     galleryGrid.innerHTML = "";
+                    categoriesContainer.innerHTML = "";
+
                     if(snapshot.empty){
                          galleryGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No hay transformaciones disponibles.</p>';
                          return;
                     }
+
+                    const categories = new Set();
+                    const items = [];
+
                     snapshot.forEach(doc => {
                         const data = doc.data();
+                        items.push({ id: doc.id, ...data });
+                        if(data.category) categories.add(data.category);
+                    });
+
+                    // Render Categories
+                    const allBtn = document.createElement('button');
+                    allBtn.textContent = 'Todos';
+                    allBtn.className = 'filter-btn active';
+                    allBtn.onclick = () => filterGallery('all', allBtn);
+                    categoriesContainer.appendChild(allBtn);
+
+                    categories.forEach(cat => {
+                        const btn = document.createElement('button');
+                        btn.textContent = cat;
+                        btn.className = 'filter-btn';
+                        btn.onclick = () => filterGallery(cat, btn);
+                        categoriesContainer.appendChild(btn);
+                    });
+
+                    // Render Items
+                    items.forEach(data => {
                         const card = document.createElement('div');
                         card.className = 'transform-card';
+                        card.dataset.category = data.category || 'all'; // Store category for filtering
                         card.innerHTML = `
                             <img-comparison-slider>
                                 <img slot="first" src="${data.beforeUrl}" alt="Antes ${data.title}">
-                                <img slot="second" src="${data.afterUrl}" alt="DespuÃ©s ${data.title}">
+                                <img slot="second" src="${data.afterUrl}" alt="Después ${data.title}">
                             </img-comparison-slider>
                             <h4>${data.title} <small style="display:block; font-size:0.8rem; opacity:0.8;">${data.category}</small></h4>
                         `;
                         galleryGrid.appendChild(card);
                     });
+                });
+            };
+
+            // Filter Gallery Function
+            const filterGallery = (category, btnElement) => {
+                // Update active button
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btnElement.classList.add('active');
+
+                // Filter items
+                const cards = document.querySelectorAll('.transform-card');
+                cards.forEach(card => {
+                    if (category === 'all' || card.dataset.category === category) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
                 });
             };
 
@@ -1431,7 +1495,7 @@
                                 ${data.tags ? `<p style="margin-top:0.5rem; font-size:0.85rem; color:var(--accent-dark);"><em>${data.tags}</em></p>` : ''}
                             </div>
                             <div class="jornada-card-footer">
-                                <button class="btn btn-primary jornada-book-btn">Agendar en ${data.city.split(',')[0]}</button>
+                                <button class="btn btn-primary jornada-book-btn" data-city="${data.city}">Agendar en ${data.city.split(',')[0]}</button>
                             </div>
                         `;
                         jornadasGrid.appendChild(card);
