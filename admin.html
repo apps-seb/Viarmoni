@@ -3,55 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Viarmoni</title>
+    <title>Admin Viarmoni - Panel Completo</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         :root {
-            --white: #ffffff;
             --bg-light: #fdfaf9;
             --primary-gold: #c5a984;
-            --secondary-rose: #e0c0c3;
             --text-dark: #4a4a4a;
             --danger: #b76e79;
-            --success: #6ba18b;
-            --font-main: "Montserrat", sans-serif;
         }
-
-        body { font-family: var(--font-main); background: var(--bg-light); color: var(--text-dark); padding: 20px; }
+        body { font-family: "Montserrat", sans-serif; background: var(--bg-light); color: var(--text-dark); padding: 20px; }
         .container { max-width: 800px; margin: 0 auto; }
         
-        /* Login Styles */
+        /* Login */
         #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-        .input-group { margin-bottom: 15px; width: 100%; max-width: 300px; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px; }
-        button { background: var(--primary-gold); color: white; border: none; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px; margin-bottom: 15px; font-family: inherit; }
+        button { background: var(--primary-gold); color: white; border: none; padding: 12px 25px; border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; }
         button:hover { filter: brightness(0.9); }
-        
-        /* Dashboard Styles */
-        #dashboard { display: none; } /* Oculto por defecto */
-        .section-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; }
-        h2 { color: var(--primary-gold); border-bottom: 2px solid var(--secondary-rose); padding-bottom: 10px; }
-        
-        .item-list { margin-top: 20px; display: grid; gap: 10px; }
-        .item { border: 1px solid #eee; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .delete-btn { background: var(--danger); font-size: 0.8rem; padding: 5px 10px; }
-        
-        .preview-img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 10px; }
-        .loader { display: none; color: var(--primary-gold); font-weight: bold; margin-top: 10px; }
+        .delete-btn { background: var(--danger); width: auto; font-size: 0.8rem; padding: 5px 10px; }
+
+        /* Dashboard */
+        #dashboard { display: none; }
+        .section-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; border-top: 5px solid var(--primary-gold); }
+        h2 { margin-top: 0; color: var(--primary-gold); }
+        .item-list { display: grid; gap: 10px; margin-top: 15px; }
+        .item { border: 1px solid #eee; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; background: #fff; }
+        .loader { display: none; color: var(--primary-gold); text-align: center; margin: 10px 0; }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
-        <img src="https://viarmoni.com/wp-content/uploads/2025/11/cropped-logo-horizontal-25-scaled-1.png" alt="Viarmoni" style="max-width: 200px; margin-bottom: 20px;">
         <h2>Acceso Administrativo</h2>
-        <div class="input-group">
-            <input type="email" id="email" placeholder="Correo electrónico">
-        </div>
-        <div class="input-group">
-            <input type="password" id="password" placeholder="Contraseña">
-        </div>
+        <input type="email" id="email" placeholder="Correo electrónico (admin@viarmoni.com)">
+        <input type="password" id="password" placeholder="Contraseña">
         <button id="login-btn">Ingresar</button>
         <p id="login-error" style="color: var(--danger); margin-top: 10px;"></p>
     </div>
@@ -59,36 +44,26 @@
     <div id="dashboard" class="container">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h1>Panel de Control</h1>
-            <button onclick="logout()" style="background: var(--text-dark);">Cerrar Sesión</button>
+            <button onclick="logout()" style="width: auto; background: #333;">Salir</button>
         </div>
 
         <div class="section-card">
-            <h2>Subir Transformación (Galería)</h2>
-            <form id="gallery-form">
-                <label>Título del Procedimiento</label>
-                <input type="text" id="gallery-title" placeholder="Ej: Rinomodelación sin cirugía" required>
-                
-                <label>Categoría</label>
-                <select id="gallery-category" required>
-                    <option value="Rinomodelación">Rinomodelación</option>
-                    <option value="Labios">Aumento de Labios</option>
-                    <option value="Lipopapada">Lipopapada</option>
-                    <option value="Bichectomía">Bichectomía</option>
-                    <option value="Otros">Otros</option>
-                </select>
+            <h2>Editar Información de Cuidados</h2>
+            <p style="font-size: 0.9rem; margin-bottom: 15px;">Edita los textos que aparecen en los modales de la app.</p>
+            
+            <label><strong>1. Instrucciones Generales</strong></label>
+            <textarea id="text-instructions" rows="4"></textarea>
+            <button onclick="updateCareText('instructions', 'text-instructions')">Guardar Instrucciones</button>
+            <br><br>
 
-                <label>Foto ANTES</label>
-                <input type="file" id="file-before" accept="image/*" required>
-                
-                <label>Foto DESPUÉS</label>
-                <input type="file" id="file-after" accept="image/*" required>
+            <label><strong>2. Cuidados Previos</strong></label>
+            <textarea id="text-pre" rows="4"></textarea>
+            <button onclick="updateCareText('pre_op', 'text-pre')">Guardar Previos</button>
+            <br><br>
 
-                <div id="gallery-loader" class="loader">Subiendo imágenes... por favor espera.</div>
-                <button type="submit" style="margin-top: 15px;">Publicar Transformación</button>
-            </form>
-
-            <h3>Transformaciones Activas</h3>
-            <div id="gallery-list" class="item-list"></div>
+            <label><strong>3. Cuidados Post-Operatorios</strong></label>
+            <textarea id="text-post" rows="4"></textarea>
+            <button onclick="updateCareText('post_op', 'text-post')">Guardar Post</button>
         </div>
 
         <div class="section-card">
@@ -97,25 +72,56 @@
                 <label>Ciudad</label>
                 <input type="text" id="journey-city" placeholder="Ej: Medellín" required>
                 
+                <label>Procedimiento Principal (Etiqueta)</label>
+                <select id="journey-procedure" required>
+                    <option value="Valoración General">Valoración General</option>
+                    <option value="Lipopapada">Lipopapada</option>
+                    <option value="Bichectomía">Bichectomía</option>
+                    <option value="Rinomodelación">Rinomodelación</option>
+                    <option value="Labios">Aumento de Labios</option>
+                    <option value="Full Face">Full Face (Armonización Completa)</option>
+                </select>
+
                 <label>Fechas</label>
                 <input type="text" id="journey-date" placeholder="Ej: 20 y 21 de Enero" required>
                 
-                <label>Descripción Corta</label>
-                <textarea id="journey-desc" rows="3" placeholder="Ej: Últimos cupos disponibles en El Poblado..." required></textarea>
+                <label>Descripción</label>
+                <textarea id="journey-desc" rows="3" placeholder="Ej: Cupos limitados en zona El Poblado..." required></textarea>
                 
-                <button type="submit" style="margin-top: 15px;">Publicar Jornada</button>
+                <button type="submit">Publicar Jornada</button>
             </form>
-
             <h3>Jornadas Activas</h3>
             <div id="journey-list" class="item-list"></div>
+        </div>
+
+        <div class="section-card">
+            <h2>Subir Transformación (Galería)</h2>
+            <form id="gallery-form">
+                <input type="text" id="gallery-title" placeholder="Título (Ej: Rinomodelación)" required>
+                <select id="gallery-category" required>
+                    <option value="Rinomodelación">Rinomodelación</option>
+                    <option value="Labios">Labios</option>
+                    <option value="Lipopapada">Lipopapada</option>
+                    <option value="Bichectomía">Bichectomía</option>
+                    <option value="Otros">Otros</option>
+                </select>
+                <label>Foto ANTES</label>
+                <input type="file" id="file-before" accept="image/*" required>
+                <label>Foto DESPUÉS</label>
+                <input type="file" id="file-after" accept="image/*" required>
+                <div id="gallery-loader" class="loader">Subiendo...</div>
+                <button type="submit">Publicar Foto</button>
+            </form>
+            <h3>Galería Activa</h3>
+            <div id="gallery-list" class="item-list"></div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+        import { getFirestore, collection, addDoc, doc, setDoc, getDoc, deleteDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBkcFFE_E-GzSVVUdfCew4fscnV6PHkH0I",
@@ -131,150 +137,108 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        // --- AUTENTICACIÓN ---
-        const loginScreen = document.getElementById('login-screen');
-        const dashboard = document.getElementById('dashboard');
-
+        // --- AUTH ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                loginScreen.style.display = 'none';
-                dashboard.style.display = 'block';
-                loadGallery();
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
                 loadJourneys();
+                loadGallery();
+                loadCareTexts();
             } else {
-                loginScreen.style.display = 'flex';
-                dashboard.style.display = 'none';
+                document.getElementById('login-screen').style.display = 'flex';
+                document.getElementById('dashboard').style.display = 'none';
             }
         });
 
         document.getElementById('login-btn').addEventListener('click', () => {
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            signInWithEmailAndPassword(auth, email, pass)
-                .catch((error) => {
-                    document.getElementById('login-error').innerText = "Error: " + error.message;
-                });
+            signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('password').value)
+            .catch(e => document.getElementById('login-error').innerText = e.message);
         });
-
         window.logout = () => signOut(auth);
 
-        // --- GESTIÓN DE GALERÍA ---
-        const galleryForm = document.getElementById('gallery-form');
-        
-        galleryForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            document.getElementById('gallery-loader').style.display = 'block';
+        // --- 1. CUIDADOS (TEXTOS) ---
+        async function loadCareTexts() {
+            const docs = ['instructions', 'pre_op', 'post_op'];
+            const inputs = ['text-instructions', 'text-pre', 'text-post'];
+            
+            for(let i=0; i<docs.length; i++) {
+                const snap = await getDoc(doc(db, "care_info", docs[i]));
+                if(snap.exists()) document.getElementById(inputs[i]).value = snap.data().content || "";
+            }
+        }
 
-            const title = document.getElementById('gallery-title').value;
-            const category = document.getElementById('gallery-category').value;
-            const fileBefore = document.getElementById('file-before').files[0];
-            const fileAfter = document.getElementById('file-after').files[0];
-
+        window.updateCareText = async (docId, inputId) => {
+            const content = document.getElementById(inputId).value;
             try {
-                // 1. Subir Imagen Antes
-                const beforeRef = ref(storage, `gallery/${Date.now()}_before`);
-                const beforeSnap = await uploadBytes(beforeRef, fileBefore);
-                const beforeUrl = await getDownloadURL(beforeSnap.ref);
-
-                // 2. Subir Imagen Después
-                const afterRef = ref(storage, `gallery/${Date.now()}_after`);
-                const afterSnap = await uploadBytes(afterRef, fileAfter);
-                const afterUrl = await getDownloadURL(afterSnap.ref);
-
-                // 3. Guardar en Firestore
-                await addDoc(collection(db, "gallery"), {
-                    title, category, beforeUrl, afterUrl,
-                    timestamp: Date.now()
-                });
-
-                galleryForm.reset();
-                alert("Transformación subida con éxito");
-            } catch (error) {
-                console.error(error);
-                alert("Error al subir: " + error.message);
-            } finally {
-                document.getElementById('gallery-loader').style.display = 'none';
-            }
-        });
-
-        function loadGallery() {
-            const q = query(collection(db, "gallery"), orderBy("timestamp", "desc"));
-            onSnapshot(q, (snapshot) => {
-                const container = document.getElementById('gallery-list');
-                container.innerHTML = "";
-                snapshot.forEach(docSnap => {
-                    const data = docSnap.data();
-                    const div = document.createElement('div');
-                    div.className = "item";
-                    div.innerHTML = `
-                        <div style="display:flex; align-items:center;">
-                            <img src="${data.beforeUrl}" class="preview-img">
-                            <div>
-                                <strong>${data.title}</strong><br>
-                                <small>${data.category}</small>
-                            </div>
-                        </div>
-                        <button class="delete-btn" data-id="${docSnap.id}">Eliminar</button>
-                    `;
-                    div.querySelector('.delete-btn').addEventListener('click', () => deleteGalleryItem(docSnap.id));
-                    container.appendChild(div);
-                });
-            });
+                await setDoc(doc(db, "care_info", docId), { content });
+                alert("Texto actualizado correctamente.");
+            } catch(e) { alert("Error: " + e.message); }
         }
 
-        async function deleteGalleryItem(id) {
-            if(confirm("¿Borrar esta transformación?")) {
-                await deleteDoc(doc(db, "gallery", id));
-            }
-        }
-
-        // --- GESTIÓN DE JORNADAS ---
-        const journeyForm = document.getElementById('journey-form');
-
-        journeyForm.addEventListener('submit', async (e) => {
+        // --- 2. JORNADAS ---
+        document.getElementById('journey-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const city = document.getElementById('journey-city').value;
+            const procedure = document.getElementById('journey-procedure').value; // NUEVO
             const dateText = document.getElementById('journey-date').value;
             const desc = document.getElementById('journey-desc').value;
 
             try {
-                await addDoc(collection(db, "journeys"), {
-                    city, dateText, desc, timestamp: Date.now()
-                });
-                journeyForm.reset();
+                await addDoc(collection(db, "journeys"), { city, procedure, dateText, desc, timestamp: Date.now() });
+                e.target.reset();
                 alert("Jornada creada");
-            } catch (error) {
-                alert(error.message);
-            }
+            } catch(e) { alert(e.message); }
         });
 
         function loadJourneys() {
-            const q = query(collection(db, "journeys"), orderBy("timestamp", "desc"));
-            onSnapshot(q, (snapshot) => {
-                const container = document.getElementById('journey-list');
-                container.innerHTML = "";
-                snapshot.forEach(docSnap => {
-                    const data = docSnap.data();
-                    const div = document.createElement('div');
-                    div.className = "item";
-                    div.innerHTML = `
-                        <div>
-                            <strong>${data.city}</strong> - ${data.dateText}<br>
-                            <small>${data.desc}</small>
-                        </div>
-                        <button class="delete-btn" data-id="${docSnap.id}">Eliminar</button>
-                    `;
-                    div.querySelector('.delete-btn').addEventListener('click', () => deleteJourneyItem(docSnap.id));
-                    container.appendChild(div);
+            onSnapshot(query(collection(db, "journeys"), orderBy("timestamp", "desc")), (snap) => {
+                const div = document.getElementById('journey-list');
+                div.innerHTML = "";
+                snap.forEach(d => {
+                    const data = d.data();
+                    const item = document.createElement('div');
+                    item.className = "item";
+                    item.innerHTML = `<div><strong>${data.city}</strong> (${data.procedure})<br><small>${data.dateText}</small></div><button class="delete-btn" onclick="del('journeys','${d.id}')">X</button>`;
+                    div.appendChild(item);
                 });
             });
         }
 
-        async function deleteJourneyItem(id) {
-            if(confirm("¿Borrar esta jornada?")) {
-                await deleteDoc(doc(db, "journeys", id));
-            }
+        // --- 3. GALERÍA ---
+        document.getElementById('gallery-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            document.getElementById('gallery-loader').style.display = 'block';
+            const title = document.getElementById('gallery-title').value;
+            const category = document.getElementById('gallery-category').value;
+            const f1 = document.getElementById('file-before').files[0];
+            const f2 = document.getElementById('file-after').files[0];
+
+            try {
+                const u1 = await getDownloadURL((await uploadBytes(ref(storage, `gallery/${Date.now()}_b`), f1)).ref);
+                const u2 = await getDownloadURL((await uploadBytes(ref(storage, `gallery/${Date.now()}_a`), f2)).ref);
+                await addDoc(collection(db, "gallery"), { title, category, beforeUrl: u1, afterUrl: u2, timestamp: Date.now() });
+                e.target.reset();
+                alert("Foto subida");
+            } catch(e) { alert(e.message); }
+            document.getElementById('gallery-loader').style.display = 'none';
+        });
+
+        function loadGallery() {
+            onSnapshot(query(collection(db, "gallery"), orderBy("timestamp", "desc")), (snap) => {
+                const div = document.getElementById('gallery-list');
+                div.innerHTML = "";
+                snap.forEach(d => {
+                    const data = d.data();
+                    const item = document.createElement('div');
+                    item.className = "item";
+                    item.innerHTML = `<div style="display:flex;align-items:center"><img src="${data.beforeUrl}" style="width:40px;height:40px;margin-right:10px;object-fit:cover"><b>${data.title}</b></div><button class="delete-btn" onclick="del('gallery','${d.id}')">X</button>`;
+                    div.appendChild(item);
+                });
+            });
         }
+
+        window.del = async (col, id) => { if(confirm("¿Borrar?")) await deleteDoc(doc(db, col, id)); }
     </script>
 </body>
 </html>
