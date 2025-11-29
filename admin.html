@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Viarmoni</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --white: #ffffff;
+            --bg-light: #fdfaf9;
+            --primary-gold: #c5a984;
+            --secondary-rose: #e0c0c3;
+            --text-dark: #4a4a4a;
+            --danger: #b76e79;
+            --success: #6ba18b;
+            --font-main: "Montserrat", sans-serif;
+        }
+
+        body { font-family: var(--font-main); background: var(--bg-light); color: var(--text-dark); padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        
+        /* Login Styles */
+        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        .input-group { margin-bottom: 15px; width: 100%; max-width: 300px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px; }
+        button { background: var(--primary-gold); color: white; border: none; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: bold; }
+        button:hover { filter: brightness(0.9); }
+        
+        /* Dashboard Styles */
+        #dashboard { display: none; } /* Oculto por defecto */
+        .section-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        h2 { color: var(--primary-gold); border-bottom: 2px solid var(--secondary-rose); padding-bottom: 10px; }
+        
+        .item-list { margin-top: 20px; display: grid; gap: 10px; }
+        .item { border: 1px solid #eee; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .delete-btn { background: var(--danger); font-size: 0.8rem; padding: 5px 10px; }
+        
+        .preview-img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 10px; }
+        .loader { display: none; color: var(--primary-gold); font-weight: bold; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <img src="https://viarmoni.com/wp-content/uploads/2025/11/cropped-logo-horizontal-25-scaled-1.png" alt="Viarmoni" style="max-width: 200px; margin-bottom: 20px;">
+        <h2>Acceso Administrativo</h2>
+        <div class="input-group">
+            <input type="email" id="email" placeholder="Correo electrónico">
+        </div>
+        <div class="input-group">
+            <input type="password" id="password" placeholder="Contraseña">
+        </div>
+        <button id="login-btn">Ingresar</button>
+        <p id="login-error" style="color: var(--danger); margin-top: 10px;"></p>
+    </div>
+
+    <div id="dashboard" class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1>Panel de Control</h1>
+            <button onclick="logout()" style="background: var(--text-dark);">Cerrar Sesión</button>
+        </div>
+
+        <div class="section-card">
+            <h2>Subir Transformación (Galería)</h2>
+            <form id="gallery-form">
+                <label>Título del Procedimiento</label>
+                <input type="text" id="gallery-title" placeholder="Ej: Rinomodelación sin cirugía" required>
+                
+                <label>Categoría</label>
+                <select id="gallery-category" required>
+                    <option value="Rinomodelación">Rinomodelación</option>
+                    <option value="Labios">Aumento de Labios</option>
+                    <option value="Lipopapada">Lipopapada</option>
+                    <option value="Bichectomía">Bichectomía</option>
+                    <option value="Otros">Otros</option>
+                </select>
+
+                <label>Foto ANTES</label>
+                <input type="file" id="file-before" accept="image/*" required>
+                
+                <label>Foto DESPUÉS</label>
+                <input type="file" id="file-after" accept="image/*" required>
+
+                <div id="gallery-loader" class="loader">Subiendo imágenes... por favor espera.</div>
+                <button type="submit" style="margin-top: 15px;">Publicar Transformación</button>
+            </form>
+
+            <h3>Transformaciones Activas</h3>
+            <div id="gallery-list" class="item-list"></div>
+        </div>
+
+        <div class="section-card">
+            <h2>Crear Jornada de Valoración</h2>
+            <form id="journey-form">
+                <label>Ciudad</label>
+                <input type="text" id="journey-city" placeholder="Ej: Medellín" required>
+                
+                <label>Fechas</label>
+                <input type="text" id="journey-date" placeholder="Ej: 20 y 21 de Enero" required>
+                
+                <label>Descripción Corta</label>
+                <textarea id="journey-desc" rows="3" placeholder="Ej: Últimos cupos disponibles en El Poblado..." required></textarea>
+                
+                <button type="submit" style="margin-top: 15px;">Publicar Jornada</button>
+            </form>
+
+            <h3>Jornadas Activas</h3>
+            <div id="journey-list" class="item-list"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBkcFFE_E-GzSVVUdfCew4fscnV6PHkH0I",
+            authDomain: "viarmoni.firebaseapp.com",
+            projectId: "viarmoni",
+            storageBucket: "viarmoni.firebasestorage.app",
+            messagingSenderId: "765794389868",
+            appId: "1:765794389868:web:d7bedf9297d0458e616d49"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // --- AUTENTICACIÓN ---
+        const loginScreen = document.getElementById('login-screen');
+        const dashboard = document.getElementById('dashboard');
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loginScreen.style.display = 'none';
+                dashboard.style.display = 'block';
+                loadGallery();
+                loadJourneys();
+            } else {
+                loginScreen.style.display = 'flex';
+                dashboard.style.display = 'none';
+            }
+        });
+
+        document.getElementById('login-btn').addEventListener('click', () => {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('password').value;
+            signInWithEmailAndPassword(auth, email, pass)
+                .catch((error) => {
+                    document.getElementById('login-error').innerText = "Error: " + error.message;
+                });
+        });
+
+        window.logout = () => signOut(auth);
+
+        // --- GESTIÓN DE GALERÍA ---
+        const galleryForm = document.getElementById('gallery-form');
+        
+        galleryForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            document.getElementById('gallery-loader').style.display = 'block';
+
+            const title = document.getElementById('gallery-title').value;
+            const category = document.getElementById('gallery-category').value;
+            const fileBefore = document.getElementById('file-before').files[0];
+            const fileAfter = document.getElementById('file-after').files[0];
+
+            try {
+                // 1. Subir Imagen Antes
+                const beforeRef = ref(storage, `gallery/${Date.now()}_before`);
+                const beforeSnap = await uploadBytes(beforeRef, fileBefore);
+                const beforeUrl = await getDownloadURL(beforeSnap.ref);
+
+                // 2. Subir Imagen Después
+                const afterRef = ref(storage, `gallery/${Date.now()}_after`);
+                const afterSnap = await uploadBytes(afterRef, fileAfter);
+                const afterUrl = await getDownloadURL(afterSnap.ref);
+
+                // 3. Guardar en Firestore
+                await addDoc(collection(db, "gallery"), {
+                    title, category, beforeUrl, afterUrl,
+                    timestamp: Date.now()
+                });
+
+                galleryForm.reset();
+                alert("Transformación subida con éxito");
+            } catch (error) {
+                console.error(error);
+                alert("Error al subir: " + error.message);
+            } finally {
+                document.getElementById('gallery-loader').style.display = 'none';
+            }
+        });
+
+        function loadGallery() {
+            const q = query(collection(db, "gallery"), orderBy("timestamp", "desc"));
+            onSnapshot(q, (snapshot) => {
+                const container = document.getElementById('gallery-list');
+                container.innerHTML = "";
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const div = document.createElement('div');
+                    div.className = "item";
+                    div.innerHTML = `
+                        <div style="display:flex; align-items:center;">
+                            <img src="${data.beforeUrl}" class="preview-img">
+                            <div>
+                                <strong>${data.title}</strong><br>
+                                <small>${data.category}</small>
+                            </div>
+                        </div>
+                        <button class="delete-btn" data-id="${docSnap.id}">Eliminar</button>
+                    `;
+                    div.querySelector('.delete-btn').addEventListener('click', () => deleteGalleryItem(docSnap.id));
+                    container.appendChild(div);
+                });
+            });
+        }
+
+        async function deleteGalleryItem(id) {
+            if(confirm("¿Borrar esta transformación?")) {
+                await deleteDoc(doc(db, "gallery", id));
+            }
+        }
+
+        // --- GESTIÓN DE JORNADAS ---
+        const journeyForm = document.getElementById('journey-form');
+
+        journeyForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const city = document.getElementById('journey-city').value;
+            const dateText = document.getElementById('journey-date').value;
+            const desc = document.getElementById('journey-desc').value;
+
+            try {
+                await addDoc(collection(db, "journeys"), {
+                    city, dateText, desc, timestamp: Date.now()
+                });
+                journeyForm.reset();
+                alert("Jornada creada");
+            } catch (error) {
+                alert(error.message);
+            }
+        });
+
+        function loadJourneys() {
+            const q = query(collection(db, "journeys"), orderBy("timestamp", "desc"));
+            onSnapshot(q, (snapshot) => {
+                const container = document.getElementById('journey-list');
+                container.innerHTML = "";
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const div = document.createElement('div');
+                    div.className = "item";
+                    div.innerHTML = `
+                        <div>
+                            <strong>${data.city}</strong> - ${data.dateText}<br>
+                            <small>${data.desc}</small>
+                        </div>
+                        <button class="delete-btn" data-id="${docSnap.id}">Eliminar</button>
+                    `;
+                    div.querySelector('.delete-btn').addEventListener('click', () => deleteJourneyItem(docSnap.id));
+                    container.appendChild(div);
+                });
+            });
+        }
+
+        async function deleteJourneyItem(id) {
+            if(confirm("¿Borrar esta jornada?")) {
+                await deleteDoc(doc(db, "journeys", id));
+            }
+        }
+    </script>
+</body>
+</html>
