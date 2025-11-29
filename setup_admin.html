@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurar Admin - Viarmoni</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Montserrat", sans-serif;
+            background-color: #fdfaf9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        h2 { color: #c5a984; }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #c5a984;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover { background-color: #a1886b; }
+        .message { margin-top: 15px; font-size: 0.9rem; word-wrap: break-word;}
+        .success { color: green; }
+        .error { color: #b76e79; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Crear Cuenta Admin</h2>
+        <p>Crea el usuario administrador para gestionar la página.</p>
+        <form id="setup-form">
+            <input type="email" id="email" placeholder="Correo electrónico" required>
+            <input type="password" id="password" placeholder="Contraseña (min 6 caracteres)" required minlength="6">
+            <button type="submit" id="submit-btn">Registrar Administrador</button>
+        </form>
+        <div id="message" class="message"></div>
+    </div>
+
+    <script type="module">
+        // Importar Firebase directamente para evitar errores de ruta
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyBkcFFE_E-GzSVVUdfCew4fscnV6PHkH0I",
+          authDomain: "viarmoni.firebaseapp.com",
+          projectId: "viarmoni",
+          storageBucket: "viarmoni.firebasestorage.app",
+          messagingSenderId: "765794389868",
+          appId: "1:765794389868:web:d7bedf9297d0458e616d49"
+        };
+
+        // Inicializar
+        let app, auth;
+        const messageDiv = document.getElementById('message');
+
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            console.log("Firebase inicializado correctamente en setup_admin");
+        } catch (e) {
+            console.error("Error inicializando Firebase:", e);
+            messageDiv.innerHTML = `<span class="error">Error de configuración: ${e.message}</span>`;
+        }
+
+        const form = document.getElementById('setup-form');
+        const submitBtn = document.getElementById('submit-btn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!auth) {
+                 messageDiv.innerHTML = `<span class="error">Firebase no se cargó correctamente. Recarga la página.</span>`;
+                 return;
+            }
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            messageDiv.innerText = "Procesando... Por favor espera.";
+            submitBtn.disabled = true;
+
+            try {
+                await createUserWithEmailAndPassword(auth, email, password);
+                messageDiv.innerHTML = `<span class="success">¡Administrador creado con éxito! <br> <a href="admin.html"><b>Haz clic aquí para ir al Panel de Admin</b></a></span>`;
+                form.reset();
+            } catch (error) {
+                console.error(error);
+                let msg = error.message;
+                if(error.code === 'auth/email-already-in-use') {
+                    msg = "Este correo ya está registrado.";
+                } else if(error.code === 'auth/weak-password') {
+                    msg = "La contraseña debe tener al menos 6 caracteres.";
+                } else if(error.code === 'auth/operation-not-allowed') {
+                    msg = "El registro con correo/contraseña no está habilitado en la consola de Firebase.";
+                } else if(error.code === 'auth/unauthorized-domain') {
+                    msg = "Dominio no autorizado. Debes agregar este dominio (github.io) en Firebase Console > Authentication > Settings.";
+                }
+
+                messageDiv.innerHTML = `<span class="error">Error: ${msg}</span>`;
+                submitBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

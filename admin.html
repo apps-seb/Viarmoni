@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Viarmoni Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --white: #ffffff;
+            --bg-light: #fdfaf9;
+            --text-dark: #4a4a4a;
+            --primary-gold: #c5a984;
+            --secondary-rose: #e0c0c3;
+            --accent-dark: #a1886b;
+            --danger: #b76e79;
+            --success: #6ba18b;
+            --font-main: "Montserrat", sans-serif;
+            --border-radius: 12px;
+            --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.06);
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-light);
+        }
+
+        h1, h2, h3 { color: var(--text-dark); }
+        h1 { text-align: center; color: var(--primary-gold); margin-bottom: 2rem; }
+
+        .form-group { margin-bottom: 1.5rem; }
+        label { display: block; margin-bottom: 0.5rem; font-weight: 600; }
+        input, textarea, select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .btn-primary { background: var(--primary-gold); color: white; }
+        .btn-primary:hover { background: var(--accent-dark); }
+        .btn-danger { background: var(--danger); color: white; }
+
+        /* Login */
+        #login-view { max-width: 400px; margin: 100px auto; text-align: center; }
+
+        /* Dashboard */
+        #dashboard-view { display: none; }
+        .tabs { display: flex; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid #ddd; padding-bottom: 1rem; }
+        .tab-btn { background: none; border: none; font-size: 1.1rem; color: #aaa; cursor: pointer; }
+        .tab-btn.active { color: var(--primary-gold); font-weight: bold; border-bottom: 2px solid var(--primary-gold); }
+
+        .section-content { display: none; }
+        .section-content.active { display: block; }
+
+        .item-list { margin-top: 2rem; display: grid; gap: 1rem; }
+        .item-card {
+            border: 1px solid #eee;
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fafafa;
+        }
+        .item-card img { width: 60px; height: 60px; object-fit: cover; border-radius: 4px; margin-right: 10px; }
+        .item-info { flex-grow: 1; }
+
+        .loading { opacity: 0.5; pointer-events: none; }
+        #error-msg { color: var(--danger); margin-top: 1rem; display: none;}
+    </style>
+</head>
+<body>
+
+    <!-- Login View -->
+    <div id="login-view" class="container">
+        <h2>Administrador Viarmoni</h2>
+        <form id="login-form">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="email" required placeholder="admin@viarmoni.com">
+            </div>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Entrar</button>
+            <p id="login-error" style="color:red; display:none; margin-top:10px;"></p>
+        </form>
+    </div>
+
+    <!-- Dashboard View -->
+    <div id="dashboard-view" class="container">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2>Panel de Control</h2>
+            <button id="logout-btn" class="btn btn-danger">Cerrar Sesión</button>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="transformations">Transformaciones</button>
+            <button class="tab-btn" data-tab="jornadas">Jornadas</button>
+        </div>
+
+        <p id="status-msg" style="text-align:center; font-weight:bold;"></p>
+
+        <!-- Transformations Tab -->
+        <div id="transformations" class="section-content active">
+            <h3>Nueva Transformación</h3>
+            <form id="trans-form">
+                <div class="form-group">
+                    <label>Título del Procedimiento</label>
+                    <input type="text" id="trans-title" required placeholder="Ej: Rinomodelación">
+                </div>
+                <div class="form-group">
+                    <label>Categoría</label>
+                    <input type="text" id="trans-category" required placeholder="Ej: Facial, Corporal" list="category-list">
+                    <datalist id="category-list"></datalist>
+                </div>
+                <div class="form-group" style="display:flex; gap:1rem;">
+                    <div style="flex:1;">
+                        <label>Foto Antes</label>
+                        <input type="file" id="trans-before" accept="image/*" required>
+                    </div>
+                    <div style="flex:1;">
+                        <label>Foto Después</label>
+                        <input type="file" id="trans-after" accept="image/*" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Subir Transformación</button>
+            </form>
+
+            <h3>Transformaciones Existentes</h3>
+            <div id="trans-list" class="item-list"></div>
+        </div>
+
+        <!-- Jornadas Tab -->
+        <div id="jornadas" class="section-content">
+            <h3>Nueva Jornada</h3>
+            <form id="jornada-form">
+                <div class="form-group">
+                    <label>Ciudad / Ubicación</label>
+                    <input type="text" id="jor-city" required placeholder="Ej: Cali, Valle del Cauca">
+                </div>
+                <div class="form-group">
+                    <label>Fechas / Texto de Fecha</label>
+                    <input type="text" id="jor-date" required placeholder="Ej: 15 y 16 de Diciembre">
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="jor-desc" rows="3" required placeholder="Descripción corta..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Número de Citas / Etiquetas (Opcional)</label>
+                    <input type="text" id="jor-tags" placeholder="Ej: Últimos cupos">
+                </div>
+                <button type="submit" class="btn btn-primary">Crear Jornada</button>
+            </form>
+
+            <h3>Jornadas Activas</h3>
+            <div id="jor-list" class="item-list"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, db, storage } from './js/firebase-config.js';
+        import { signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+        // DOM Elements
+        const loginView = document.getElementById('login-view');
+        const dashboardView = document.getElementById('dashboard-view');
+        const loginForm = document.getElementById('login-form');
+        const logoutBtn = document.getElementById('logout-btn');
+        const statusMsg = document.getElementById('status-msg');
+
+        // Check Auth Status
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loginView.style.display = 'none';
+                dashboardView.style.display = 'block';
+                loadData();
+            } else {
+                loginView.style.display = 'block';
+                dashboardView.style.display = 'none';
+            }
+        });
+
+        // Login
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                document.getElementById('login-error').innerText = "Error: " + error.message;
+                document.getElementById('login-error').style.display = 'block';
+            }
+        });
+
+        // Logout
+        logoutBtn.addEventListener('click', () => signOut(auth));
+
+        // Tabs
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.section-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        // --- TRANSFORMATIONS ---
+        const transForm = document.getElementById('trans-form');
+        const transList = document.getElementById('trans-list');
+
+        transForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            statusMsg.innerText = "Subiendo imágenes...";
+
+            const title = document.getElementById('trans-title').value;
+            const category = document.getElementById('trans-category').value;
+            const fileBefore = document.getElementById('trans-before').files[0];
+            const fileAfter = document.getElementById('trans-after').files[0];
+
+            if (!fileBefore || !fileAfter) return;
+
+            try {
+                // Upload Before
+                const beforeRef = ref(storage, `transformations/${Date.now()}_before_${fileBefore.name}`);
+                await uploadBytes(beforeRef, fileBefore);
+                const beforeUrl = await getDownloadURL(beforeRef);
+
+                // Upload After
+                const afterRef = ref(storage, `transformations/${Date.now()}_after_${fileAfter.name}`);
+                await uploadBytes(afterRef, fileAfter);
+                const afterUrl = await getDownloadURL(afterRef);
+
+                // Save to Firestore
+                await addDoc(collection(db, "transformations"), {
+                    title,
+                    category,
+                    beforeUrl,
+                    afterUrl,
+                    beforePath: beforeRef.fullPath,
+                    afterPath: afterRef.fullPath,
+                    createdAt: new Date()
+                });
+
+                statusMsg.innerText = "¡Transformación agregada!";
+                transForm.reset();
+                setTimeout(() => statusMsg.innerText = "", 3000);
+            } catch (error) {
+                console.error(error);
+                statusMsg.innerText = "Error: " + error.message;
+            }
+        });
+
+        // --- JORNADAS ---
+        const jorForm = document.getElementById('jornada-form');
+        const jorList = document.getElementById('jor-list');
+
+        jorForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            statusMsg.innerText = "Guardando jornada...";
+
+            const city = document.getElementById('jor-city').value;
+            const dateText = document.getElementById('jor-date').value;
+            const desc = document.getElementById('jor-desc').value;
+            const tags = document.getElementById('jor-tags').value;
+
+            try {
+                await addDoc(collection(db, "jornadas"), {
+                    city,
+                    dateText,
+                    description: desc,
+                    tags,
+                    createdAt: new Date()
+                });
+                statusMsg.innerText = "¡Jornada creada!";
+                jorForm.reset();
+                setTimeout(() => statusMsg.innerText = "", 3000);
+            } catch (error) {
+                console.error(error);
+                statusMsg.innerText = "Error: " + error.message;
+            }
+        });
+
+        // --- LOAD DATA ---
+        function loadData() {
+            // Load Transformations
+            const qTrans = query(collection(db, "transformations"), orderBy("createdAt", "desc"));
+            onSnapshot(qTrans, (snapshot) => {
+                transList.innerHTML = "";
+                const categories = new Set();
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    categories.add(data.category);
+                    const div = document.createElement('div');
+                    div.className = 'item-card';
+                    div.innerHTML = `
+                        <div style="display:flex; align-items:center;">
+                            <img src="${data.beforeUrl}" alt="Before">
+                            <img src="${data.afterUrl}" alt="After">
+                            <div class="item-info">
+                                <strong>${data.title}</strong><br>
+                                <small>${data.category}</small>
+                            </div>
+                        </div>
+                        <button class="btn btn-danger btn-sm" onclick="window.deleteTrans('${docSnap.id}', '${data.beforePath}', '${data.afterPath}')">Eliminar</button>
+                    `;
+                    transList.appendChild(div);
+                });
+
+                // Update datalist
+                const datalist = document.getElementById('category-list');
+                datalist.innerHTML = '';
+                categories.forEach(cat => {
+                    const opt = document.createElement('option');
+                    opt.value = cat;
+                    datalist.appendChild(opt);
+                });
+            });
+
+            // Load Jornadas
+            const qJor = query(collection(db, "jornadas"), orderBy("createdAt", "desc"));
+            onSnapshot(qJor, (snapshot) => {
+                jorList.innerHTML = "";
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const div = document.createElement('div');
+                    div.className = 'item-card';
+                    div.innerHTML = `
+                        <div class="item-info">
+                            <strong>${data.city}</strong><br>
+                            <small>${data.dateText}</small>
+                        </div>
+                        <button class="btn btn-danger btn-sm" onclick="window.deleteJor('${docSnap.id}')">Eliminar</button>
+                    `;
+                    jorList.appendChild(div);
+                });
+            });
+        }
+
+        // --- GLOBAL FUNCTIONS FOR BUTTONS ---
+        window.deleteTrans = async (id, beforePath, afterPath) => {
+            if(!confirm("¿Eliminar esta transformación?")) return;
+            try {
+                await deleteDoc(doc(db, "transformations", id));
+                // Try to delete images, but don't fail if they don't exist
+                if(beforePath) await deleteObject(ref(storage, beforePath)).catch(e => console.log(e));
+                if(afterPath) await deleteObject(ref(storage, afterPath)).catch(e => console.log(e));
+            } catch (error) {
+                alert("Error: " + error.message);
+            }
+        };
+
+        window.deleteJor = async (id) => {
+            if(!confirm("¿Eliminar esta jornada?")) return;
+            try {
+                await deleteDoc(doc(db, "jornadas", id));
+            } catch (error) {
+                alert("Error: " + error.message);
+            }
+        };
+
+    </script>
+</body>
+</html>
