@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reservas de Valoraciones Estéticas Viarmoni</title>
     
+    <!-- 
+      APLICACIÓN DE RESERVAS EN UN SOLO ARCHIVO
+      HTML, CSS y JavaScript nativo (sin frameworks)
+      Almacenamiento: localStorage
+    -->
     <style>
         /* --- 1. Variables de Diseño y Reseteo --- */
         :root {
@@ -38,6 +43,7 @@
             width: 100%;
             margin: 0;
             padding: 0;
+            /* overflow: hidden; <--- Eliminado para permitir scroll interno */
         }
 
         html {
@@ -100,24 +106,6 @@
         .btn-secondary:hover {
             background-color: var(--primary-gold);
             color: var(--white);
-        }
-
-        /* Filter Buttons Style */
-        .filter-btn {
-            background-color: transparent;
-            border: 2px solid var(--secondary-rose);
-            color: var(--text-dark);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            margin: 0 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .filter-btn.active, .filter-btn:hover {
-            background-color: var(--secondary-rose);
-            color: white;
-            border-color: var(--secondary-rose);
         }
 
         .card {
@@ -1054,7 +1042,7 @@
                 <a href="#info-section">Cuidados</a>
                 <a href="#gallery-section">Galería</a>
                 <a href="#jornadas-section">Jornadas</a>
-                <a href="admin.html" target="_blank">Admin</a>
+                <a href="#admin-section">Admin Citas</a>
             </nav>
             <button class="btn btn-primary" id="header-book-btn">Agendar</button>
         </div>
@@ -1152,11 +1140,31 @@
         <section class="gallery-section fullscreen-section" id="gallery-section">
             <div class="container">
                 <h2>Nuestras Transformaciones</h2>
-                <!-- Filter Controls can be added here if needed, now we have categories in DB -->
-                <div id="gallery-categories" style="margin-bottom: 2rem; text-align: center; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem;"></div>
-                <div class="gallery-grid" id="dynamic-gallery-grid">
-                    <!-- Dynamic content will be loaded here -->
-                    <p style="text-align: center; width: 100%;">Cargando transformaciones...</p>
+                <div class="gallery-grid">
+                    
+                    <div class="transform-card">
+                        <img-comparison-slider>
+                            <img slot="first" src="https://placehold.co/400x500/d6b4b8/ffffff?text=Antes" alt="Antes Rinomodelación">
+                            <img slot="second" src="https://placehold.co/400x500/c5a984/ffffff?text=Despu%C3%A9s" alt="Después Rinomodelación">
+                        </img-comparison-slider>
+                        <h4>Rinomodelación</h4>
+                    </div>
+                    
+                    <div class="transform-card">
+                        <img-comparison-slider>
+                            <img slot="first" src="https://placehold.co/400x500/d6b4b8/ffffff?text=Antes" alt="Antes Labios">
+                            <img slot="second" src="https://placehold.co/400x500/c5a984/ffffff?text=Despu%C3%A9s" alt="Después Labios">
+                        </img-comparison-slider>
+                        <h4>Aumento de Labios</h4>
+                    </div>
+
+                    <div class="transform-card">
+                        <img-comparison-slider>
+                            <img slot="first" src="https://placehold.co/400x500/d6b4b8/ffffff?text=Antes" alt="Antes Lipopapada">
+                            <img slot="second" src="https://placehold.co/400x500/c5a984/ffffff?text=Despu%C3%A9s" alt="Después Lipopapada">
+                        </img-comparison-slider>
+                        <h4>Lipopapada</h4>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1165,9 +1173,48 @@
         <section class="fullscreen-section" id="jornadas-section">
             <div class="container">
                 <h2>Próximas Jornadas de Valoración</h2>
-                <div class="jornadas-grid" id="dynamic-jornadas-grid">
-                     <!-- Dynamic content will be loaded here -->
-                     <p style="text-align: center; width: 100%;">Cargando jornadas...</p>
+                <div class="jornadas-grid">
+                    <!-- Jornada 1: Cali -->
+                    <div class="jornada-card">
+                        <div class="jornada-card-header">
+                            <h3>Cali, Valle del Cauca</h3>
+                        </div>
+                        <div class="jornada-card-body">
+                            <p class="jornada-date"><i class="fas fa-calendar-alt"></i> 15 y 16 de Diciembre</p>
+                            <p>¡Últimos cupos disponibles! No te pierdas la oportunidad de una valoración exclusiva en la capital de la salsa.</p>
+                        </div>
+                        <div class="jornada-card-footer">
+                            <button class="btn btn-primary jornada-book-btn" data-city="Cali">Agendar en Cali</button>
+                        </div>
+                    </div>
+
+                    <!-- Jornada 2: Pereira -->
+                    <div class="jornada-card">
+                        <div class="jornada-card-header">
+                            <h3>Pereira, Risaralda</h3>
+                        </div>
+                        <div class="jornada-card-body">
+                            <p class="jornada-date"><i class="fas fa-calendar-alt"></i> 22 y 23 de Diciembre</p>
+                            <p>El eje cafetero nos recibe. Agenda tu cita y prepárate para resaltar tu belleza natural en un entorno único.</p>
+                        </div>
+                        <div class="jornada-card-footer">
+                           <button class="btn btn-primary jornada-book-btn" data-city="Pereira">Agendar en Pereira</button>
+                        </div>
+                    </div>
+                    
+                     <!-- Jornada 3: Popayán -->
+                    <div class="jornada-card">
+                        <div class="jornada-card-header">
+                            <h3>Popayán, Cauca</h3>
+                        </div>
+                        <div class="jornada-card-body">
+                            <p class="jornada-date"><i class="fas fa-calendar-alt"></i> Atendiendo ahora</p>
+                            <p>Nuestra sede principal siempre está abierta para ti. Agenda tu valoración en la 'Ciudad Blanca' cualquier día.</p>
+                        </div>
+                        <div class="jornada-card-footer">
+                           <button class="btn btn-primary jornada-book-btn" data-city="Popayán">Agendar en Popayán</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1180,11 +1227,37 @@
            <iframe src="https://viarmoni.com/agendar-cita/" style="width: 100%; height: 100%; border: none;"></iframe>
         </section>
 
-        <!-- ==== PANEL DE ADMINISTRACIÓN (ELIMINADO DE INDEX, MOVIDO A ADMIN.HTML) ==== -->
+        <!-- ==== PANEL DE ADMINISTRACIÓN (Y FOOTER) ==== -->
+        <section class="admin-section fullscreen-section" id="admin-section">
+            <div class="container">
+                <h2>Panel de Reservas</h2>
+                <div class="filters">
+                    <select id="filter-city">
+                        <option value="">Filtrar por Ciudad</option>
+                        <option value="Popayán">Popayán</option>
+                        <option value="Cali">Cali</option>
+                        <option value="Pereira">Pereira</option>
+                    </select>
+                    <select id="filter-procedure">
+                        <option value="">Filtrar por Procedimiento</option>
+                        <option value="Lipopapada">Lipopapada</option>
+                        <option value="Bichectomía">Bichectomía</option>
+                        <option value="Labios">Labios</option>
+                        <option value="Rinomodelación">Rinomodelación</option>
+                    </select>
+                </div>
+                
+                <div id="booking-list">
+                    <!-- Las tarjetas de reserva se insertarán aquí con JS -->
+                </div>
+
+                </div>
+            </div>
+        </section>
 
         <footer class="footer">
              <p>© 2025 Viarmoni. Todos los derechos reservados.</p>
-             <p class="nav-admin"><a href="admin.html" target="_blank">Acceso Administrativo</a></p>
+             <p class="nav-admin">Estás en el <a href="#admin-section">Panel de Citas</a>.</p>
         </footer>
 
     </main>
@@ -1249,16 +1322,225 @@
 
 
     <!-- ==== SCRIPT PRINCIPAL ==== -->
-    <script type="module">
-        import { db } from './js/firebase-config.js';
-        import { collection, getDocs, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    <script>
+        /*
+    GUÍA DETALLADA PARA IMPLEMENTAR LA CONFIRMACIÓN DE CITAS POR CORREO ELECTRÓNICO
 
+    Objetivo: Enviar un correo de confirmación al cliente cuando agende una cita
+    y, opcionalmente, notificar al administrador.
+
+    Dado que esta es una aplicación de una sola página (HTML, CSS, JS) que se ejecuta
+    completamente en el navegador del cliente (frontend), no podemos enviar correos
+    directamente desde aquí de forma segura. El código del frontend es público y
+    expondría claves de servicios de correo, lo cual es un riesgo de seguridad grave.
+
+    La solución correcta es usar un servicio de backend (un pequeño servidor o una
+    función "serverless") que reciba la información de la cita y se encargue de
+    enviar el correo de forma segura.
+
+    Aquí tienes una guía paso a paso:
+
+    ---
+    Paso 1: Elegir un Servicio de Envío de Correos
+    ---
+    Necesitas un servicio que te permita enviar correos a través de una API.
+    Algunas opciones populares y con capas gratuitas generosas son:
+
+    1.  Resend (recomendado por su simplicidad):
+        -   Web: https://resend.com
+        -   Ofrece una API muy fácil de usar.
+        -   Ideal para empezar.
+
+    2.  SendGrid:
+        -   Web: https://sendgrid.com
+        -   Muy potente y escalable. Propiedad de Twilio.
+
+    3.  Mailgun:
+        -   Web: https://mailgun.com
+        -   Otra opción robusta y popular.
+
+    Para este ejemplo, usaremos **Resend**.
+
+    ---
+    Paso 2: Crear el Backend (Función Serverless)
+    ---
+    Usaremos una función "serverless" porque es económica (a menudo gratuita para
+    bajo tráfico) y fácil de desplegar. Vercel, Netlify o AWS Lambda son excelentes
+    opciones.
+
+    Ejemplo usando Vercel (que se integra perfectamente con proyectos frontend):
+
+    1.  **Estructura del Proyecto:**
+        Crea una carpeta `api` en la raíz de tu proyecto. Dentro, crea un archivo
+        llamado `send-confirmation.js`.
+
+        /
+        |-- index.html
+        |-- api/
+        |   |-- send-confirmation.js
+
+    2.  **Contenido de `api/send-confirmation.js` (usando Node.js):**
+
+        ```javascript
+        // Importar el SDK de Resend
+        import { Resend } from 'resend';
+
+        // Crear una instancia de Resend con tu clave API
+        // ¡IMPORTANTE! Guarda tu clave API como una variable de entorno, no en el código.
+        const resend = new Resend(process.env.RESEND_API_KEY);
+
+        // Esta es la función que se ejecutará cuando se llame a la API
+        export default async function handler(req, res) {
+          // Solo permitir peticiones POST
+          if (req.method !== 'POST') {
+            return res.status(405).json({ error: 'Method Not Allowed' });
+          }
+
+          try {
+            // Extraer los datos de la cita del cuerpo de la petición
+            const { name, email, procedure, date, time, city } = req.body;
+
+            // --- 1. Enviar correo de confirmación al CLIENTE ---
+            const { data: clientData, error: clientError } = await resend.emails.send({
+              from: 'Confirmacion ViArmoni <confirmacion@tu-dominio.com>', // Debes verificar este dominio en Resend
+              to: [email],
+              subject: `Confirmación de tu cita para ${procedure}`,
+              html: `
+                <h1>¡Hola ${name}, tu cita está confirmada!</h1>
+                <p>Gracias por agendar con ViArmoni. Aquí están los detalles de tu valoración:</p>
+                <ul>
+                  <li><strong>Procedimiento:</strong> ${procedure}</li>
+                  <li><strong>Ciudad:</strong> ${city}</li>
+                  <li><strong>Fecha:</strong> ${date}</li>
+                  <li><strong>Hora:</strong> ${time}</li>
+                </ul>
+                <p>Si necesitas reagendar o cancelar, por favor contáctanos.</p>
+                <p>¡Te esperamos!</p>
+              `,
+            });
+
+            if (clientError) {
+              console.error('Error enviando correo al cliente:', clientError);
+              // No detenemos el proceso aquí para intentar notificar al admin
+            }
+
+            // --- 2. Enviar correo de notificación al ADMINISTRADOR ---
+            const { data: adminData, error: adminError } = await resend.emails.send({
+              from: 'Nueva Cita <notificaciones@tu-dominio.com>',
+              to: ['correo-del-admin@viarmoni.com'], // El correo del administrador
+              subject: `¡Nueva cita agendada! - ${procedure} para ${name}`,
+              html: `
+                <h1>Nueva Cita Registrada</h1>
+                <p>Se ha agendado una nueva valoración a través de la web:</p>
+                <ul>
+                  <li><strong>Cliente:</strong> ${name}</li>
+                  <li><strong>Email:</strong> ${email}</li>
+                  <li><strong>Procedimiento:</strong> ${procedure}</li>
+                  <li><strong>Ciudad:</strong> ${city}</li>
+                  <li><strong>Fecha:</strong> ${date}</li>
+                  <li><strong>Hora:</strong> ${time}</li>
+                </ul>
+              `,
+            });
+
+            if (adminError) {
+              console.error('Error enviando correo al admin:', adminError);
+              return res.status(500).json({ error: 'Error al enviar notificación' });
+            }
+
+            // Si todo fue bien (o al menos la notificación al admin funcionó)
+            res.status(200).json({ message: 'Correos enviados exitosamente' });
+
+          } catch (error) {
+            console.error('Error en la función del servidor:', error);
+            res.status(500).json({ error: 'Internal Server Error' });
+          }
+        }
+        ```
+
+    ---
+    Paso 3: Modificar el Frontend para Llamar a la API
+    ---
+    Ahora, en tu `index.html`, necesitas modificar la función que maneja el envío
+    del formulario (`handleFormSubmit`) para que, además de guardar en `localStorage`,
+    envíe los datos a tu nueva API.
+
+    1.  **Localiza la función `handleFormSubmit` en tu `<script>`:**
+
+    2.  **Añade una llamada `fetch` después de guardar la reserva:**
+
+        ```javascript
+        // Dentro de la función handleFormSubmit, después de saveBookings();
+
+        // ... (código existente)
+        bookings.push(newBooking);
+        saveBookings();
+
+        // --- INICIO DE LA MODIFICACIÓN ---
+
+        // Enviar datos al backend para el correo de confirmación
+        fetch('/api/send-confirmation', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(newBooking),
+        })
+        .then(response => {
+          if (!response.ok) {
+            // Si la respuesta no es exitosa, lanza un error para capturarlo después
+            return response.json().then(err => { throw new Error(err.error || 'Error en el servidor') });
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Respuesta del servidor:', data.message); // "Correos enviados exitosamente"
+        })
+        .catch(error => {
+          console.error('Error al enviar el correo de confirmación:', error);
+          // Opcional: Podrías mostrar un mensaje al usuario aquí, aunque la cita
+          // ya está guardada localmente. Por ejemplo:
+          // alert('Tu cita fue guardada, pero hubo un problema al enviar el correo de confirmación.');
+        });
+
+        // --- FIN DE LA MODIFICACIÓN ---
+
+        // El resto del código sigue igual
+        renderBookings();
+        showConfirmation(newBooking);
+        bookingForm.reset();
+        // ... (resto de la función)
+        ```
+
+    ---
+    Resumen del Flujo
+    ---
+    1.  **Usuario rellena el formulario:** El cliente completa sus datos en `index.html`.
+    2.  **Frontend (JS):**
+        -   Valida los datos.
+        -   Guarda la cita en `localStorage` (como ya lo hace).
+        -   Envía los datos de la cita (nombre, email, etc.) a `/api/send-confirmation` usando `fetch`.
+        -   Muestra el modal de confirmación al usuario inmediatamente, sin esperar la respuesta del servidor de correos.
+    3.  **Backend (Función Serverless en Vercel):**
+        -   La función en `api/send-confirmation.js` recibe la petición.
+        -   Usa la clave API de Resend (guardada de forma segura en variables de entorno) para conectarse al servicio.
+        -   Envía un correo de confirmación al cliente.
+        -   Envía un correo de notificación al administrador.
+        -   Devuelve una respuesta de éxito o error al frontend.
+    4.  **Frontend (JS):**
+        -   Recibe la respuesta y la registra en la consola. El usuario no nota nada a menos que haya un error.
+
+    Este enfoque es seguro, profesional y escalable.
+    */
         document.addEventListener('DOMContentLoaded', () => {
 
             // --- 1. Estado y Constantes ---
-            // Se restaura la variable bookings por si acaso, aunque la lógica principal se movió a admin.html.
-            // Si hay algun listener que dependa de esto, evitará errores.
             let bookings = [];
+            const STORAGE_KEY = 'aestheticBookingsViarmoni'; // Clave actualizada
+            const HORARIOS = [
+                "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+                "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"
+            ];
 
             // --- 2. Selectores del DOM ---
             // Modales
@@ -1272,8 +1554,14 @@
                 document.getElementById('finish-btn')
             ];
 
+            // Panel Admin
+            const bookingList = document.getElementById('booking-list');
+            const filterCity = document.getElementById('filter-city');
+            const filterProcedure = document.getElementById('filter-procedure');
+
             // Confirmación e Impresión
             const printBtn = document.getElementById('print-btn');
+            const confirmationDetails = document.getElementById('confirmation-details');
             
             // Tarjetas Info
             const infoCards = document.querySelectorAll('.info-card');
@@ -1286,6 +1574,8 @@
             const bottomNavItems = document.querySelectorAll('.bottom-nav-item');
             const desktopNavLinks = document.querySelectorAll('.nav-links a');
 
+            // Jornadas
+            const jornadaBookBtns = document.querySelectorAll('.jornada-book-btn');
             
             // Botón de Volver
             const backToHomeBtn = document.getElementById('back-to-home-btn');
@@ -1309,6 +1599,118 @@
                 if(modal) modal.classList.remove('active');
             };
 
+            /**
+             * Carga las reservas desde localStorage
+             */
+            const loadBookings = () => {
+                const data = localStorage.getItem(STORAGE_KEY);
+                bookings = data ? JSON.parse(data) : [];
+            };
+
+            /**
+             * Guarda las reservas en localStorage
+             */
+            const saveBookings = () => {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(bookings));
+            };
+
+            /**
+             * Renderiza la lista de reservas en el panel de admin
+             */
+            const renderBookings = () => {
+                const city = filterCity.value;
+                const procedure = filterProcedure.value;
+
+                // Filtrar reservas
+                const filteredBookings = bookings.filter(booking => {
+                    const cityMatch = !city || booking.city === city;
+                    const procedureMatch = !procedure || booking.procedure === procedure;
+                    return cityMatch && procedureMatch;
+                });
+                
+                // Ordenar por fecha
+                filteredBookings.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                // Limpiar lista
+                bookingList.innerHTML = '';
+
+                if (filteredBookings.length === 0) {
+                    bookingList.innerHTML = '<p>No hay reservas que coincidan con los filtros.</p>';
+                    return;
+                }
+
+                // Crear y añadir tarjetas de reserva
+                filteredBookings.forEach(booking => {
+                    const card = document.createElement('div');
+                    card.className = `card booking-card status-${booking.status}`;
+                    card.innerHTML = `
+                        <div class="booking-card-header">
+                            <h4>${booking.name}</h4>
+                            <span class="booking-date">${booking.date}</span>
+                        </div>
+                        <div class="booking-card-body">
+                            <p><strong>Proced:</strong> ${booking.procedure}</p>
+                            <p><strong>Hora:</strong> ${booking.time}</p>
+                            <p><strong>Ciudad:</strong> ${booking.city}</p>
+                            <p><strong>Tel:</strong> ${booking.phone}</p>
+                        </div>
+                        <div class="booking-card-actions">
+                            <select class="status-select" data-id="${booking.id}">
+                                <option value="confirmada" ${booking.status === 'confirmada' ? 'selected' : ''}>Confirmada</option>
+                                <option value="atendida" ${booking.status === 'atendida' ? 'selected' : ''}>Atendida</option>
+                                <option value="cancelada" ${booking.status === 'cancelada' ? 'selected' : ''}>Cancelada</option>
+                            </select>
+                            <button class="delete-btn" data-id="${booking.id}">Eliminar</button>
+                        </div>
+                    `;
+                    bookingList.appendChild(card);
+                });
+            };
+
+
+            /**
+             * Actualiza el estado de una reserva
+             * @param {string} id - ID de la reserva
+             * @param {string} newStatus - Nuevo estado (confirmada, atendida, cancelada)
+             */
+            const updateStatus = (id, newStatus) => {
+                const index = bookings.findIndex(b => b.id === id);
+                if (index !== -1) {
+                    bookings[index].status = newStatus;
+                    saveBookings();
+                    renderBookings(); // Re-renderizar para actualizar color de borde
+                }
+            };
+
+            /**
+             * Elimina una reserva
+             * @param {string} id - ID de la reserva a eliminar
+             */
+            const deleteBooking = (id) => {
+                if (confirm('¿Estás seguro de que deseas eliminar esta cita?')) {
+                    bookings = bookings.filter(b => b.id !== id);
+                    saveBookings();
+                    renderBookings();
+                }
+            };
+
+            /**
+             * Maneja el clic en el panel de administración (delegación de eventos)
+             */
+            const handleAdminListClick = (e) => {
+                const target = e.target;
+                
+                if (target.classList.contains('status-select')) {
+                    const id = target.dataset.id;
+                    const newStatus = target.value;
+                    updateStatus(id, newStatus);
+                }
+                
+                if (target.classList.contains('delete-btn')) {
+                    const id = target.dataset.id;
+                    deleteBooking(id);
+                }
+            };
             
             /**
              * Maneja el clic en una tarjeta de información, mostrando su contenido en un modal.
@@ -1370,8 +1772,6 @@
              */
             const handleNavClick = (e) => {
                 const targetId = e.currentTarget.getAttribute('href');
-                if (targetId === 'admin.html') return; // Default behavior for external link
-
                 if (targetId === '#booking-section') {
                     e.preventDefault();
                     window.location.href = 'https://viarmoni.com/agendar-cita/';
@@ -1386,125 +1786,9 @@
             };
 
             const handleJornadaBookClick = (e) => {
-                // El atributo data-city se puede usar aquí si se implementa lógica adicional
-                // Por ahora, redirigimos como antes
-                const city = e.currentTarget.dataset.city;
-                // console.log("Booking for city:", city); // Para debug
                 window.location.href = 'https://viarmoni.com/agendar-cita/';
             };
 
-
-            // --- FIREBASE DATA LOADING ---
-
-            // Load Transformations
-            const loadTransformations = () => {
-                const galleryGrid = document.getElementById('dynamic-gallery-grid');
-                const categoriesContainer = document.getElementById('gallery-categories');
-                const q = query(collection(db, "transformations"), orderBy("createdAt", "desc"));
-
-                onSnapshot(q, (snapshot) => {
-                    galleryGrid.innerHTML = "";
-                    categoriesContainer.innerHTML = "";
-
-                    if(snapshot.empty){
-                         galleryGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No hay transformaciones disponibles.</p>';
-                         return;
-                    }
-
-                    const categories = new Set();
-                    const items = [];
-
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        items.push({ id: doc.id, ...data });
-                        if(data.category) categories.add(data.category);
-                    });
-
-                    // Render Categories
-                    const allBtn = document.createElement('button');
-                    allBtn.textContent = 'Todos';
-                    allBtn.className = 'filter-btn active';
-                    allBtn.onclick = () => filterGallery('all', allBtn);
-                    categoriesContainer.appendChild(allBtn);
-
-                    categories.forEach(cat => {
-                        const btn = document.createElement('button');
-                        btn.textContent = cat;
-                        btn.className = 'filter-btn';
-                        btn.onclick = () => filterGallery(cat, btn);
-                        categoriesContainer.appendChild(btn);
-                    });
-
-                    // Render Items
-                    items.forEach(data => {
-                        const card = document.createElement('div');
-                        card.className = 'transform-card';
-                        card.dataset.category = data.category || 'all'; // Store category for filtering
-                        card.innerHTML = `
-                            <img-comparison-slider>
-                                <img slot="first" src="${data.beforeUrl}" alt="Antes ${data.title}">
-                                <img slot="second" src="${data.afterUrl}" alt="Después ${data.title}">
-                            </img-comparison-slider>
-                            <h4>${data.title} <small style="display:block; font-size:0.8rem; opacity:0.8;">${data.category}</small></h4>
-                        `;
-                        galleryGrid.appendChild(card);
-                    });
-                });
-            };
-
-            // Filter Gallery Function
-            const filterGallery = (category, btnElement) => {
-                // Update active button
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                btnElement.classList.add('active');
-
-                // Filter items
-                const cards = document.querySelectorAll('.transform-card');
-                cards.forEach(card => {
-                    if (category === 'all' || card.dataset.category === category) {
-                        card.style.display = 'block';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            };
-
-            // Load Jornadas
-            const loadJornadas = () => {
-                const jornadasGrid = document.getElementById('dynamic-jornadas-grid');
-                const q = query(collection(db, "jornadas"), orderBy("createdAt", "desc"));
-
-                onSnapshot(q, (snapshot) => {
-                    jornadasGrid.innerHTML = "";
-                    if(snapshot.empty){
-                        jornadasGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">No hay jornadas programadas.</p>';
-                        return;
-                    }
-
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        const card = document.createElement('div');
-                        card.className = 'jornada-card';
-                        card.innerHTML = `
-                            <div class="jornada-card-header">
-                                <h3>${data.city}</h3>
-                            </div>
-                            <div class="jornada-card-body">
-                                <p class="jornada-date"><i class="fas fa-calendar-alt"></i> ${data.dateText}</p>
-                                <p>${data.description}</p>
-                                ${data.tags ? `<p style="margin-top:0.5rem; font-size:0.85rem; color:var(--accent-dark);"><em>${data.tags}</em></p>` : ''}
-                            </div>
-                            <div class="jornada-card-footer">
-                                <button class="btn btn-primary jornada-book-btn" data-city="${data.city}">Agendar en ${data.city.split(',')[0]}</button>
-                            </div>
-                        `;
-                        jornadasGrid.appendChild(card);
-
-                        // Re-attach listener for new button
-                        card.querySelector('.jornada-book-btn').addEventListener('click', handleJornadaBookClick);
-                    });
-                });
-            };
 
             // --- 5. Inicialización y Event Listeners ---
 
@@ -1515,6 +1799,11 @@
             closeModalBtns.forEach(btn => btn.addEventListener('click', () => {
                 closeModal(confirmModal);
             }));
+
+            // Admin Panel
+            filterCity.addEventListener('change', renderBookings);
+            filterProcedure.addEventListener('change', renderBookings);
+            bookingList.addEventListener('click', handleAdminListClick);
 
             // Imprimir
             printBtn.addEventListener('click', () => {
@@ -1533,14 +1822,18 @@
                 item.addEventListener('click', handleNavClick);
             });
 
+            jornadaBookBtns.forEach(btn => {
+                btn.addEventListener('click', handleJornadaBookClick);
+            });
+
             // Listener para el botón de volver
             backToHomeBtn.addEventListener('click', () => {
                 showSection('#home');
             });
 
-            // Init Data
-            loadTransformations();
-            loadJornadas();
+            // Carga inicial
+            loadBookings();
+            renderBookings();
 
             // Inicializar Carousel
             if (document.getElementById('main-carousel')) {
