@@ -170,7 +170,7 @@
     <header class="header">
         <div class="container">
             <a href="#home" class="logo">
-                <img src="https://placehold.co/200x50/ffffff/c5a984?text=VIARMONI+LOGO" alt="Viarmoni">
+                <img id="nav-logo-img" src="https://placehold.co/200x50/ffffff/c5a984?text=VIARMONI+LOGO" alt="Viarmoni">
             </a>
             <nav class="nav-links">
                 <a href="#home">Inicio</a>
@@ -776,8 +776,19 @@
             }
         }
 
+        // --- CARGAR LOGO ---
+        async function loadLogo() {
+            try {
+                const snap = await getDoc(doc(db, "settings", "global"));
+                if(snap.exists() && snap.data().logoUrl) {
+                    document.getElementById('nav-logo-img').src = snap.data().logoUrl;
+                }
+            } catch(e) { console.error("Error loading logo:", e); }
+        }
+
         // INIT
         document.addEventListener('DOMContentLoaded', () => {
+            loadLogo();
             loadGallery();
             loadJourneys();
             loadBanners(); // Loads banners and initializes Splide
