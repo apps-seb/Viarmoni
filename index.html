@@ -501,29 +501,54 @@
                 container.innerHTML = '<div class="loader">Loading...</div>';
                 const staffFilter = document.getElementById('staff-select').value;
                 
+                // SAFETY CHECK: Ensure city is selected
+                if (!this.bookingData.city || !this.bookingData.city.name) {
+                    container.innerHTML = '<p style="color:red">Error: No se ha seleccionado ciudad.</p>';
+                    return;
+                }
+
+                // REMOVED orderBy('time') to avoid composite index requirement
                 let q = query(
                     collection(this.db, 'slots'), 
                     where('date', '==', date), 
                     where('city', '==', this.bookingData.city.name),
-                    where('status', '==', 'free'),
-                    orderBy('time')
+                    where('status', '==', 'free')
                 );
 
                 try {
                     const snap = await getDocs(q);
                     container.innerHTML = '';
-                    if(snap.empty) { container.innerHTML = '<p>No hay disponibilidad para esta fecha.</p>'; return; }
+                    
+                    if(snap.empty) { 
+                        container.innerHTML = '<p>No hay disponibilidad para esta fecha.</p>'; 
+                        return; 
+                    }
 
+                    // Client-side filtering and sorting
+                    let docs = [];
                     snap.forEach(d => {
                         const data = d.data();
-                        if(staffFilter !== 'any' && data.staff !== staffFilter) return;
+                        if(staffFilter === 'any' || data.staff === staffFilter) {
+                            docs.push({ id: d.id, ...data });
+                        }
+                    });
 
+                    // Sort by time
+                    docs.sort((a, b) => a.time.localeCompare(b.time));
+
+                    if (docs.length === 0) {
+                        container.innerHTML = '<p>No hay disponibilidad para el especialista seleccionado.</p>';
+                        return;
+                    }
+
+                    docs.forEach(data => {
                         const slot = document.createElement('div');
                         slot.className = 'time-slot';
                         slot.innerText = data.time;
                         slot.onclick = () => {
                             this.bookingData.slot = data;
-                            this.bookingData.slot.id = d.id;
+                            // Ensure ID is passed
+                            this.bookingData.slot.id = data.id; 
                             this.bookingData.staff = { name: data.staff }; 
                             
                             document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
@@ -532,7 +557,10 @@
                         };
                         container.appendChild(slot);
                     });
-                } catch(e) { console.error(e); container.innerHTML = 'Error cargando horarios.'; }
+                } catch(e) { 
+                    console.error("Firestore Error:", e); 
+                    container.innerHTML = '<p style="color:red">No se pudieron cargar los horarios. Intenta más tarde.</p>'; 
+                }
             }
 
             renderSummary() {
