@@ -37,7 +37,7 @@
         .nav-item i { width: 25px; text-align: center; margin-right: 10px; }
 
         /* Mobile Header */
-        .mobile-header { display: none; align-items: center; justify-content: space-between; padding: 15px 20px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 90; }
+        .mobile-header { display: none; align-items: center; justify-content: space-between; padding: 15px 20px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: fixed; top: 0; left: 0; width: 100%; box-sizing: border-box; z-index: 90; height: 60px; }
         .hamburger { background: none; border: none; font-size: 1.5rem; color: var(--primary-gold); cursor: pointer; }
         .mobile-brand { font-size: 1.2rem; font-weight: bold; color: var(--primary-gold); }
 
@@ -59,7 +59,7 @@
         @media (max-width: 768px) {
             .sidebar { transform: translateX(-100%); }
             .sidebar.active { transform: translateX(0); }
-            .main-content { margin-left: 0; padding: 20px; }
+            .main-content { margin-left: 0; padding: 20px; padding-top: 80px; } /* Added top padding for fixed header */
             .mobile-header { display: flex; }
             #dashboard { display: block; } /* Override flex */
         }
@@ -226,6 +226,16 @@
 
             <!-- TAB: CONTENIDO WEB (LO ANTIGUO) -->
             <div id="tab-content" class="section-tab">
+                
+                <div class="card">
+                    <h2>Logo de la Empresa</h2>
+                    <p style="color:#666; margin-bottom:15px;">Sube el logo de tu empresa. Se ajustará automáticamente en el encabezado.</p>
+                    <button onclick="document.getElementById('logo-input').click()" style="width: auto;"><i class="fas fa-upload"></i> Subir Logo</button>
+                    <input type="file" id="logo-input" accept="image/*" style="display:none">
+                    <br><br>
+                    <img id="current-logo-preview" src="" style="max-height:60px; display:none; border:1px solid #ddd; padding:5px; border-radius:5px;">
+                </div>
+
                 <div class="card">
                     <h2>Editar Información de Cuidados</h2>
                     <label><strong>1. Instrucciones Generales</strong></label>
@@ -407,53 +417,90 @@
             }
         };
 
-        // --- BANNERS LOGIC ---
+        // --- BANNERS & LOGO LOGIC ---
         let cropper;
-        const bannerInput = document.getElementById('banner-input');
+        let currentUploadType = 'banner'; // 'banner' or 'logo'
         
-        bannerInput.addEventListener('change', (e) => {
-            if(e.target.files && e.target.files[0]) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    document.getElementById('image-to-crop').src = e.target.result;
-                    document.getElementById('cropper-modal').style.display = 'flex';
-                    if(cropper) cropper.destroy();
-                    cropper = new Cropper(document.getElementById('image-to-crop'), {
-                        aspectRatio: 16 / 9,
-                        viewMode: 1
-                    });
+        const bannerInput = document.getElementById('banner-input');
+        const logoInput = document.getElementById('logo-input');
+        
+        function setupCropper(inputElement, type) {
+            inputElement.addEventListener('change', (e) => {
+                if(e.target.files && e.target.files[0]) {
+                    currentUploadType = type;
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        document.getElementById('image-to-crop').src = e.target.result;
+                        document.getElementById('cropper-modal').style.display = 'flex';
+                        if(cropper) cropper.destroy();
+                        
+                        const aspectRatio = type === 'banner' ? 16 / 9 : NaN; // NaN = Free crop for logo
+                        
+                        cropper = new Cropper(document.getElementById('image-to-crop'), {
+                            aspectRatio: aspectRatio,
+                            viewMode: 1
+                        });
+                    }
+                    reader.readAsDataURL(e.target.files[0]);
                 }
-                reader.readAsDataURL(e.target.files[0]);
-            }
-        });
+            });
+        }
+
+        setupCropper(bannerInput, 'banner');
+        setupCropper(logoInput, 'logo');
 
         window.closeCropper = () => {
             document.getElementById('cropper-modal').style.display = 'none';
             bannerInput.value = '';
+            logoInput.value = '';
             if(cropper) cropper.destroy();
         }
 
         window.cropAndUpload = () => {
             if(!cropper) return;
-            const canvas = cropper.getCroppedCanvas({ width: 1200, height: 675 }); // Resize to sane default
+            
+            // Different dimensions based on type
+            const options = currentUploadType === 'banner' 
+                ? { width: 1200, height: 675 } 
+                : { width: 400 }; // Logo width constraint, auto height
+
+            const canvas = cropper.getCroppedCanvas(options);
+            
             canvas.toBlob(async (blob) => {
                 try {
-                    const storageRef = ref(storage, `banners/${Date.now()}.jpg`);
-                    await uploadBytes(storageRef, blob);
+                    const path = currentUploadType === 'banner' 
+                        ? `banners/${Date.now()}.jpg` 
+                        : `settings/logo_${Date.now()}.png`; // Use PNG for transparency if supported/converted (canvas toBlob default is png if not specified, but here we specify below)
+                    
+                    const storageRef = ref(storage, path);
+                    // Upload as PNG for logo to keep transparency if original had it (though jpeg arg below might kill it, let's switch)
+                    const format = currentUploadType === 'banner' ? 'image/jpeg' : 'image/png';
+                    
+                    // Re-blob if format changed
+                    const finalBlob = await new Promise(r => canvas.toBlob(r, format, 0.9));
+
+                    await uploadBytes(storageRef, finalBlob);
                     const url = await getDownloadURL(storageRef);
                     
-                    await addDoc(collection(db, 'banners'), {
-                        url: url,
-                        timestamp: Date.now()
-                    });
+                    if (currentUploadType === 'banner') {
+                        await addDoc(collection(db, 'banners'), {
+                            url: url,
+                            timestamp: Date.now()
+                        });
+                        alert('Banner subido correctamente');
+                    } else {
+                        // Save logo to settings/global
+                        await setDoc(doc(db, 'settings', 'global'), { logoUrl: url }, { merge: true });
+                        alert('Logo actualizado correctamente');
+                        loadLogoPreview();
+                    }
                     
-                    alert('Banner subido correctamente');
                     closeCropper();
                 } catch(e) {
                     console.error(e);
-                    alert('Error subiendo banner');
+                    alert('Error subiendo imagen');
                 }
-            }, 'image/jpeg', 0.8);
+            }, currentUploadType === 'banner' ? 'image/jpeg' : 'image/png', 0.9);
         }
 
         function listenToBanners() {
@@ -469,6 +516,15 @@
                         </div>`;
                 });
             });
+        }
+        
+        async function loadLogoPreview() {
+            const snap = await getDoc(doc(db, 'settings', 'global'));
+            const img = document.getElementById('current-logo-preview');
+            if(snap.exists() && snap.data().logoUrl) {
+                img.src = snap.data().logoUrl;
+                img.style.display = 'block';
+            }
         }
 
         // --- CONFIG SUBMITS ---
