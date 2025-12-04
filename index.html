@@ -189,10 +189,7 @@
         </section>
     </main>
 
-    <section id="booking-section">
-        <button onclick="closeBooking()" style="position:absolute;top:20px;left:20px;z-index:20;padding:10px;border-radius:50%;border:none;background:#eee"><i class="fas fa-arrow-left"></i></button>
-        <iframe src="https://viarmoni.com/agendar-cita/" style="width:100%;height:100%;border:none;"></iframe>
-    </section>
+    <section id="booking-section"></section>
 
     <nav class="bottom-nav">
         <a href="#home" class="bottom-nav-item active"><i class="fas fa-home"></i><span>Inicio</span></a>
@@ -213,6 +210,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, getDocs, getDoc, doc, query, orderBy, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { BookingWizard } from "./js/booking-wizard.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBkcFFE_E-GzSVVUdfCew4fscnV6PHkH0I",
@@ -245,7 +243,14 @@
         });
 
         // --- BOOKING ---
-        window.openBooking = () => { document.body.classList.add('booking-active'); }
+        let wizardInitialized = false;
+        window.openBooking = () => {
+            document.body.classList.add('booking-active');
+            if(!wizardInitialized) {
+                new BookingWizard(db);
+                wizardInitialized = true;
+            }
+        }
         window.closeBooking = () => { document.body.classList.remove('booking-active'); }
 
         // --- CARGAR CUIDADOS (DINÁMICO) ---
