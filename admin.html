@@ -23,10 +23,10 @@
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px; margin-bottom: 15px; font-family: inherit; box-sizing: border-box; }
         button { background: var(--primary-gold); color: white; border: none; padding: 12px 25px; border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
         button:hover { filter: brightness(0.9); }
-
+        
         /* Dashboard Layout */
         #dashboard { display: none; width: 100%; display: flex; } /* Flex container for Sidebar + Content */
-
+        
         /* Sidebar */
         .sidebar { width: var(--sidebar-width); background: white; height: 100vh; position: fixed; box-shadow: 2px 0 10px rgba(0,0,0,0.05); padding-top: 20px; z-index: 100; }
         .brand { text-align: center; margin-bottom: 30px; font-size: 1.5rem; font-weight: bold; color: var(--primary-gold); }
@@ -36,18 +36,18 @@
 
         /* Main Content */
         .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 40px; }
-
+        
         .section-tab { display: none; animation: fadeIn 0.3s ease; }
         .section-tab.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); margin-bottom: 30px; }
         .card h2 { margin-top: 0; color: var(--primary-gold); border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }
-
+        
         .item-list { display: grid; gap: 10px; margin-top: 15px; }
         .item { border: 1px solid #eee; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; background: #fff; }
         .delete-btn { background: var(--danger); width: auto; padding: 5px 12px; font-size: 0.8rem; }
-
+        
         /* Specific Styles */
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .form-group label { font-weight: 600; font-size: 0.9rem; color: #555; }
@@ -71,7 +71,7 @@
 
     <!-- DASHBOARD -->
     <div id="dashboard" style="display:none;"> <!-- Initially hidden until auth -->
-
+        
         <!-- SIDEBAR -->
         <div class="sidebar">
             <div class="brand">Viarmoni</div>
@@ -180,11 +180,11 @@
                     <label><strong>1. Instrucciones Generales</strong></label>
                     <textarea id="text-instructions" rows="2"></textarea>
                     <button onclick="updateCareText('instructions', 'text-instructions')" style="margin-bottom:15px;">Guardar</button>
-
+                    
                     <label><strong>2. Cuidados Previos</strong></label>
                     <textarea id="text-pre" rows="2"></textarea>
                     <button onclick="updateCareText('pre_op', 'text-pre')" style="margin-bottom:15px;">Guardar</button>
-
+                    
                     <label><strong>3. Cuidados Post-Operatorios</strong></label>
                     <textarea id="text-post" rows="2"></textarea>
                     <button onclick="updateCareText('post_op', 'text-post')">Guardar</button>
@@ -282,7 +282,7 @@
             listenToCollection('locations', 'cities-list', (d) => `<b>${d.name}</b><br><small>${d.address}</small>`);
             listenToCollection('services', 'services-list', (d) => `<b>${d.name}</b> - $${d.price}`);
             listenToCollection('staff', 'staff-list', (d) => `<b>${d.name}</b> (${d.role})`);
-
+            
             // Content Listeners
             listenToCollection('journeys', 'journey-list', (d) => `<b>${d.city}</b> - ${d.dateText}`);
             listenToCollection('gallery', 'gallery-list', (d) => `<b>${d.title}</b>`);
@@ -312,7 +312,7 @@
                 });
             });
         }
-
+        
         async function populateSelect(colName, selectId) {
             const s = document.getElementById(selectId);
             s.innerHTML = "";
@@ -389,7 +389,7 @@
                     status: 'free', // free, booked
                     timestamp: currentTime.getTime()
                 });
-
+                
                 currentTime.setMinutes(currentTime.getMinutes() + duration);
                 count++;
             }
@@ -404,9 +404,9 @@
 
         function listenToSlots() {
             // Shows slots for next 30 days roughly
-            const q = query(collection(db, "slots"), orderBy("timestamp", "asc"));
+            const q = query(collection(db, "slots"), orderBy("timestamp", "asc")); 
             // In a real app, we would filter where("timestamp", ">", Date.now())
-
+            
             onSnapshot(q, (snap) => {
                 const div = document.getElementById('slots-list');
                 div.innerHTML = "";
@@ -417,7 +417,7 @@
                     const data = d.data();
                     // Status Badge
                     const badge = data.status === 'free' ? '<span class="status-badge free">Libre</span>' : '<span class="status-badge booked">Ocupado</span>';
-
+                    
                     div.innerHTML += `
                         <div class="item">
                             <div>
@@ -462,13 +462,13 @@
 
         // --- OLD CONTENT (Cuidados/Jornadas/Galería) ---
         // (Re-implementing the handlers from the previous file to ensure they work in the new structure)
-
+        
         window.updateCareText = async (docId, inputId) => {
             const content = document.getElementById(inputId).value;
             await setDoc(doc(db, "care_info", docId), { content });
             alert("Texto actualizado.");
         }
-
+        
         async function loadCareTexts() {
             const docs = ['instructions', 'pre_op', 'post_op'];
             const inputs = ['text-instructions', 'text-pre', 'text-post'];
@@ -498,7 +498,7 @@
             const f2 = document.getElementById('file-after').files[0];
             const title = document.getElementById('gallery-title').value;
             const category = document.getElementById('gallery-category').value;
-
+            
             try {
                  const u1 = await getDownloadURL((await uploadBytes(ref(storage, `gallery/${Date.now()}_b`), f1)).ref);
                  const u2 = await getDownloadURL((await uploadBytes(ref(storage, `gallery/${Date.now()}_a`), f2)).ref);
