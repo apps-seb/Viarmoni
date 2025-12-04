@@ -3,124 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Viarmoni - Panel Completo</title>
+    <title>Admin Viarmoni - Panel de Gestión</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         :root {
-            --bg-light: #fdfaf9;
+            --bg-light: #f4f7f6;
             --primary-gold: #c5a984;
-            --text-dark: #4a4a4a;
+            --text-dark: #333;
+            --sidebar-width: 250px;
             --danger: #b76e79;
+            --success: #6ba18b;
         }
-        body { font-family: "Montserrat", sans-serif; background: var(--bg-light); color: var(--text-dark); padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
+        body { font-family: "Montserrat", sans-serif; background: var(--bg-light); color: var(--text-dark); margin: 0; display: flex; min-height: 100vh; }
         
-        /* Login */
-        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px; margin-bottom: 15px; font-family: inherit; }
-        button { background: var(--primary-gold); color: white; border: none; padding: 12px 25px; border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; }
+        /* Login Overlay */
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-light); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
+        .login-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; margin-top: 5px; margin-bottom: 15px; font-family: inherit; box-sizing: border-box; }
+        button { background: var(--primary-gold); color: white; border: none; padding: 12px 25px; border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; }
         button:hover { filter: brightness(0.9); }
-        .delete-btn { background: var(--danger); width: auto; font-size: 0.8rem; padding: 5px 10px; }
 
-        /* Dashboard */
-        #dashboard { display: none; }
-        .section-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; border-top: 5px solid var(--primary-gold); }
-        h2 { margin-top: 0; color: var(--primary-gold); }
+        /* Dashboard Layout */
+        #dashboard { display: none; width: 100%; display: flex; } /* Flex container for Sidebar + Content */
+
+        /* Sidebar */
+        .sidebar { width: var(--sidebar-width); background: white; height: 100vh; position: fixed; box-shadow: 2px 0 10px rgba(0,0,0,0.05); padding-top: 20px; z-index: 100; }
+        .brand { text-align: center; margin-bottom: 30px; font-size: 1.5rem; font-weight: bold; color: var(--primary-gold); }
+        .nav-item { padding: 15px 25px; cursor: pointer; transition: 0.3s; color: #666; display: block; text-decoration: none; }
+        .nav-item:hover, .nav-item.active { background: var(--bg-light); color: var(--primary-gold); border-left: 4px solid var(--primary-gold); }
+        .nav-item i { width: 25px; text-align: center; margin-right: 10px; }
+
+        /* Main Content */
+        .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 40px; }
+
+        .section-tab { display: none; animation: fadeIn 0.3s ease; }
+        .section-tab.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); margin-bottom: 30px; }
+        .card h2 { margin-top: 0; color: var(--primary-gold); border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px; }
+
         .item-list { display: grid; gap: 10px; margin-top: 15px; }
-        .item { border: 1px solid #eee; padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; background: #fff; }
-        .loader { display: none; color: var(--primary-gold); text-align: center; margin: 10px 0; }
+        .item { border: 1px solid #eee; padding: 15px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; background: #fff; }
+        .delete-btn { background: var(--danger); width: auto; padding: 5px 12px; font-size: 0.8rem; }
+
+        /* Specific Styles */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group label { font-weight: 600; font-size: 0.9rem; color: #555; }
+        .status-badge { padding: 4px 10px; border-radius: 15px; font-size: 0.75rem; font-weight: bold; }
+        .status-badge.booked { background: #ffebee; color: var(--danger); }
+        .status-badge.free { background: #e8f5e9; color: var(--success); }
     </style>
 </head>
 <body>
 
+    <!-- LOGIN -->
     <div id="login-screen">
-        <h2>Acceso Administrativo</h2>
-        <input type="email" id="email" placeholder="Correo electrónico (admin@viarmoni.com)">
-        <input type="password" id="password" placeholder="Contraseña">
-        <button id="login-btn">Ingresar</button>
-        <p id="login-error" style="color: var(--danger); margin-top: 10px;"></p>
+        <div class="login-box">
+            <h2 style="color:var(--primary-gold)">Admin Viarmoni</h2>
+            <input type="email" id="email" placeholder="Correo electrónico">
+            <input type="password" id="password" placeholder="Contraseña">
+            <button id="login-btn">Ingresar al Panel</button>
+            <p id="login-error" style="color: var(--danger); margin-top: 10px;"></p>
+        </div>
     </div>
 
-    <div id="dashboard" class="container">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1>Panel de Control</h1>
-            <button onclick="logout()" style="width: auto; background: #333;">Salir</button>
+    <!-- DASHBOARD -->
+    <div id="dashboard" style="display:none;"> <!-- Initially hidden until auth -->
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="brand">Viarmoni</div>
+            <div class="nav-item active" onclick="switchTab('tab-reservas')"><i class="fas fa-calendar-check"></i> Reservas</div>
+            <div class="nav-item" onclick="switchTab('tab-agenda')"><i class="fas fa-clock"></i> Agenda & Cupos</div>
+            <div class="nav-item" onclick="switchTab('tab-config')"><i class="fas fa-cogs"></i> Configuración</div>
+            <div class="nav-item" onclick="switchTab('tab-content')"><i class="fas fa-edit"></i> Contenido Web</div>
+            <div class="nav-item" onclick="logout()" style="margin-top: 50px; color: var(--danger);"><i class="fas fa-sign-out-alt"></i> Salir</div>
         </div>
 
-        <div class="section-card">
-            <h2>Editar Información de Cuidados</h2>
-            <p style="font-size: 0.9rem; margin-bottom: 15px;">Edita los textos que aparecen en los modales de la app.</p>
-            
-            <label><strong>1. Instrucciones Generales</strong></label>
-            <textarea id="text-instructions" rows="4"></textarea>
-            <button onclick="updateCareText('instructions', 'text-instructions')">Guardar Instrucciones</button>
-            <br><br>
+        <!-- MAIN CONTENT AREA -->
+        <div class="main-content">
 
-            <label><strong>2. Cuidados Previos</strong></label>
-            <textarea id="text-pre" rows="4"></textarea>
-            <button onclick="updateCareText('pre_op', 'text-pre')">Guardar Previos</button>
-            <br><br>
+            <!-- TAB: RESERVAS -->
+            <div id="tab-reservas" class="section-tab active">
+                <div class="card">
+                    <h2>Próximas Citas Agendadas</h2>
+                    <div id="appointments-list" class="item-list">
+                        <p style="text-align:center; color:#999;">Cargando citas...</p>
+                    </div>
+                </div>
+            </div>
 
-            <label><strong>3. Cuidados Post-Operatorios</strong></label>
-            <textarea id="text-post" rows="4"></textarea>
-            <button onclick="updateCareText('post_op', 'text-post')">Guardar Post</button>
-        </div>
-
-        <div class="section-card">
-            <h2>Crear Jornada de Valoración</h2>
-            <form id="journey-form">
-                <label>Ciudad</label>
-                <input type="text" id="journey-city" placeholder="Ej: Medellín" required>
+            <!-- TAB: AGENDA (DISPONIBILIDAD) -->
+            <div id="tab-agenda" class="section-tab">
+                <div class="card">
+                    <h2>Crear Disponibilidad</h2>
+                    <p style="font-size:0.9rem; color:#666;">Selecciona un profesional, una ciudad y las fechas para abrir agenda.</p>
+                    <form id="availability-form" class="grid-2">
+                        <div class="form-group">
+                            <label>Ciudad</label>
+                            <select id="avail-city" required><option>Cargando...</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Especialista</label>
+                            <select id="avail-staff" required><option>Cargando...</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Fecha</label>
+                            <input type="date" id="avail-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Hora Inicio - Fin</label>
+                            <div style="display:flex; gap:10px;">
+                                <input type="time" id="avail-start" value="09:00">
+                                <input type="time" id="avail-end" value="18:00">
+                            </div>
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Duración del turno (minutos)</label>
+                            <input type="number" id="avail-duration" value="30">
+                        </div>
+                        <button type="submit" style="grid-column: 1 / -1;">Generar Cupos Disponibles</button>
+                    </form>
+                </div>
                 
-                <label>Procedimiento Principal (Etiqueta)</label>
-                <select id="journey-procedure" required>
-                    <option value="Valoración General">Valoración General</option>
-                    <option value="Lipopapada">Lipopapada</option>
-                    <option value="Bichectomía">Bichectomía</option>
-                    <option value="Rinomodelación">Rinomodelación</option>
-                    <option value="Labios">Aumento de Labios</option>
-                    <option value="Full Face">Full Face (Armonización Completa)</option>
-                </select>
+                <div class="card">
+                    <h2>Cupos Generados (Próximos 30 días)</h2>
+                    <div id="slots-list" class="item-list"></div>
+                </div>
+            </div>
 
-                <label>Fechas</label>
-                <input type="text" id="journey-date" placeholder="Ej: 20 y 21 de Enero" required>
+            <!-- TAB: CONFIGURACIÓN (CRUD) -->
+            <div id="tab-config" class="section-tab">
                 
-                <label>Descripción</label>
-                <textarea id="journey-desc" rows="3" placeholder="Ej: Cupos limitados en zona El Poblado..." required></textarea>
-                
-                <button type="submit">Publicar Jornada</button>
-            </form>
-            <h3>Jornadas Activas</h3>
-            <div id="journey-list" class="item-list"></div>
-        </div>
+                <!-- 1. CIUDADES -->
+                <div class="card">
+                    <h2>Gestión de Ciudades</h2>
+                    <form id="city-form" style="display:flex; gap:10px;">
+                        <input type="text" id="city-name" placeholder="Nombre Ciudad (Ej: Medellín)" required>
+                        <input type="text" id="city-address" placeholder="Dirección Sede" required>
+                        <button type="submit" style="width:auto;">Agregar</button>
+                    </form>
+                    <div id="cities-list" class="item-list"></div>
+                </div>
 
-        <div class="section-card">
-            <h2>Subir Transformación (Galería)</h2>
-            <form id="gallery-form">
-                <input type="text" id="gallery-title" placeholder="Título (Ej: Rinomodelación)" required>
-                <select id="gallery-category" required>
-                    <option value="Rinomodelación">Rinomodelación</option>
-                    <option value="Labios">Labios</option>
-                    <option value="Lipopapada">Lipopapada</option>
-                    <option value="Bichectomía">Bichectomía</option>
-                    <option value="Otros">Otros</option>
-                </select>
-                <label>Foto ANTES</label>
-                <input type="file" id="file-before" accept="image/*" required>
-                <label>Foto DESPUÉS</label>
-                <input type="file" id="file-after" accept="image/*" required>
-                <div id="gallery-loader" class="loader">Subiendo...</div>
-                <button type="submit">Publicar Foto</button>
-            </form>
-            <h3>Galería Activa</h3>
-            <div id="gallery-list" class="item-list"></div>
+                <!-- 2. SERVICIOS -->
+                <div class="card">
+                    <h2>Gestión de Procedimientos</h2>
+                    <form id="service-form" class="grid-2">
+                        <input type="text" id="service-name" placeholder="Nombre Procedimiento" required>
+                        <input type="number" id="service-price" placeholder="Precio Estimado" required>
+                        <input type="number" id="service-deposit" placeholder="Valor Depósito" required>
+                        <input type="number" id="service-duration" placeholder="Duración (min)" value="30">
+                        <button type="submit" style="grid-column: 1 / -1;">Guardar Procedimiento</button>
+                    </form>
+                    <div id="services-list" class="item-list"></div>
+                </div>
+
+                <!-- 3. STAFF -->
+                <div class="card">
+                    <h2>Gestión de Personal</h2>
+                    <form id="staff-form" style="display:flex; gap:10px;">
+                        <input type="text" id="staff-name" placeholder="Nombre Completo" required>
+                        <input type="text" id="staff-role" placeholder="Cargo/Especialidad" required>
+                        <button type="submit" style="width:auto;">Agregar</button>
+                    </form>
+                    <div id="staff-list" class="item-list"></div>
+                </div>
+            </div>
+
+            <!-- TAB: CONTENIDO WEB (LO ANTIGUO) -->
+            <div id="tab-content" class="section-tab">
+                <div class="card">
+                    <h2>Editar Información de Cuidados</h2>
+                    <label><strong>1. Instrucciones Generales</strong></label>
+                    <textarea id="text-instructions" rows="2"></textarea>
+                    <button onclick="updateCareText('instructions', 'text-instructions')" style="margin-bottom:15px;">Guardar</button>
+
+                    <label><strong>2. Cuidados Previos</strong></label>
+                    <textarea id="text-pre" rows="2"></textarea>
+                    <button onclick="updateCareText('pre_op', 'text-pre')" style="margin-bottom:15px;">Guardar</button>
+
+                    <label><strong>3. Cuidados Post-Operatorios</strong></label>
+                    <textarea id="text-post" rows="2"></textarea>
+                    <button onclick="updateCareText('post_op', 'text-post')">Guardar</button>
+                </div>
+
+                <div class="card">
+                    <h2>Jornadas (Página de Inicio)</h2>
+                    <form id="journey-form">
+                        <input type="text" id="journey-city" placeholder="Ciudad" required>
+                        <input type="text" id="journey-date" placeholder="Fecha Texto" required>
+                        <input type="text" id="journey-procedure" placeholder="Procedimiento (Etiqueta)" required>
+                        <textarea id="journey-desc" placeholder="Descripción breve" required></textarea>
+                        <button type="submit">Publicar Jornada</button>
+                    </form>
+                    <div id="journey-list" class="item-list"></div>
+                </div>
+
+                <div class="card">
+                    <h2>Galería Antes/Después</h2>
+                    <form id="gallery-form">
+                        <input type="text" id="gallery-title" placeholder="Título" required>
+                        <select id="gallery-category" required>
+                            <option value="Rinomodelación">Rinomodelación</option>
+                            <option value="Labios">Labios</option>
+                            <option value="Lipopapada">Lipopapada</option>
+                            <option value="Bichectomía">Bichectomía</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                        <label>Foto ANTES</label><input type="file" id="file-before" accept="image/*" required>
+                        <label>Foto DESPUÉS</label><input type="file" id="file-after" accept="image/*" required>
+                        <button type="submit">Subir Transformación</button>
+                    </form>
+                    <div id="gallery-list" class="item-list"></div>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, addDoc, doc, setDoc, getDoc, deleteDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, doc, setDoc, getDoc, deleteDoc, query, orderBy, where, onSnapshot, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
         const firebaseConfig = {
@@ -137,14 +244,12 @@
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        // --- AUTH ---
+        // --- AUTH LOGIC ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('dashboard').style.display = 'block';
-                loadJourneys();
-                loadGallery();
-                loadCareTexts();
+                document.getElementById('dashboard').style.display = 'flex';
+                initDashboard();
             } else {
                 document.getElementById('login-screen').style.display = 'flex';
                 document.getElementById('dashboard').style.display = 'none';
@@ -157,88 +262,252 @@
         });
         window.logout = () => signOut(auth);
 
-        // --- 1. CUIDADOS (TEXTOS) ---
+        // --- TAB SWITCHING ---
+        window.switchTab = (tabId) => {
+            document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            
+            // Highlight active nav item
+            const navs = document.querySelectorAll('.nav-item');
+            if(tabId === 'tab-reservas') navs[0].classList.add('active');
+            if(tabId === 'tab-agenda') navs[1].classList.add('active');
+            if(tabId === 'tab-config') navs[2].classList.add('active');
+            if(tabId === 'tab-content') navs[3].classList.add('active');
+        };
+
+        // --- INITIALIZATION ---
+        function initDashboard() {
+            // Config Listeners
+            listenToCollection('locations', 'cities-list', (d) => `<b>${d.name}</b><br><small>${d.address}</small>`);
+            listenToCollection('services', 'services-list', (d) => `<b>${d.name}</b> - $${d.price}`);
+            listenToCollection('staff', 'staff-list', (d) => `<b>${d.name}</b> (${d.role})`);
+
+            // Content Listeners
+            listenToCollection('journeys', 'journey-list', (d) => `<b>${d.city}</b> - ${d.dateText}`);
+            listenToCollection('gallery', 'gallery-list', (d) => `<b>${d.title}</b>`);
+            loadCareTexts();
+
+            // Populate Selects
+            populateSelect('locations', 'avail-city');
+            populateSelect('staff', 'avail-staff');
+
+            // Load Slots & Appointments
+            listenToSlots();
+            listenToAppointments();
+        }
+
+        // --- GENERIC CRUD ---
+        function listenToCollection(colName, elementId, formatFn) {
+            onSnapshot(collection(db, colName), (snap) => {
+                const el = document.getElementById(elementId);
+                el.innerHTML = "";
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    el.innerHTML += `
+                        <div class="item">
+                            <div>${formatFn(data)}</div>
+                            <button class="delete-btn" onclick="deleteDocById('${colName}', '${doc.id}')">Eliminar</button>
+                        </div>`;
+                });
+            });
+        }
+
+        async function populateSelect(colName, selectId) {
+            const s = document.getElementById(selectId);
+            s.innerHTML = "";
+            const snap = await getDocs(collection(db, colName));
+            snap.forEach(d => {
+                const op = document.createElement('option');
+                op.value = d.data().name; // Storing name for simplicity in this small app
+                op.innerText = d.data().name;
+                s.appendChild(op);
+            });
+        }
+
+        window.deleteDocById = async (col, id) => {
+            if(confirm('¿Estás seguro de eliminar este elemento?')) {
+                await deleteDoc(doc(db, col, id));
+            }
+        };
+
+        // --- CONFIG SUBMITS ---
+        document.getElementById('city-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, 'locations'), {
+                name: document.getElementById('city-name').value,
+                address: document.getElementById('city-address').value
+            });
+            e.target.reset();
+        });
+
+        document.getElementById('service-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, 'services'), {
+                name: document.getElementById('service-name').value,
+                price: document.getElementById('service-price').value,
+                deposit: document.getElementById('service-deposit').value,
+                duration: document.getElementById('service-duration').value
+            });
+            e.target.reset();
+        });
+
+        document.getElementById('staff-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await addDoc(collection(db, 'staff'), {
+                name: document.getElementById('staff-name').value,
+                role: document.getElementById('staff-role').value
+            });
+            e.target.reset();
+            populateSelect('staff', 'avail-staff'); // refresh
+        });
+
+        // --- AGENDA & SLOTS LOGIC ---
+        document.getElementById('availability-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const city = document.getElementById('avail-city').value;
+            const staff = document.getElementById('avail-staff').value;
+            const date = document.getElementById('avail-date').value;
+            const start = document.getElementById('avail-start').value;
+            const end = document.getElementById('avail-end').value;
+            const duration = parseInt(document.getElementById('avail-duration').value);
+
+            // Generate slots
+            const batch = writeBatch(db);
+            let currentTime = new Date(`${date}T${start}`);
+            const endTime = new Date(`${date}T${end}`);
+
+            let count = 0;
+            while(currentTime < endTime) {
+                const timeStr = currentTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false});
+                const ref = doc(collection(db, "slots")); // Auto-ID
+                batch.set(ref, {
+                    city: city,
+                    staff: staff,
+                    date: date,
+                    time: timeStr,
+                    status: 'free', // free, booked
+                    timestamp: currentTime.getTime()
+                });
+
+                currentTime.setMinutes(currentTime.getMinutes() + duration);
+                count++;
+            }
+
+            try {
+                await batch.commit();
+                alert(`Se generaron ${count} cupos para el ${date}`);
+            } catch(err) {
+                alert("Error generando cupos: " + err.message);
+            }
+        });
+
+        function listenToSlots() {
+            // Shows slots for next 30 days roughly
+            const q = query(collection(db, "slots"), orderBy("timestamp", "asc"));
+            // In a real app, we would filter where("timestamp", ">", Date.now())
+
+            onSnapshot(q, (snap) => {
+                const div = document.getElementById('slots-list');
+                div.innerHTML = "";
+                // Limit to 50 for performance in this view
+                let i = 0;
+                snap.forEach(d => {
+                    if(i++ > 50) return;
+                    const data = d.data();
+                    // Status Badge
+                    const badge = data.status === 'free' ? '<span class="status-badge free">Libre</span>' : '<span class="status-badge booked">Ocupado</span>';
+
+                    div.innerHTML += `
+                        <div class="item">
+                            <div>
+                                <strong>${data.date} - ${data.time}</strong><br>
+                                ${data.staff} en ${data.city}
+                            </div>
+                            <div>
+                                ${badge}
+                                <button class="delete-btn" onclick="deleteDocById('slots', '${d.id}')">X</button>
+                            </div>
+                        </div>`;
+                });
+            });
+        }
+
+        // --- APPOINTMENTS LOGIC ---
+        function listenToAppointments() {
+             const q = query(collection(db, "appointments"), orderBy("timestamp", "desc"));
+             onSnapshot(q, (snap) => {
+                const div = document.getElementById('appointments-list');
+                div.innerHTML = "";
+                if(snap.empty) { div.innerHTML = "<p>No hay citas agendadas.</p>"; return; }
+
+                snap.forEach(d => {
+                    const data = d.data();
+                    div.innerHTML += `
+                        <div class="item" style="display:block;">
+                            <div style="display:flex; justify-content:space-between; border-bottom:1px solid #eee; padding-bottom:5px; margin-bottom:5px;">
+                                <strong>${data.date} ${data.time}</strong>
+                                <span class="status-badge ${data.status === 'confirmed' ? 'free' : 'booked'}">${data.status || 'Pendiente'}</span>
+                            </div>
+                            <div>
+                                <i class="fas fa-user"></i> ${data.clientName}<br>
+                                <i class="fas fa-phone"></i> ${data.clientPhone}<br>
+                                <i class="fas fa-syringe"></i> ${data.serviceName} ($${data.serviceDeposit} Deposito)<br>
+                                <small>Creado: ${new Date(data.timestamp).toLocaleString()}</small>
+                            </div>
+                        </div>`;
+                });
+             });
+        }
+
+        // --- OLD CONTENT (Cuidados/Jornadas/Galería) ---
+        // (Re-implementing the handlers from the previous file to ensure they work in the new structure)
+
+        window.updateCareText = async (docId, inputId) => {
+            const content = document.getElementById(inputId).value;
+            await setDoc(doc(db, "care_info", docId), { content });
+            alert("Texto actualizado.");
+        }
+
         async function loadCareTexts() {
             const docs = ['instructions', 'pre_op', 'post_op'];
             const inputs = ['text-instructions', 'text-pre', 'text-post'];
-            
             for(let i=0; i<docs.length; i++) {
                 const snap = await getDoc(doc(db, "care_info", docs[i]));
                 if(snap.exists()) document.getElementById(inputs[i]).value = snap.data().content || "";
             }
         }
 
-        window.updateCareText = async (docId, inputId) => {
-            const content = document.getElementById(inputId).value;
-            try {
-                await setDoc(doc(db, "care_info", docId), { content });
-                alert("Texto actualizado correctamente.");
-            } catch(e) { alert("Error: " + e.message); }
-        }
-
-        // --- 2. JORNADAS ---
         document.getElementById('journey-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const city = document.getElementById('journey-city').value;
-            const procedure = document.getElementById('journey-procedure').value; // NUEVO
-            const dateText = document.getElementById('journey-date').value;
-            const desc = document.getElementById('journey-desc').value;
-
-            try {
-                await addDoc(collection(db, "journeys"), { city, procedure, dateText, desc, timestamp: Date.now() });
-                e.target.reset();
-                alert("Jornada creada");
-            } catch(e) { alert(e.message); }
+            await addDoc(collection(db, "journeys"), {
+                city: document.getElementById('journey-city').value,
+                dateText: document.getElementById('journey-date').value,
+                procedure: document.getElementById('journey-procedure').value,
+                desc: document.getElementById('journey-desc').value,
+                timestamp: Date.now()
+            });
+            e.target.reset();
+            alert("Jornada creada");
         });
 
-        function loadJourneys() {
-            onSnapshot(query(collection(db, "journeys"), orderBy("timestamp", "desc")), (snap) => {
-                const div = document.getElementById('journey-list');
-                div.innerHTML = "";
-                snap.forEach(d => {
-                    const data = d.data();
-                    const item = document.createElement('div');
-                    item.className = "item";
-                    item.innerHTML = `<div><strong>${data.city}</strong> (${data.procedure})<br><small>${data.dateText}</small></div><button class="delete-btn" onclick="del('journeys','${d.id}')">X</button>`;
-                    div.appendChild(item);
-                });
-            });
-        }
-
-        // --- 3. GALERÍA ---
         document.getElementById('gallery-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            document.getElementById('gallery-loader').style.display = 'block';
-            const title = document.getElementById('gallery-title').value;
-            const category = document.getElementById('gallery-category').value;
+            // Assuming image upload logic is same as before
             const f1 = document.getElementById('file-before').files[0];
             const f2 = document.getElementById('file-after').files[0];
+            const title = document.getElementById('gallery-title').value;
+            const category = document.getElementById('gallery-category').value;
 
             try {
-                const u1 = await getDownloadURL((await uploadBytes(ref(storage, `gallery/${Date.now()}_b`), f1)).ref);
-                const u2 = await getDownloadURL((await uploadBytes(ref(storage, `gallery/${Date.now()}_a`), f2)).ref);
-                await addDoc(collection(db, "gallery"), { title, category, beforeUrl: u1, afterUrl: u2, timestamp: Date.now() });
-                e.target.reset();
-                alert("Foto subida");
-            } catch(e) { alert(e.message); }
-            document.getElementById('gallery-loader').style.display = 'none';
+                 const u1 = await getDownloadURL((await uploadBytes(ref(storage, `gallery/${Date.now()}_b`), f1)).ref);
+                 const u2 = await getDownloadURL((await uploadBytes(ref(storage, `gallery/${Date.now()}_a`), f2)).ref);
+                 await addDoc(collection(db, "gallery"), { title, category, beforeUrl: u1, afterUrl: u2, timestamp: Date.now() });
+                 alert("Foto subida");
+                 e.target.reset();
+            } catch(err) { alert(err.message); }
         });
 
-        function loadGallery() {
-            onSnapshot(query(collection(db, "gallery"), orderBy("timestamp", "desc")), (snap) => {
-                const div = document.getElementById('gallery-list');
-                div.innerHTML = "";
-                snap.forEach(d => {
-                    const data = d.data();
-                    const item = document.createElement('div');
-                    item.className = "item";
-                    item.innerHTML = `<div style="display:flex;align-items:center"><img src="${data.beforeUrl}" style="width:40px;height:40px;margin-right:10px;object-fit:cover"><b>${data.title}</b></div><button class="delete-btn" onclick="del('gallery','${d.id}')">X</button>`;
-                    div.appendChild(item);
-                });
-            });
-        }
-
-        window.del = async (col, id) => { if(confirm("¿Borrar?")) await deleteDoc(doc(db, col, id)); }
     </script>
 </body>
 </html>
