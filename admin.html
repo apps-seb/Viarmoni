@@ -6,6 +6,8 @@
     <title>Admin Viarmoni - Panel de Gestión</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
     <style>
         :root {
             --bg-light: #f4f7f6;
@@ -28,15 +30,40 @@
         #dashboard { display: none; width: 100%; display: flex; } /* Flex container for Sidebar + Content */
         
         /* Sidebar */
-        .sidebar { width: var(--sidebar-width); background: white; height: 100vh; position: fixed; box-shadow: 2px 0 10px rgba(0,0,0,0.05); padding-top: 20px; z-index: 100; }
+        .sidebar { width: var(--sidebar-width); background: white; height: 100vh; position: fixed; box-shadow: 2px 0 10px rgba(0,0,0,0.05); padding-top: 20px; z-index: 100; transition: transform 0.3s ease; }
         .brand { text-align: center; margin-bottom: 30px; font-size: 1.5rem; font-weight: bold; color: var(--primary-gold); }
         .nav-item { padding: 15px 25px; cursor: pointer; transition: 0.3s; color: #666; display: block; text-decoration: none; }
         .nav-item:hover, .nav-item.active { background: var(--bg-light); color: var(--primary-gold); border-left: 4px solid var(--primary-gold); }
         .nav-item i { width: 25px; text-align: center; margin-right: 10px; }
 
+        /* Mobile Header */
+        .mobile-header { display: none; align-items: center; justify-content: space-between; padding: 15px 20px; background: white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 90; }
+        .hamburger { background: none; border: none; font-size: 1.5rem; color: var(--primary-gold); cursor: pointer; }
+        .mobile-brand { font-size: 1.2rem; font-weight: bold; color: var(--primary-gold); }
+
+        /* Overlay */
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 99; display: none; opacity: 0; transition: opacity 0.3s ease; }
+        .sidebar-overlay.active { display: block; opacity: 1; }
+
+        /* Cropper Modal */
+        #cropper-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .cropper-container { background: white; padding: 20px; width: 90%; max-width: 600px; height: 80vh; display: flex; flex-direction: column; border-radius: 10px; }
+        .cropper-wrapper { flex: 1; overflow: hidden; background: #eee; position: relative; }
+        .cropper-wrapper img { max-width: 100%; }
+        .cropper-controls { margin-top: 15px; display: flex; justify-content: flex-end; gap: 10px; }
+
         /* Main Content */
         .main-content { margin-left: var(--sidebar-width); flex: 1; padding: 40px; }
         
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.active { transform: translateX(0); }
+            .main-content { margin-left: 0; padding: 20px; }
+            .mobile-header { display: flex; }
+            #dashboard { display: block; } /* Override flex */
+        }
+
         .section-tab { display: none; animation: fadeIn 0.3s ease; }
         .section-tab.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -72,6 +99,16 @@
     <!-- DASHBOARD -->
     <div id="dashboard" style="display:none;"> <!-- Initially hidden until auth -->
         
+        <!-- MOBILE HEADER -->
+        <div class="mobile-header">
+            <button class="hamburger" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+            <div class="mobile-brand">Viarmoni Admin</div>
+            <div style="width:24px"></div> <!-- Spacer -->
+        </div>
+
+        <!-- OVERLAY -->
+        <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
         <!-- SIDEBAR -->
         <div class="sidebar">
             <div class="brand">Viarmoni</div>
@@ -79,6 +116,7 @@
             <div class="nav-item" onclick="switchTab('tab-agenda')"><i class="fas fa-clock"></i> Agenda & Cupos</div>
             <div class="nav-item" onclick="switchTab('tab-config')"><i class="fas fa-cogs"></i> Configuración</div>
             <div class="nav-item" onclick="switchTab('tab-content')"><i class="fas fa-edit"></i> Contenido Web</div>
+            <div class="nav-item" onclick="switchTab('tab-banners')"><i class="fas fa-images"></i> Banners Inicio</div>
             <div class="nav-item" onclick="logout()" style="margin-top: 50px; color: var(--danger);"><i class="fas fa-sign-out-alt"></i> Salir</div>
         </div>
 
@@ -173,6 +211,19 @@
                 </div>
             </div>
 
+            <!-- TAB: BANNERS INICIO -->
+            <div id="tab-banners" class="section-tab">
+                <div class="card">
+                    <h2>Banners del Carrusel de Inicio</h2>
+                    <p style="color:#666; margin-bottom:15px;">Sube imágenes para el carrusel principal. Se recomienda formato horizontal (ej. 1200x600).</p>
+
+                    <button onclick="document.getElementById('banner-input').click()" style="width: auto;"><i class="fas fa-plus"></i> Nuevo Banner</button>
+                    <input type="file" id="banner-input" accept="image/*" style="display:none">
+
+                    <div id="banners-list" class="item-list" style="margin-top:20px"></div>
+                </div>
+            </div>
+
             <!-- TAB: CONTENIDO WEB (LO ANTIGUO) -->
             <div id="tab-content" class="section-tab">
                 <div class="card">
@@ -224,11 +275,25 @@
         </div>
     </div>
 
+    <!-- CROPPER MODAL -->
+    <div id="cropper-modal">
+        <div class="cropper-container">
+            <h3 style="margin-top:0">Recortar Banner</h3>
+            <div class="cropper-wrapper">
+                <img id="image-to-crop" src="">
+            </div>
+            <div class="cropper-controls">
+                <button onclick="closeCropper()" style="background:#ccc;color:#333;width:auto">Cancelar</button>
+                <button onclick="cropAndUpload()" style="width:auto">Recortar y Subir</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, doc, setDoc, getDoc, deleteDoc, query, orderBy, where, onSnapshot, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBkcFFE_E-GzSVVUdfCew4fscnV6PHkH0I",
@@ -262,6 +327,12 @@
         });
         window.logout = () => signOut(auth);
 
+        // --- RESPONSIVE SIDEBAR ---
+        window.toggleSidebar = () => {
+            document.querySelector('.sidebar').classList.toggle('active');
+            document.querySelector('.sidebar-overlay').classList.toggle('active');
+        };
+
         // --- TAB SWITCHING ---
         window.switchTab = (tabId) => {
             document.querySelectorAll('.section-tab').forEach(t => t.classList.remove('active'));
@@ -274,6 +345,10 @@
             if(tabId === 'tab-agenda') navs[1].classList.add('active');
             if(tabId === 'tab-config') navs[2].classList.add('active');
             if(tabId === 'tab-content') navs[3].classList.add('active');
+            if(tabId === 'tab-banners') navs[4].classList.add('active');
+
+            // Close sidebar on mobile after selection
+            if(window.innerWidth <= 768) toggleSidebar();
         };
 
         // --- INITIALIZATION ---
@@ -286,6 +361,7 @@
             // Content Listeners
             listenToCollection('journeys', 'journey-list', (d) => `<b>${d.city}</b> - ${d.dateText}`);
             listenToCollection('gallery', 'gallery-list', (d) => `<b>${d.title}</b>`);
+            listenToBanners(); // New
             loadCareTexts();
 
             // Populate Selects
@@ -330,6 +406,70 @@
                 await deleteDoc(doc(db, col, id));
             }
         };
+
+        // --- BANNERS LOGIC ---
+        let cropper;
+        const bannerInput = document.getElementById('banner-input');
+
+        bannerInput.addEventListener('change', (e) => {
+            if(e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('image-to-crop').src = e.target.result;
+                    document.getElementById('cropper-modal').style.display = 'flex';
+                    if(cropper) cropper.destroy();
+                    cropper = new Cropper(document.getElementById('image-to-crop'), {
+                        aspectRatio: 16 / 9,
+                        viewMode: 1
+                    });
+                }
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        window.closeCropper = () => {
+            document.getElementById('cropper-modal').style.display = 'none';
+            bannerInput.value = '';
+            if(cropper) cropper.destroy();
+        }
+
+        window.cropAndUpload = () => {
+            if(!cropper) return;
+            const canvas = cropper.getCroppedCanvas({ width: 1200, height: 675 }); // Resize to sane default
+            canvas.toBlob(async (blob) => {
+                try {
+                    const storageRef = ref(storage, `banners/${Date.now()}.jpg`);
+                    await uploadBytes(storageRef, blob);
+                    const url = await getDownloadURL(storageRef);
+
+                    await addDoc(collection(db, 'banners'), {
+                        url: url,
+                        timestamp: Date.now()
+                    });
+
+                    alert('Banner subido correctamente');
+                    closeCropper();
+                } catch(e) {
+                    console.error(e);
+                    alert('Error subiendo banner');
+                }
+            }, 'image/jpeg', 0.8);
+        }
+
+        function listenToBanners() {
+            onSnapshot(query(collection(db, 'banners'), orderBy('timestamp', 'desc')), (snap) => {
+                const div = document.getElementById('banners-list');
+                div.innerHTML = "";
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    div.innerHTML += `
+                        <div class="item">
+                            <img src="${data.url}" style="height:60px; border-radius:4px;">
+                            <button class="delete-btn" onclick="deleteDocById('banners', '${doc.id}')">Eliminar</button>
+                        </div>`;
+                });
+            });
+        }
 
         // --- CONFIG SUBMITS ---
         document.getElementById('city-form').addEventListener('submit', async (e) => {
