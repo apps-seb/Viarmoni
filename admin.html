@@ -117,6 +117,7 @@
             <div class="nav-item" onclick="switchTab('tab-config')"><i class="fas fa-cogs"></i> Configuración</div>
             <div class="nav-item" onclick="switchTab('tab-content')"><i class="fas fa-edit"></i> Contenido Web</div>
             <div class="nav-item" onclick="switchTab('tab-banners')"><i class="fas fa-images"></i> Banners Inicio</div>
+            <div class="nav-item" onclick="switchTab('tab-categories')"><i class="fas fa-th-large"></i> Categorías</div>
             <div class="nav-item" onclick="logout()" style="margin-top: 50px; color: var(--danger);"><i class="fas fa-sign-out-alt"></i> Salir</div>
         </div>
 
@@ -221,6 +222,19 @@
                     <input type="file" id="banner-input" accept="image/*" style="display:none">
 
                     <div id="banners-list" class="item-list" style="margin-top:20px"></div>
+                </div>
+            </div>
+
+            <!-- TAB: CATEGORÍAS (NUEVO) -->
+            <div id="tab-categories" class="section-tab">
+                <div class="card">
+                    <h2>Categorías de Procedimientos</h2>
+                    <p style="color:#666; margin-bottom:15px;">Sube imágenes para el carrusel de categorías (Formato 1:1, Cuadrado). Ejemplo: Lipopapada, Bichectomía.</p>
+                    
+                    <button onclick="document.getElementById('cat-input').click()" style="width: auto;"><i class="fas fa-plus"></i> Nueva Categoría</button>
+                    <input type="file" id="cat-input" accept="image/*" style="display:none">
+
+                    <div id="categories-list" class="item-list" style="margin-top:20px"></div>
                 </div>
             </div>
 
@@ -356,6 +370,7 @@
             if(tabId === 'tab-config') navs[2].classList.add('active');
             if(tabId === 'tab-content') navs[3].classList.add('active');
             if(tabId === 'tab-banners') navs[4].classList.add('active');
+            if(tabId === 'tab-categories') navs[5].classList.add('active');
 
             // Close sidebar on mobile after selection
             if(window.innerWidth <= 768) toggleSidebar();
@@ -372,6 +387,7 @@
             listenToCollection('journeys', 'journey-list', (d) => `<b>${d.city}</b> - ${d.dateText}`);
             listenToCollection('gallery', 'gallery-list', (d) => `<b>${d.title}</b>`);
             listenToBanners(); // New
+            listenToCategories(); // New Categories
             loadCareTexts();
 
             // Populate Selects
@@ -417,12 +433,13 @@
             }
         };
 
-        // --- BANNERS & LOGO LOGIC ---
+        // --- BANNERS, LOGO & CATEGORIES LOGIC ---
         let cropper;
-        let currentUploadType = 'banner'; // 'banner' or 'logo'
+        let currentUploadType = 'banner'; // 'banner', 'logo', or 'category'
         
         const bannerInput = document.getElementById('banner-input');
         const logoInput = document.getElementById('logo-input');
+        const catInput = document.getElementById('cat-input');
         
         function setupCropper(inputElement, type) {
             inputElement.addEventListener('change', (e) => {
@@ -434,7 +451,10 @@
                         document.getElementById('cropper-modal').style.display = 'flex';
                         if(cropper) cropper.destroy();
                         
-                        const aspectRatio = type === 'banner' ? 16 / 9 : NaN; // NaN = Free crop for logo
+                        let aspectRatio;
+                        if (type === 'banner') aspectRatio = 16 / 9;
+                        else if (type === 'category') aspectRatio = 1 / 1;
+                        else aspectRatio = NaN; // Free crop for logo
                         
                         cropper = new Cropper(document.getElementById('image-to-crop'), {
                             aspectRatio: aspectRatio,
@@ -448,33 +468,44 @@
 
         setupCropper(bannerInput, 'banner');
         setupCropper(logoInput, 'logo');
+        setupCropper(catInput, 'category');
 
         window.closeCropper = () => {
             document.getElementById('cropper-modal').style.display = 'none';
             bannerInput.value = '';
             logoInput.value = '';
+            catInput.value = '';
             if(cropper) cropper.destroy();
         }
 
         window.cropAndUpload = () => {
             if(!cropper) return;
+
+            // Prompt for Category Name if applicable
+            let categoryName = "";
+            if (currentUploadType === 'category') {
+                categoryName = prompt("Nombre de la categoría (ej. Lipopapada):");
+                if (!categoryName) return; // Cancel if no name
+            }
             
             // Different dimensions based on type
-            const options = currentUploadType === 'banner' 
-                ? { width: 1200, height: 675 } 
-                : { width: 400 }; // Logo width constraint, auto height
+            let options;
+            if (currentUploadType === 'banner') options = { width: 1200, height: 675 };
+            else if (currentUploadType === 'category') options = { width: 600, height: 600 };
+            else options = { width: 400 };
 
             const canvas = cropper.getCroppedCanvas(options);
             
             canvas.toBlob(async (blob) => {
                 try {
-                    const path = currentUploadType === 'banner' 
-                        ? `banners/${Date.now()}.jpg` 
-                        : `settings/logo_${Date.now()}.png`; // Use PNG for transparency if supported/converted (canvas toBlob default is png if not specified, but here we specify below)
+                    let path;
+                    if (currentUploadType === 'banner') path = `banners/${Date.now()}.jpg`;
+                    else if (currentUploadType === 'category') path = `categories/${Date.now()}.jpg`;
+                    else path = `settings/logo_${Date.now()}.png`;
                     
                     const storageRef = ref(storage, path);
-                    // Upload as PNG for logo to keep transparency if original had it (though jpeg arg below might kill it, let's switch)
-                    const format = currentUploadType === 'banner' ? 'image/jpeg' : 'image/png';
+                    // Use JPEG for banners/categories, PNG for logo
+                    const format = (currentUploadType === 'banner' || currentUploadType === 'category') ? 'image/jpeg' : 'image/png';
                     
                     // Re-blob if format changed
                     const finalBlob = await new Promise(r => canvas.toBlob(r, format, 0.9));
@@ -488,6 +519,13 @@
                             timestamp: Date.now()
                         });
                         alert('Banner subido correctamente');
+                    } else if (currentUploadType === 'category') {
+                        await addDoc(collection(db, 'categories'), {
+                            name: categoryName,
+                            url: url,
+                            timestamp: Date.now()
+                        });
+                        alert('Categoría creada correctamente');
                     } else {
                         // Save logo to settings/global
                         await setDoc(doc(db, 'settings', 'global'), { logoUrl: url }, { merge: true });
@@ -500,7 +538,7 @@
                     console.error(e);
                     alert('Error subiendo imagen');
                 }
-            }, currentUploadType === 'banner' ? 'image/jpeg' : 'image/png', 0.9);
+            }, (currentUploadType === 'banner' || currentUploadType === 'category') ? 'image/jpeg' : 'image/png', 0.9);
         }
 
         function listenToBanners() {
@@ -513,6 +551,24 @@
                         <div class="item">
                             <img src="${data.url}" style="height:60px; border-radius:4px;">
                             <button class="delete-btn" onclick="deleteDocById('banners', '${doc.id}')">Eliminar</button>
+                        </div>`;
+                });
+            });
+        }
+
+        function listenToCategories() {
+            onSnapshot(query(collection(db, 'categories'), orderBy('timestamp', 'desc')), (snap) => {
+                const div = document.getElementById('categories-list');
+                div.innerHTML = "";
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    div.innerHTML += `
+                        <div class="item">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <img src="${data.url}" style="height:60px; width:60px; object-fit:cover; border-radius:4px;">
+                                <strong>${data.name}</strong>
+                            </div>
+                            <button class="delete-btn" onclick="deleteDocById('categories', '${doc.id}')">Eliminar</button>
                         </div>`;
                 });
             });
