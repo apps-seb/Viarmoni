@@ -54,7 +54,13 @@
         #main-carousel .splide__slide img { width: 100%; height: 100%; object-fit: cover; }
         .hero { text-align: center; }
         .hero h1 { font-size: 2rem; color: #5a4b3a; margin-bottom: 10px; line-height: 1.2; }
-        
+
+        /* Categories Carousel */
+        .category-card { position: relative; width: 100%; padding-top: 100%; /* 1:1 Aspect Ratio */ overflow: hidden; border-radius: var(--border-radius); box-shadow: var(--shadow-light); cursor: pointer; }
+        .category-card img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+        .category-card:hover img { transform: scale(1.05); }
+        .category-title { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); color: white; text-align: center; padding: 15px 10px 10px 10px; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
+
         /* Info Cards */
         .info-cards-container { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 2rem; }
         .info-card { background: white; border-radius: var(--border-radius); padding: 1.5rem; text-align: center; box-shadow: var(--shadow-light); cursor: pointer; border: 1px solid rgba(0,0,0,0.05); }
@@ -191,6 +197,19 @@
                     </ul>
                 </div>
             </section>
+
+            <!-- CATEGORIES CAROUSEL -->
+            <div class="container" style="margin-bottom: 30px;">
+                <h3 style="text-align:center; color:var(--primary-gold); margin-bottom:15px; font-weight:600;">Nuestros Procedimientos</h3>
+                <section id="categories-carousel" class="splide" aria-label="Categorías">
+                    <div class="splide__track">
+                        <ul class="splide__list" id="categories-list-public">
+                            <!-- Dynamic Categories -->
+                        </ul>
+                    </div>
+                </section>
+            </div>
+
             <div class="container hero">
                 <h1>Armonización Facial: Belleza que Resalta, no Transforma.</h1>
                 <p>En Viarmoni, esculpimos tu belleza natural con procedimientos mínimamente invasivos.</p>
@@ -776,6 +795,43 @@
             }
         }
 
+        // --- CARGAR CATEGORÍAS (NUEVO) ---
+        async function loadCategories() {
+            try {
+                const snap = await getDocs(query(collection(db, "categories"), orderBy("timestamp", "desc")));
+                const list = document.getElementById('categories-list-public');
+                
+                if(!snap.empty) {
+                    list.innerHTML = "";
+                    snap.forEach(d => {
+                        const data = d.data();
+                        list.innerHTML += `
+                            <li class="splide__slide">
+                                <div class="category-card" onclick="openBooking()">
+                                    <img src="${data.url}" alt="${data.name}">
+                                    <div class="category-title">${data.name}</div>
+                                </div>
+                            </li>`;
+                    });
+
+                    // Initialize Splide
+                    new Splide('#categories-carousel', {
+                        perPage: 4,
+                        gap: '1rem',
+                        pagination: false,
+                        breakpoints: {
+                            768: { perPage: 3 },
+                            480: { perPage: 2 },
+                        }
+                    }).mount();
+                } else {
+                    // Hide if no content
+                    document.getElementById('categories-carousel').style.display = 'none';
+                }
+
+            } catch(e) { console.error("Error loading categories:", e); }
+        }
+
         // --- CARGAR LOGO ---
         async function loadLogo() {
             try {
@@ -792,6 +848,7 @@
             loadGallery();
             loadJourneys();
             loadBanners(); // Loads banners and initializes Splide
+            loadCategories(); // Load new categories carousel
             document.getElementById('gallery-filter-public').addEventListener('change', (e) => loadGallery(e.target.value));
         });
     </script>
