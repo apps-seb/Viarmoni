@@ -452,7 +452,7 @@
                         if(cropper) cropper.destroy();
                         
                         let aspectRatio;
-                        if (type === 'banner') aspectRatio = 16 / 9;
+                        if (type === 'banner') aspectRatio = 2 / 1;
                         else if (type === 'category') aspectRatio = 1 / 1;
                         else aspectRatio = NaN; // Free crop for logo
                         
@@ -490,7 +490,7 @@
             
             // Different dimensions based on type
             let options;
-            if (currentUploadType === 'banner') options = { width: 1200, height: 675 };
+            if (currentUploadType === 'banner') options = { width: 1200, height: 600 };
             else if (currentUploadType === 'category') options = { width: 600, height: 600 };
             else options = { width: 400 };
 
