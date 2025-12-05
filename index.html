@@ -637,6 +637,71 @@
                             status: 'pending_payment',
                             timestamp: Date.now()
                         });
+
+                        // Send Email Notification (Trigger Email Extension)
+                        const mailRef = doc(collection(this.db, 'mail'));
+                        transaction.set(mailRef, {
+                            to: this.bookingData.client.email,
+                            message: {
+                                subject: 'Confirmación de Cita - Viarmoni',
+                                text: `Hola ${this.bookingData.client.name},\n\n` +
+                                      `Tu cita en Viarmoni ha sido registrada.\n` +
+                                      `Procedimiento: ${this.bookingData.service.name}\n` +
+                                      `Ciudad: ${this.bookingData.city.name}\n` +
+                                      `Fecha: ${this.bookingData.slot.date}\n` +
+                                      `Hora: ${this.bookingData.slot.time}\n` +
+                                      `Especialista: ${this.bookingData.slot.staff}\n\n` +
+                                      `Recuerda realizar el pago del depósito ($${this.bookingData.service.deposit}) y enviar el comprobante por WhatsApp.`,
+                                html: `
+                                    <div style="font-family: 'Montserrat', sans-serif; color: #4a4a4a; max-width: 600px; margin: 0 auto; background-color: #fdfaf9; padding: 20px; border-radius: 12px; border: 1px solid #e0c0c3;">
+                                        <div style="text-align: center; margin-bottom: 20px;">
+                                            <h1 style="color: #c5a984; margin: 0;">Viarmoni</h1>
+                                            <p style="color: #a1886b; font-size: 14px; letter-spacing: 2px; text-transform: uppercase;">Valoraciones Estéticas</p>
+                                        </div>
+                                        
+                                        <div style="background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.06);">
+                                            <h2 style="color: #c5a984; border-bottom: 2px solid #e0c0c3; padding-bottom: 10px;">Confirmación de Cita</h2>
+                                            <p>Hola <strong>${this.bookingData.client.name}</strong>,</p>
+                                            <p>Tu cita ha sido registrada exitosamente. Aquí están los detalles:</p>
+                                            
+                                            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                                                <tr>
+                                                    <td style="padding: 8px; color: #a1886b; font-weight: bold;">Procedimiento:</td>
+                                                    <td style="padding: 8px;">${this.bookingData.service.name}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px; color: #a1886b; font-weight: bold;">Ciudad:</td>
+                                                    <td style="padding: 8px;">${this.bookingData.city.name}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px; color: #a1886b; font-weight: bold;">Fecha:</td>
+                                                    <td style="padding: 8px;">${this.bookingData.slot.date}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px; color: #a1886b; font-weight: bold;">Hora:</td>
+                                                    <td style="padding: 8px;">${this.bookingData.slot.time}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 8px; color: #a1886b; font-weight: bold;">Especialista:</td>
+                                                    <td style="padding: 8px;">${this.bookingData.slot.staff}</td>
+                                                </tr>
+                                            </table>
+                                            
+                                            <div style="background-color: #fffdf5; border-left: 4px solid #c5a984; padding: 10px; margin-top: 20px;">
+                                                <p style="margin: 0; font-size: 0.9em;">
+                                                    <strong>Importante:</strong> Para asegurar tu cita, recuerda realizar el pago del depósito ($${this.bookingData.service.deposit}) y enviar el comprobante por WhatsApp.
+                                                </p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div style="text-align: center; margin-top: 20px; font-size: 12px; color: #999;">
+                                            <p>&copy; ${new Date().getFullYear()} Viarmoni. Todos los derechos reservados.</p>
+                                            <p>Este es un correo automático, por favor no respondas a este mensaje.</p>
+                                        </div>
+                                    </div>
+                                `
+                            }
+                        });
                     });
 
                     const text = `Hola, quiero confirmar mi reserva en Viarmoni:%0A%0A` +
