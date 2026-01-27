@@ -227,14 +227,75 @@
 
             <!-- TAB: CATEGORÍAS (NUEVO) -->
             <div id="tab-categories" class="section-tab">
-                <div class="card">
+                <!-- LIST VIEW -->
+                <div class="card" id="categories-main-view">
                     <h2>Categorías de Procedimientos</h2>
-                    <p style="color:#666; margin-bottom:15px;">Sube imágenes para el carrusel de categorías (Formato 1:1, Cuadrado). Ejemplo: Lipopapada, Bichectomía.</p>
+                    <p style="color:#666; margin-bottom:15px;">Gestiona los procedimientos, portadas y cuidados.</p>
+
+                    <button onclick="openProcForm()" style="width: auto;"><i class="fas fa-plus"></i> Nuevo Procedimiento</button>
                     
-                    <button onclick="document.getElementById('cat-input').click()" style="width: auto;"><i class="fas fa-plus"></i> Nueva Categoría</button>
+                    <!-- Hidden inputs for existing cropper logic to keep working if needed, or we refactor -->
                     <input type="file" id="cat-input" accept="image/*" style="display:none">
 
                     <div id="categories-list" class="item-list" style="margin-top:20px"></div>
+                </div>
+
+                <!-- FORM VIEW -->
+                <div class="card" id="proc-form-container" style="display:none">
+                    <h2 id="form-title" style="color:var(--primary-gold); border-bottom:1px solid #eee; padding-bottom:10px;">Nuevo Procedimiento</h2>
+                    <input type="hidden" id="proc-id">
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Nombre del Procedimiento</label>
+                            <input type="text" id="proc-name" placeholder="Ej: Lipopapada">
+                        </div>
+                        <!-- Thumb -->
+                        <div class="form-group">
+                            <label>Miniatura (Cuadrada 1:1)</label>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <button type="button" onclick="document.getElementById('proc-thumb-input').click()" style="width:auto; font-size:0.8rem; background:#666;">Subir Foto</button>
+                                <img id="proc-thumb-preview" src="" style="height:50px; display:none; border-radius:4px; border:1px solid #ddd;">
+                            </div>
+                            <input type="file" id="proc-thumb-input" style="display:none" accept="image/*">
+                        </div>
+                    </div>
+
+                    <!-- Cover -->
+                    <div class="form-group">
+                        <label>Foto de Portada (Página de Detalle)</label>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <button type="button" onclick="document.getElementById('proc-cover-input').click()" style="width:auto; font-size:0.8rem; background:#666;">Subir Portada</button>
+                            <img id="proc-cover-preview" src="" style="height:50px; display:none; border-radius:4px; border:1px solid #ddd;">
+                        </div>
+                        <input type="file" id="proc-cover-input" style="display:none" accept="image/*">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Descripción General</label>
+                        <textarea id="proc-desc" rows="3" placeholder="Descripción breve del procedimiento..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Instrucciones Generales</label>
+                        <textarea id="proc-instructions" rows="3"></textarea>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Cuidados Previos</label>
+                            <textarea id="proc-pre" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Cuidados Post-Operatorios</label>
+                            <textarea id="proc-post" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:15px; margin-top:20px;">
+                        <button onclick="saveProcedure()">Guardar Procedimiento</button>
+                        <button onclick="closeProcForm()" style="background:#ccc; color:#333;">Cancelar</button>
+                    </div>
                 </div>
             </div>
 
@@ -435,11 +496,13 @@
 
         // --- BANNERS, LOGO & CATEGORIES LOGIC ---
         let cropper;
-        let currentUploadType = 'banner'; // 'banner', 'logo', or 'category'
+        let currentUploadType = 'banner'; // 'banner', 'logo', 'category', 'proc_thumb', 'proc_cover'
         
         const bannerInput = document.getElementById('banner-input');
         const logoInput = document.getElementById('logo-input');
         const catInput = document.getElementById('cat-input');
+        const procThumbInput = document.getElementById('proc-thumb-input');
+        const procCoverInput = document.getElementById('proc-cover-input');
         
         function setupCropper(inputElement, type) {
             inputElement.addEventListener('change', (e) => {
@@ -452,8 +515,8 @@
                         if(cropper) cropper.destroy();
                         
                         let aspectRatio;
-                        if (type === 'banner') aspectRatio = 2 / 1;
-                        else if (type === 'category') aspectRatio = 1 / 1;
+                        if (type === 'banner' || type === 'proc_cover') aspectRatio = 2 / 1;
+                        else if (type === 'category' || type === 'proc_thumb') aspectRatio = 1 / 1;
                         else aspectRatio = NaN; // Free crop for logo
                         
                         cropper = new Cropper(document.getElementById('image-to-crop'), {
@@ -469,29 +532,25 @@
         setupCropper(bannerInput, 'banner');
         setupCropper(logoInput, 'logo');
         setupCropper(catInput, 'category');
+        setupCropper(procThumbInput, 'proc_thumb');
+        setupCropper(procCoverInput, 'proc_cover');
 
         window.closeCropper = () => {
             document.getElementById('cropper-modal').style.display = 'none';
             bannerInput.value = '';
             logoInput.value = '';
             catInput.value = '';
+            procThumbInput.value = '';
+            procCoverInput.value = '';
             if(cropper) cropper.destroy();
         }
 
         window.cropAndUpload = () => {
             if(!cropper) return;
 
-            // Prompt for Category Name if applicable
-            let categoryName = "";
-            if (currentUploadType === 'category') {
-                categoryName = prompt("Nombre de la categoría (ej. Lipopapada):");
-                if (!categoryName) return; // Cancel if no name
-            }
-            
-            // Different dimensions based on type
             let options;
-            if (currentUploadType === 'banner') options = { width: 1200, height: 600 };
-            else if (currentUploadType === 'category') options = { width: 600, height: 600 };
+            if (currentUploadType === 'banner' || currentUploadType === 'proc_cover') options = { width: 1200, height: 600 };
+            else if (currentUploadType === 'category' || currentUploadType === 'proc_thumb') options = { width: 600, height: 600 };
             else options = { width: 400 };
 
             const canvas = cropper.getCroppedCanvas(options);
@@ -499,37 +558,35 @@
             canvas.toBlob(async (blob) => {
                 try {
                     let path;
-                    if (currentUploadType === 'banner') path = `banners/${Date.now()}.jpg`;
+                    if (currentUploadType.startsWith('proc_')) path = `procedures/${Date.now()}.jpg`;
+                    else if (currentUploadType === 'banner') path = `banners/${Date.now()}.jpg`;
                     else if (currentUploadType === 'category') path = `categories/${Date.now()}.jpg`;
                     else path = `settings/logo_${Date.now()}.png`;
                     
                     const storageRef = ref(storage, path);
-                    // Use JPEG for banners/categories, PNG for logo
-                    const format = (currentUploadType === 'banner' || currentUploadType === 'category') ? 'image/jpeg' : 'image/png';
+                    const format = (currentUploadType === 'logo') ? 'image/png' : 'image/jpeg';
                     
-                    // Re-blob if format changed
                     const finalBlob = await new Promise(r => canvas.toBlob(r, format, 0.9));
 
                     await uploadBytes(storageRef, finalBlob);
                     const url = await getDownloadURL(storageRef);
                     
-                    if (currentUploadType === 'banner') {
-                        await addDoc(collection(db, 'banners'), {
-                            url: url,
-                            timestamp: Date.now()
-                        });
+                    // HANDLE TYPES
+                    if (currentUploadType === 'proc_thumb') {
+                        document.getElementById('proc-thumb-preview').src = url;
+                        document.getElementById('proc-thumb-preview').style.display = 'block';
+                    } else if (currentUploadType === 'proc_cover') {
+                        document.getElementById('proc-cover-preview').src = url;
+                        document.getElementById('proc-cover-preview').style.display = 'block';
+                    } else if (currentUploadType === 'banner') {
+                        await addDoc(collection(db, 'banners'), { url: url, timestamp: Date.now() });
                         alert('Banner subido correctamente');
                     } else if (currentUploadType === 'category') {
-                        await addDoc(collection(db, 'categories'), {
-                            name: categoryName,
-                            url: url,
-                            timestamp: Date.now()
-                        });
-                        alert('Categoría creada correctamente');
-                    } else {
-                        // Save logo to settings/global
+                         let name = prompt("Nombre de la categoría:");
+                         if(name) await addDoc(collection(db, 'categories'), { name: name, url: url, timestamp: Date.now() });
+                    } else if (currentUploadType === 'logo') {
                         await setDoc(doc(db, 'settings', 'global'), { logoUrl: url }, { merge: true });
-                        alert('Logo actualizado correctamente');
+                        alert('Logo actualizado');
                         loadLogoPreview();
                     }
                     
@@ -538,8 +595,91 @@
                     console.error(e);
                     alert('Error subiendo imagen');
                 }
-            }, (currentUploadType === 'banner' || currentUploadType === 'category') ? 'image/jpeg' : 'image/png', 0.9);
+            }, 'image/jpeg', 0.9);
         }
+
+        // --- NEW PROCEDURE FORM LOGIC ---
+        window.openProcForm = async (id = null) => {
+            document.getElementById('categories-main-view').style.display = 'none';
+            document.getElementById('proc-form-container').style.display = 'block';
+            document.getElementById('form-title').innerText = id ? 'Editar Procedimiento' : 'Nuevo Procedimiento';
+
+            // Reset
+            document.getElementById('proc-id').value = '';
+            document.getElementById('proc-name').value = '';
+            document.getElementById('proc-desc').value = '';
+            document.getElementById('proc-instructions').value = '';
+            document.getElementById('proc-pre').value = '';
+            document.getElementById('proc-post').value = '';
+            document.getElementById('proc-thumb-preview').style.display = 'none';
+            document.getElementById('proc-cover-preview').style.display = 'none';
+            document.getElementById('proc-thumb-preview').src = '';
+            document.getElementById('proc-cover-preview').src = '';
+
+            if(id) {
+                document.getElementById('proc-id').value = id;
+                try {
+                    const snap = await getDoc(doc(db, "categories", id));
+                    if(snap.exists()) {
+                        const d = snap.data();
+                        document.getElementById('proc-name').value = d.name || '';
+                        document.getElementById('proc-desc').value = d.description || '';
+                        document.getElementById('proc-instructions').value = d.instructions || '';
+                        document.getElementById('proc-pre').value = d.preCare || '';
+                        document.getElementById('proc-post').value = d.postCare || '';
+
+                        if(d.url) {
+                            document.getElementById('proc-thumb-preview').src = d.url;
+                            document.getElementById('proc-thumb-preview').style.display = 'block';
+                        }
+                        if(d.coverUrl) {
+                            document.getElementById('proc-cover-preview').src = d.coverUrl;
+                            document.getElementById('proc-cover-preview').style.display = 'block';
+                        }
+                    }
+                } catch(e) { console.error(e); }
+            }
+        };
+
+        window.closeProcForm = () => {
+            document.getElementById('categories-main-view').style.display = 'block';
+            document.getElementById('proc-form-container').style.display = 'none';
+        };
+
+        window.saveProcedure = async () => {
+            const id = document.getElementById('proc-id').value;
+            const data = {
+                name: document.getElementById('proc-name').value,
+                description: document.getElementById('proc-desc').value,
+                instructions: document.getElementById('proc-instructions').value,
+                preCare: document.getElementById('proc-pre').value,
+                postCare: document.getElementById('proc-post').value,
+                timestamp: Date.now()
+            };
+
+            const thumbSrc = document.getElementById('proc-thumb-preview').src;
+            const coverSrc = document.getElementById('proc-cover-preview').src;
+
+            if(thumbSrc && thumbSrc.startsWith('http')) data.url = thumbSrc;
+            if(coverSrc && coverSrc.startsWith('http')) data.coverUrl = coverSrc;
+
+            if(!data.name) { alert("El nombre es obligatorio"); return; }
+
+            try {
+                if(id) {
+                    await setDoc(doc(db, "categories", id), data, { merge: true });
+                    alert("Procedimiento actualizado");
+                } else {
+                    if(!data.url) { alert("La imagen miniatura es obligatoria"); return; }
+                    await addDoc(collection(db, "categories"), data);
+                    alert("Procedimiento creado");
+                }
+                closeProcForm();
+            } catch(e) {
+                console.error(e);
+                alert("Error guardando: " + e.message);
+            }
+        };
 
         function listenToBanners() {
             onSnapshot(query(collection(db, 'banners'), orderBy('timestamp', 'desc')), (snap) => {
@@ -568,7 +708,10 @@
                                 <img src="${data.url}" style="height:60px; width:60px; object-fit:cover; border-radius:4px;">
                                 <strong>${data.name}</strong>
                             </div>
-                            <button class="delete-btn" onclick="deleteDocById('categories', '${doc.id}')">Eliminar</button>
+                            <div>
+                                <button onclick="openProcForm('${doc.id}')" style="width:auto; padding:5px 15px; margin-right:5px; font-size:0.8rem;">Editar</button>
+                                <button class="delete-btn" onclick="deleteDocById('categories', '${doc.id}')">Eliminar</button>
+                            </div>
                         </div>`;
                 });
             });

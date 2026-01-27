@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Procedimiento - Viarmoni</title>
+
+    <style>
+        :root {
+            --white: #ffffff;
+            --bg-light: #fdfaf9;
+            --text-dark: #4a4a4a;
+            --primary-gold: #c5a984;
+            --secondary-rose: #e0c0c3;
+            --accent-dark: #a1886b;
+            --font-main: "Montserrat", sans-serif;
+            --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.06);
+            --border-radius: 12px;
+            --header-height: 60px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            padding-top: var(--header-height);
+        }
+
+        .container { width: 90%; max-width: 900px; margin: 0 auto; }
+
+        /* Header */
+        .header { background-color: var(--white); box-shadow: var(--shadow-light); padding: 0 1rem; position: fixed; top: 0; left: 0; z-index: 1000; width: 100%; height: var(--header-height); display: flex; align-items: center; }
+        .header .container { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .logo img { max-height: 40px; }
+        .back-link { text-decoration: none; color: var(--text-dark); font-weight: 600; display: flex; align-items: center; gap: 5px; }
+
+        /* Cover & Title */
+        .cover-section { width: 100%; height: 300px; position: relative; overflow: hidden; }
+        .cover-section img { width: 100%; height: 100%; object-fit: cover; }
+        .cover-overlay { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,0.7)); padding: 20px 0; }
+        .procedure-title { color: white; text-align: center; font-size: 2rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+
+        /* Content */
+        .content-section { padding: 40px 0; }
+        .description-box { background: white; padding: 30px; border-radius: var(--border-radius); box-shadow: var(--shadow-light); margin-bottom: 30px; line-height: 1.6; }
+
+        .care-grid { display: grid; gap: 20px; }
+        .care-card { background: white; border-radius: var(--border-radius); padding: 25px; box-shadow: var(--shadow-light); border-left: 5px solid var(--primary-gold); }
+        .care-card h3 { color: var(--primary-gold); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .care-card p { white-space: pre-wrap; color: #555; }
+
+        .btn { display: inline-block; padding: 0.8rem 1.8rem; border: none; border-radius: 50px; cursor: pointer; font-size: 1rem; font-weight: 600; text-decoration: none; text-align: center; transition: all 0.3s ease; width: 100%; }
+        .btn-primary { background: linear-gradient(145deg, var(--primary-gold), var(--accent-dark)); color: var(--white); box-shadow: 0 4px 15px rgba(197, 169, 132, 0.3); margin-top: 30px; }
+
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--primary-gold); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 50px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @media (min-width: 768px) {
+            .cover-section { height: 400px; }
+            .procedure-title { font-size: 3rem; }
+        }
+    </style>
+
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Volver</a>
+            <a href="index.html" class="logo">
+                <img id="nav-logo-img" src="https://placehold.co/200x50/ffffff/c5a984?text=VIARMONI" alt="Viarmoni">
+            </a>
+            <div style="width: 70px;"></div> <!-- Spacer -->
+        </div>
+    </header>
+
+    <div id="loading" class="loader"></div>
+
+    <main id="main-content" style="display: none;">
+        <section class="cover-section">
+            <img id="cover-img" src="" alt="Portada">
+            <div class="cover-overlay">
+                <div class="container">
+                    <h1 id="proc-title" class="procedure-title"></h1>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <!-- Description -->
+                <div class="description-box">
+                    <p id="proc-desc"></p>
+                </div>
+
+                <!-- Care Sections -->
+                <div id="care-section" class="care-grid">
+                    <div class="care-card">
+                        <h3><i class="fas fa-list-ol"></i> Instrucciones Generales</h3>
+                        <p id="proc-instructions">No hay información disponible.</p>
+                    </div>
+
+                    <div class="care-card">
+                        <h3><i class="fas fa-shield-alt"></i> Cuidados Previos</h3>
+                        <p id="proc-pre">No hay información disponible.</p>
+                    </div>
+
+                    <div class="care-card">
+                        <h3><i class="fas fa-heartbeat"></i> Cuidados Post-Operatorios</h3>
+                        <p id="proc-post">No hay información disponible.</p>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="window.location.href='index.html?action=book'">Agendar Cita</button>
+            </div>
+        </section>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBkcFFE_E-GzSVVUdfCew4fscnV6PHkH0I",
+            authDomain: "viarmoni.firebaseapp.com",
+            projectId: "viarmoni",
+            storageBucket: "viarmoni.firebasestorage.app",
+            messagingSenderId: "765794389868",
+            appId: "1:765794389868:web:d7bedf9297d0458e616d49"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadProcedure() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            const section = params.get('section');
+
+            if (!id) {
+                alert("Procedimiento no especificado.");
+                window.location.href = 'index.html';
+                return;
+            }
+
+            try {
+                const docRef = doc(db, "categories", id);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+
+                    document.title = `${data.name} - Viarmoni`;
+                    document.getElementById('proc-title').innerText = data.name;
+                    document.getElementById('cover-img').src = data.coverUrl || data.url; // Fallback to thumbnail if no cover
+
+                    document.getElementById('proc-desc').innerText = data.description || "Sin descripción disponible.";
+
+                    if(data.instructions) document.getElementById('proc-instructions').innerText = data.instructions;
+                    if(data.preCare) document.getElementById('proc-pre').innerText = data.preCare;
+                    if(data.postCare) document.getElementById('proc-post').innerText = data.postCare;
+
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('main-content').style.display = 'block';
+
+                    // Load Logo
+                    loadLogo();
+
+                    // Scroll to care section if requested
+                    if(section === 'care') {
+                        setTimeout(() => {
+                            document.getElementById('care-section').scrollIntoView({ behavior: 'smooth' });
+                        }, 500);
+                    }
+
+                } else {
+                    alert("Procedimiento no encontrado.");
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                console.error("Error fetching document:", error);
+                document.getElementById('loading').innerHTML = '<p style="text-align:center">Error cargando información.</p>';
+            }
+        }
+
+        async function loadLogo() {
+            try {
+                const logoSnap = await getDoc(doc(db, "settings", "global"));
+                if(logoSnap.exists() && logoSnap.data().logoUrl) {
+                    document.getElementById('nav-logo-img').src = logoSnap.data().logoUrl;
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        window.addEventListener('DOMContentLoaded', loadProcedure);
+    </script>
+</body>
+</html>
