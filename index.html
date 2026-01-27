@@ -221,17 +221,9 @@
 
         <section class="fullscreen-section" id="info-section">
             <div class="container">
-                <h2 style="text-align: center;">Información Importante</h2>
-                <div class="info-cards-container">
-                    <div class="info-card" onclick="loadCareModal('instructions', 'Instrucciones')">
-                        <i class="fas fa-list-ol"></i><h3>Instrucciones</h3>
-                    </div>
-                    <div class="info-card" onclick="loadCareModal('pre_op', 'Cuidados Previos')">
-                        <i class="fas fa-shield-alt"></i><h3>Previos</h3>
-                    </div>
-                    <div class="info-card" onclick="loadCareModal('post_op', 'Cuidados Post')">
-                        <i class="fas fa-heartbeat"></i><h3>Post-Operatorios</h3>
-                    </div>
+                <h2 style="text-align: center;">Guías de Cuidados por Procedimiento</h2>
+                <div class="info-cards-container" id="care-cards-container">
+                    <div class="loader"></div>
                 </div>
             </div>
         </section>
@@ -809,7 +801,7 @@
                         const data = d.data();
                         list.innerHTML += `
                             <li class="splide__slide">
-                                <div class="category-card" onclick="openBooking()">
+                                <div class="category-card" onclick="window.location.href='procedure.html?id=${d.id}'">
                                     <img src="${data.url}" alt="${data.name}">
                                     <div class="category-title">${data.name}</div>
                                 </div>
@@ -834,6 +826,36 @@
             } catch(e) { console.error("Error loading categories:", e); }
         }
 
+        // --- CARGAR CUIDADOS (NUEVO SECCIÓN) ---
+        async function loadCareSection() {
+            const container = document.getElementById('care-cards-container');
+            if(!container) return;
+
+            try {
+                const snap = await getDocs(query(collection(db, "categories"), orderBy("timestamp", "desc")));
+                container.innerHTML = "";
+
+                if(snap.empty) {
+                    container.innerHTML = "<p>No hay guías disponibles.</p>";
+                    return;
+                }
+
+                snap.forEach(d => {
+                    const data = d.data();
+                    container.innerHTML += `
+                        <div class="info-card" style="padding:20px; display:flex; flex-direction:column; align-items:center; gap:15px; transition: transform 0.3s;"
+                             onclick="window.location.href='procedure.html?id=${d.id}&section=care'">
+                            <img src="${data.url}" style="width:100px; height:100px; border-radius:50%; object-fit:cover; border:3px solid var(--primary-gold); box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                            <h3 style="font-size:1.1rem; margin:0; color:var(--text-dark);">${data.name}</h3>
+                            <button class="btn-primary" style="font-size:0.8rem; padding: 5px 15px; border-radius: 20px;">Ver Guía</button>
+                        </div>`;
+                });
+            } catch(e) {
+                console.error(e);
+                container.innerHTML = "<p>Error cargando guías.</p>";
+            }
+        }
+
         // --- CARGAR LOGO ---
         async function loadLogo() {
             try {
@@ -851,6 +873,7 @@
             loadJourneys();
             loadBanners(); // Loads banners and initializes Splide
             loadCategories(); // Load new categories carousel
+            loadCareSection(); // Load new care section
             document.getElementById('gallery-filter-public').addEventListener('change', (e) => loadGallery(e.target.value));
         });
     </script>
