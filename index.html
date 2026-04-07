@@ -50,18 +50,128 @@
         .header .btn-primary { padding: 0.5rem 1rem; font-size: 0.85rem; background: linear-gradient(135deg, var(--secondary-rose), var(--danger)); }
 
         /* Hero & Carousel */
-        #main-carousel { width: 100%; aspect-ratio: 1200 / 600; overflow: hidden; margin-bottom: 0; }
+        #main-carousel { width: 100%; aspect-ratio: 4 / 3; overflow: hidden; margin-bottom: 0; }
         #main-carousel .splide__track, #main-carousel .splide__list, #main-carousel .splide__slide { height: 100%; }
         #main-carousel .splide__pagination { bottom: 10px; padding: 0; }
         #main-carousel .splide__slide img { width: 100%; height: 100%; object-fit: cover; }
-        .hero { text-align: center; }
-        .hero h1 { font-size: 2rem; color: #5a4b3a; margin-bottom: 10px; line-height: 1.2; }
+
+        .hero { text-align: center; padding: 2rem 1rem; }
+        .hero-glass-card {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: var(--border-radius);
+            padding: 2.5rem;
+            box-shadow: 0 8px 32px 0 rgba(197, 169, 132, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            max-width: 800px;
+            margin: -60px auto 30px auto; /* Overlap the carousel */
+            position: relative;
+            z-index: 10;
+        }
+        /* Animated border stroke for the hero card */
+        .hero-glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: var(--border-radius);
+            padding: 2px;
+            background: linear-gradient(45deg, var(--primary-gold), transparent, var(--secondary-rose), transparent);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            background-size: 200% 200%;
+            animation: gradientBorderMove 4s linear infinite;
+        }
+        @keyframes gradientBorderMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .hero-title-wrapper {
+            display: inline-block;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 2px solid var(--primary-gold);
+            animation: typewriter 3.5s steps(40) 1s forwards, blink 0.75s step-end infinite;
+            width: 0; /* Start hidden */
+        }
+        .hero h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            line-height: 1.3;
+            background: linear-gradient(135deg, var(--primary-gold), var(--secondary-rose));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0px 0px 15px rgba(197, 169, 132, 0.5);
+        }
+        @keyframes typewriter {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        @keyframes blink {
+            from, to { border-color: transparent; }
+            50% { border-color: var(--primary-gold); }
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .hero-btn {
+            background: linear-gradient(145deg, var(--primary-gold), var(--secondary-rose));
+            box-shadow: 0 0 15px rgba(197, 169, 132, 0.6);
+            animation: pulse-glow-btn 2s infinite;
+        }
+        @keyframes pulse-glow-btn {
+            0% { box-shadow: 0 0 15px rgba(197, 169, 132, 0.6); transform: scale(1); }
+            50% { box-shadow: 0 0 25px rgba(197, 169, 132, 1); transform: scale(1.05); }
+            100% { box-shadow: 0 0 15px rgba(197, 169, 132, 0.6); transform: scale(1); }
+        }
+        .hero-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 30px rgba(197, 169, 132, 1);
+        }
 
         /* Categories Carousel */
-        .category-card { position: relative; width: 100%; padding-top: 100%; /* 1:1 Aspect Ratio */ overflow: hidden; border-radius: var(--border-radius); box-shadow: var(--shadow-light); cursor: pointer; }
-        .category-card img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
-        .category-card:hover img { transform: scale(1.05); }
-        .category-title { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); color: white; text-align: center; padding: 15px 10px 10px 10px; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .category-card {
+            position: relative;
+            width: 100%;
+            padding-top: 75%; /* 4:3 Aspect Ratio */
+            overflow: hidden;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 15px rgba(197, 169, 132, 0.2);
+            cursor: pointer;
+            border: 2px solid var(--primary-gold);
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(197, 169, 132, 0.4);
+        }
+        .category-card img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; z-index: -1; }
+        .category-card:hover img { transform: scale(1.1); }
+        .category-title {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%;
+            background: linear-gradient(to top, var(--secondary-rose), transparent);
+            color: var(--text-dark);
+            text-align: center;
+            padding: 20px 10px 10px 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 1px 3px rgba(255,255,255,0.8);
+        }
 
         /* Info Cards */
         .info-cards-container { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 2rem; }
@@ -88,6 +198,17 @@
         .bottom-nav-item i { font-size: 1.3rem; margin-bottom: 3px; color: #888; transition: 0.3s; }
         .bottom-nav-item.active i { color: var(--primary-gold); transform: scale(1.1); }
         .bottom-nav-item span { font-size: 0.65rem; font-weight: bold; }
+
+        /* Scroll Animations */
+        .scroll-anim {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .scroll-anim.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
         /* Modals & Loader */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 3000; padding: 20px; }
@@ -172,8 +293,39 @@
         .summary-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
         .summary-total { font-size: 1.2rem; font-weight: bold; color: var(--primary-gold); text-align: right; margin-top: 15px; }
     </style>
+    <style>
+        /* Preloader */
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-light);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+
+        .preloader-logo {
+            max-width: 180px;
+            animation: pulse-glow-logo 2s infinite;
+        }
+
+        @keyframes pulse-glow-logo {
+            0% { transform: scale(0.95); filter: drop-shadow(0 0 10px rgba(197, 169, 132, 0.4)); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(197, 169, 132, 1)); }
+            100% { transform: scale(0.95); filter: drop-shadow(0 0 10px rgba(197, 169, 132, 0.4)); }
+        }
+    </style>
 </head>
 <body>
+
+    <div id="preloader">
+        <img src="PRELOADER.png" alt="Cargando..." class="preloader-logo">
+    </div>
 
     <header class="header">
         <div class="container">
@@ -213,14 +365,18 @@
             </div>
 
             <div class="container hero">
-                <h1>Armonización Facial: Belleza que Resalta, no Transforma.</h1>
-                <p>En Viarmoni, esculpimos tu belleza natural con procedimientos mínimamente invasivos.</p>
-                <button class="btn btn-primary" onclick="openBooking()">Iniciar mi Transformación</button>
+                <div class="hero-glass-card">
+                    <div class="hero-title-wrapper">
+                        <h1>Tu Mejor Versión, Al Natural.</h1>
+                    </div>
+                    <p>Realza tu belleza única con nuestros tratamientos estéticos personalizados, diseñados para brindarte armonía y confianza.</p>
+                    <button class="btn btn-primary hero-btn" onclick="openBooking()">¡Descubre tu Cambio!</button>
+                </div>
             </div>
         </section>
 
         <section class="fullscreen-section" id="info-section">
-            <div class="container">
+            <div class="container scroll-anim">
                 <h2 style="text-align: center;">Guías de Cuidados por Procedimiento</h2>
                 <div class="info-cards-container" id="care-cards-container">
                     <div class="loader"></div>
@@ -229,7 +385,7 @@
         </section>
 
         <section class="fullscreen-section" id="gallery-section">
-            <div class="container">
+            <div class="container scroll-anim">
                 <h2 style="text-align: center;">Nuestras Transformaciones</h2>
                 <div class="filter-container">
                     <select id="gallery-filter-public">
@@ -245,7 +401,7 @@
         </section>
 
         <section class="fullscreen-section" id="jornadas-section">
-            <div class="container">
+            <div class="container scroll-anim">
                 <h2 style="text-align: center;">Próximas Jornadas</h2>
                 <div class="jornadas-grid" id="public-journeys-grid"><div class="loader"></div></div>
             </div>
@@ -866,6 +1022,15 @@
             } catch(e) { console.error("Error loading logo:", e); }
         }
 
+        // PRELOADER HIDE
+        window.addEventListener('load', () => {
+            const preloader = document.getElementById('preloader');
+            if (preloader) {
+                preloader.style.opacity = '0';
+                preloader.style.visibility = 'hidden';
+            }
+        });
+
         // INIT
         document.addEventListener('DOMContentLoaded', () => {
             loadLogo();
@@ -875,6 +1040,17 @@
             loadCategories(); // Load new categories carousel
             loadCareSection(); // Load new care section
             document.getElementById('gallery-filter-public').addEventListener('change', (e) => loadGallery(e.target.value));
+
+            // Scroll animations observer
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.scroll-anim').forEach((el) => observer.observe(el));
         });
     </script>
 </body>
