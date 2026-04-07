@@ -407,6 +407,23 @@
         #booking-section { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 2500; display: none; }
         body.booking-active #booking-section { display: block; }
 
+        /* Payment Modal Specifics */
+        @media (max-width: 480px) {
+            .bank-card {
+                flex-direction: column;
+                align-items: center !important;
+                text-align: center !important;
+                gap: 10px;
+            }
+            .bank-card > div {
+                flex-direction: column;
+                text-align: center !important;
+            }
+            .bank-card img {
+                margin-bottom: 10px;
+            }
+        }
+
         @media (min-width: 768px) {
             .nav-links { display: block; }
             .bottom-nav { display: none; }
@@ -547,6 +564,17 @@
                 <div style="text-align: center; margin-top: 3rem;">
                     <button class="hero-btn-animated" onclick="openBooking()">Descubre tu Mejor Versión</button>
                 </div>
+
+                <!-- SECCIÓN DE CONFIANZA Y PAGOS -->
+                <div class="trust-banner-section" style="margin-top: 40px; margin-bottom: 20px; padding: 25px 20px; background: #fffdf5; border-radius: 15px; border: 1px solid #e0c0c3; text-align: center; box-shadow: 0 4px 15px rgba(183, 110, 121, 0.1);">
+                    <h3 style="color: #b76e79; margin-bottom: 10px; font-size: 1.5rem;">¡Asegura tu Cambio Hoy!</h3>
+                    <p style="color: #555; margin-bottom: 20px; font-size: 1rem; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.5;">
+                        Estás a un paso de resaltar tu belleza natural. Separa tu cita o haz tu abono de forma fácil, rápida y segura. ¡Tu bienestar es nuestra prioridad!
+                    </p>
+                    <button class="hero-btn-animated" onclick="openPaymentModal()" style="font-size: 1rem; padding: 12px 25px;">
+                        <i class="fas fa-wallet" style="margin-right: 8px;"></i> Separar mi cupo
+                    </button>
+                </div>
             </div>
 
         </section>
@@ -629,6 +657,56 @@
             <button class="modal-close" onclick="document.getElementById('dynamic-modal').classList.remove('active')">&times;</button>
             <h3 id="modal-title" style="color:var(--primary-gold); margin-bottom:15px;"></h3>
             <div id="modal-body" style="white-space: pre-wrap;"></div>
+        </div>
+    </div>
+
+    <!-- MODAL DE PAGOS -->
+    <div class="modal-overlay" id="payment-modal">
+        <div class="modal-content" style="text-align: center; padding: 30px;">
+            <button class="modal-close" onclick="closePaymentModal()">&times;</button>
+            <h3 style="color:var(--primary-gold); margin-bottom:15px; font-size: 1.5rem;">Cuentas de Pago</h3>
+            <p style="color: #666; margin-bottom: 25px;">Selecciona tu banco para ver el número de cuenta y realizar el abono.</p>
+
+            <!-- Nequi -->
+            <div class="bank-card" style="border: 1px solid #eee; border-radius: 12px; padding: 20px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; background: #fff;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <img src="https://mercacol.com.co/wp-content/uploads/2026/04/nequi-logo_brandlogos.net_ldrer.webp" alt="Nequi" style="width: 50px; height: auto; border-radius: 8px;">
+                    <div style="text-align: left;">
+                        <h4 style="margin: 0; color: #333; font-size: 1.1rem;">Nequi</h4>
+                        <p style="margin: 5px 0 0; color: #777; font-weight: bold; font-size: 1.1rem;" id="nequi-account">3054255782</p>
+                    </div>
+                </div>
+                <button onclick="copyToClipboard('3054255782', 'Nequi')" style="background: none; border: none; color: var(--primary-gold); cursor: pointer; font-size: 1.2rem; padding: 10px;" title="Copiar número">
+                    <i class="far fa-copy"></i>
+                </button>
+            </div>
+
+            <!-- Bancolombia -->
+            <div class="bank-card" style="border: 1px solid #eee; border-radius: 12px; padding: 20px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; background: #fff;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <img src="https://mercacol.com.co/wp-content/uploads/2026/04/Bancolombia-logo-scaled.webp" alt="Bancolombia" style="width: 50px; height: auto; border-radius: 8px; object-fit: contain;">
+                    <div style="text-align: left;">
+                        <h4 style="margin: 0; color: #333; font-size: 1.1rem;">Bancolombia Ahorros</h4>
+                        <p style="margin: 5px 0 0; color: #777; font-weight: bold; font-size: 1.1rem;" id="bancolombia-account">24237670660</p>
+                    </div>
+                </div>
+                <button onclick="copyToClipboard('24237670660', 'Bancolombia')" style="background: none; border: none; color: var(--primary-gold); cursor: pointer; font-size: 1.2rem; padding: 10px;" title="Copiar número">
+                    <i class="far fa-copy"></i>
+                </button>
+            </div>
+
+            <!-- Pasos después de copiar (Oculto por defecto) -->
+            <div id="payment-steps" style="display: none; background: #f9f9f9; border-radius: 12px; padding: 20px; margin-top: 20px; text-align: left; border: 1px solid #e0c0c3;">
+                <h4 style="color: #b76e79; margin-bottom: 15px; text-align: center;">¡Siguientes Pasos!</h4>
+                <ol style="color: #555; padding-left: 20px; margin-bottom: 20px; line-height: 1.6; font-size: 0.95rem;">
+                    <li>Haz el pago desde la app de tu banco.</li>
+                    <li>Toma captura de pantalla del comprobante exitoso.</li>
+                    <li>Envía el comprobante con tus datos para confirmar.</li>
+                </ol>
+                <a href="https://wa.me/573054255782" target="_blank" class="hero-btn-animated" style="display: block; width: 100%; text-align: center; text-decoration: none; padding: 12px; box-sizing: border-box; background: #25D366; color: white;">
+                    <i class="fab fa-whatsapp"></i> Enviar Comprobante
+                </a>
+            </div>
         </div>
     </div>
 
@@ -716,9 +794,19 @@
                         <div class="wizard-step" id="step-5">
                             <h3>Resumen de Reserva</h3>
                             <div id="booking-summary"></div>
-                            <div style="margin-top:20px;">
-                                <button class="btn btn-primary" style="width:100%; margin-bottom:10px;" id="btn-deposit">Pagar Depósito</button>
-                                <a href="#" class="btn-whatsapp" id="btn-whatsapp" target="_blank"><i class="fab fa-whatsapp"></i> Confirmar por WhatsApp</a>
+
+                            <div class="trust-banner-section" style="margin-top: 20px; padding: 20px; background: #fffdf5; border-radius: 10px; border: 1px solid #e0c0c3; text-align: center;">
+                                <h4 style="color: #b76e79; margin-bottom: 10px;">¡Asegura tu Cita!</h4>
+                                <p style="color: #555; margin-bottom: 15px; font-size: 0.9rem;">
+                                    Realiza tu abono de forma fácil y segura para confirmar tu espacio.
+                                </p>
+                                <button class="btn btn-primary" style="width:100%; margin-bottom:10px; background: #b76e79; border-color: #b76e79;" onclick="openPaymentModal(true)">
+                                    <i class="fas fa-wallet"></i> Hacer Abono / Separar
+                                </button>
+                            </div>
+
+                            <div style="margin-top:10px;">
+                                <a href="#" class="btn-whatsapp" id="btn-whatsapp" target="_blank" style="background: #25D366; color: white;"><i class="fab fa-whatsapp"></i> Confirmar por WhatsApp</a>
                             </div>
                         </div>
 
@@ -740,9 +828,6 @@
                     if(date) this.loadSlots(date);
                 });
 
-                document.getElementById('btn-deposit').addEventListener('click', () => {
-                    alert('Para asegurar tu cita, por favor realiza una transferencia a Bancolombia Ahorros: 123-456-7890 a nombre de Viarmoni SAS y envía el comprobante por WhatsApp.');
-                });
             }
 
             async nextStep() {
@@ -1026,6 +1111,28 @@
         document.querySelectorAll('a[href^="#"]').forEach(a => {
             a.addEventListener('click', e => { e.preventDefault(); navigate(a.getAttribute('href')); });
         });
+
+        // --- PAYMENT MODAL LOGIC ---
+        window.openPaymentModal = (fromBooking = false) => {
+            document.getElementById('payment-modal').classList.add('active');
+            // Reset state
+            document.getElementById('payment-steps').style.display = 'none';
+        }
+
+        window.closePaymentModal = () => {
+            document.getElementById('payment-modal').classList.remove('active');
+        }
+
+        window.copyToClipboard = (text, bankName) => {
+            navigator.clipboard.writeText(text).then(() => {
+                alert(`Número de cuenta de ${bankName} copiado: ${text}`);
+                document.getElementById('payment-steps').style.display = 'block';
+            }).catch(err => {
+                console.error('Error al copiar: ', err);
+                alert(`Error al copiar. El número es: ${text}`);
+                document.getElementById('payment-steps').style.display = 'block';
+            });
+        }
 
         // --- BOOKING ---
         let wizardInitialized = false;
