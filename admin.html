@@ -216,10 +216,19 @@
             <div id="tab-banners" class="section-tab">
                 <div class="card">
                     <h2>Banners del Carrusel de Inicio</h2>
-                    <p style="color:#666; margin-bottom:15px;">Sube imágenes para el carrusel principal. Se recomienda formato horizontal (ej. 1200x600).</p>
+                    <p style="color:#666; margin-bottom:15px;">Sube imágenes para el carrusel principal. Puedes subir imágenes en formato 4:3 sin problema (ej. 800x600 o 1200x900).</p>
                     
-                    <button onclick="document.getElementById('banner-input').click()" style="width: auto;"><i class="fas fa-plus"></i> Nuevo Banner</button>
+                    <button onclick="document.getElementById('banner-input').click()" style="width: auto;"><i class="fas fa-plus"></i> Seleccionar Imagen</button>
                     <input type="file" id="banner-input" accept="image/*" style="display:none">
+
+                    <div id="banner-preview-container" style="display:none; margin-top:20px; border:1px solid #ddd; padding:15px; border-radius:8px; text-align:center;">
+                        <h4 style="margin-top:0;">Previsualización</h4>
+                        <img id="banner-preview-img" src="" style="max-width:100%; max-height:400px; border-radius:4px;">
+                        <div style="margin-top:15px; display:flex; gap:10px; justify-content:center;">
+                            <button onclick="uploadBanner()" style="width:auto;">Subir Banner</button>
+                            <button onclick="cancelBannerUpload()" style="width:auto; background:#ccc; color:#333;">Cancelar</button>
+                        </div>
+                    </div>
 
                     <div id="banners-list" class="item-list" style="margin-top:20px"></div>
                 </div>
@@ -496,7 +505,7 @@
 
         // --- BANNERS, LOGO & CATEGORIES LOGIC ---
         let cropper;
-        let currentUploadType = 'banner'; // 'banner', 'logo', 'category', 'proc_thumb', 'proc_cover'
+        let currentUploadType = 'logo'; // 'logo', 'category', 'proc_thumb', 'proc_cover'
         
         const bannerInput = document.getElementById('banner-input');
         const logoInput = document.getElementById('logo-input');
@@ -504,6 +513,49 @@
         const procThumbInput = document.getElementById('proc-thumb-input');
         const procCoverInput = document.getElementById('proc-cover-input');
         
+        // Direct Banner Upload Handlers
+        let selectedBannerFile = null;
+
+        bannerInput.addEventListener('change', (e) => {
+            if(e.target.files && e.target.files[0]) {
+                selectedBannerFile = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('banner-preview-img').src = e.target.result;
+                    document.getElementById('banner-preview-container').style.display = 'block';
+                }
+                reader.readAsDataURL(selectedBannerFile);
+            }
+        });
+
+        window.cancelBannerUpload = () => {
+            selectedBannerFile = null;
+            bannerInput.value = '';
+            document.getElementById('banner-preview-img').src = '';
+            document.getElementById('banner-preview-container').style.display = 'none';
+        }
+
+        window.uploadBanner = async () => {
+            if(!selectedBannerFile) return;
+
+            try {
+                // Upload directly without crop
+                const path = `banners/${Date.now()}_${selectedBannerFile.name}`;
+                const storageRef = ref(storage, path);
+
+                await uploadBytes(storageRef, selectedBannerFile);
+                const url = await getDownloadURL(storageRef);
+
+                await addDoc(collection(db, 'banners'), { url: url, timestamp: Date.now() });
+                alert('Banner subido correctamente');
+
+                cancelBannerUpload();
+            } catch(e) {
+                console.error(e);
+                alert('Error subiendo banner');
+            }
+        }
+
         function setupCropper(inputElement, type) {
             inputElement.addEventListener('change', (e) => {
                 if(e.target.files && e.target.files[0]) {
@@ -515,7 +567,7 @@
                         if(cropper) cropper.destroy();
                         
                         let aspectRatio;
-                        if (type === 'banner' || type === 'proc_cover') aspectRatio = 2 / 1;
+                        if (type === 'proc_cover') aspectRatio = 2 / 1;
                         else if (type === 'category' || type === 'proc_thumb') aspectRatio = 1 / 1;
                         else aspectRatio = NaN; // Free crop for logo
                         
@@ -529,7 +581,6 @@
             });
         }
 
-        setupCropper(bannerInput, 'banner');
         setupCropper(logoInput, 'logo');
         setupCropper(catInput, 'category');
         setupCropper(procThumbInput, 'proc_thumb');
@@ -537,7 +588,6 @@
 
         window.closeCropper = () => {
             document.getElementById('cropper-modal').style.display = 'none';
-            bannerInput.value = '';
             logoInput.value = '';
             catInput.value = '';
             procThumbInput.value = '';
@@ -549,7 +599,7 @@
             if(!cropper) return;
 
             let options;
-            if (currentUploadType === 'banner' || currentUploadType === 'proc_cover') options = { width: 1200, height: 600 };
+            if (currentUploadType === 'proc_cover') options = { width: 1200, height: 600 };
             else if (currentUploadType === 'category' || currentUploadType === 'proc_thumb') options = { width: 600, height: 600 };
             else options = { width: 400 };
 
@@ -559,7 +609,6 @@
                 try {
                     let path;
                     if (currentUploadType.startsWith('proc_')) path = `procedures/${Date.now()}.jpg`;
-                    else if (currentUploadType === 'banner') path = `banners/${Date.now()}.jpg`;
                     else if (currentUploadType === 'category') path = `categories/${Date.now()}.jpg`;
                     else path = `settings/logo_${Date.now()}.png`;
                     
@@ -578,9 +627,6 @@
                     } else if (currentUploadType === 'proc_cover') {
                         document.getElementById('proc-cover-preview').src = url;
                         document.getElementById('proc-cover-preview').style.display = 'block';
-                    } else if (currentUploadType === 'banner') {
-                        await addDoc(collection(db, 'banners'), { url: url, timestamp: Date.now() });
-                        alert('Banner subido correctamente');
                     } else if (currentUploadType === 'category') {
                          let name = prompt("Nombre de la categoría:");
                          if(name) await addDoc(collection(db, 'categories'), { name: name, url: url, timestamp: Date.now() });
