@@ -142,7 +142,7 @@
             -webkit-background-clip: text;
             background-clip: text;
             text-shadow: 0 0 10px rgba(183, 110, 121, 0.3);
-            text-transform: none; /* Mejor legibilidad en frases */
+            text-transform: none; 
         }
 
         @keyframes shine {
@@ -154,7 +154,7 @@
             #dynamic-title { min-height: 65px; }
         }
 
-        /* Tarjetas de Beneficios Premium (Bordes e Iconos Oro Rosa) */
+        /* Tarjetas de Beneficios Premium */
         .benefits-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -166,19 +166,18 @@
             border-radius: 16px;
             padding: 3rem 2rem;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(183, 110, 121, 0.05); /* Sombra muy sutil rosa */
+            box-shadow: 0 10px 30px rgba(183, 110, 121, 0.05); 
             position: relative;
             transition: all 0.4s ease;
             z-index: 1;
         }
-        /* Borde degradado avanzado usando máscara */
         .benefit-card::before {
             content: "";
             position: absolute;
             inset: 0;
             border-radius: 16px;
-            padding: 2px; /* Grosor del borde premium */
-            background: linear-gradient(135deg, #fdfaf9, #e0bfb8, #b76e79); /* Oro Rosa Real */
+            padding: 2px; 
+            background: linear-gradient(135deg, #fdfaf9, #e0bfb8, #b76e79); 
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: destination-out;
             mask-composite: exclude;
@@ -192,7 +191,6 @@
         .benefit-card i {
             font-size: 3rem;
             margin-bottom: 1.5rem;
-            /* Icono Oro Rosa Gradient */
             background: linear-gradient(135deg, #b76e79, #e0bfb8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -214,7 +212,7 @@
             line-height: 1.6;
         }
 
-        /* Botón Oro Rosa (CTA Principal) */
+        /* Botón Oro Rosa */
         .hero-btn-animated {
             background: linear-gradient(145deg, #e0c0c3, #b76e79);
             color: #ffffff;
@@ -240,6 +238,172 @@
             0% { transform: scale(1); box-shadow: 0 0 10px rgba(183, 110, 121, 0.3); }
             50% { transform: scale(1.03); box-shadow: 0 0 20px rgba(183, 110, 121, 0.6); }
             100% { transform: scale(1); box-shadow: 0 0 10px rgba(183, 110, 121, 0.3); }
+        }
+
+        /* Nueva Sección de Pagos / Abonos */
+        .payment-banner {
+            background: linear-gradient(135deg, #ffffff, #fdfaf9);
+            border: 1px solid rgba(183, 110, 121, 0.2);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(183, 110, 121, 0.08);
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .payment-banner::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(to right, var(--secondary-rose), var(--danger));
+        }
+        .payment-banner h3 {
+            color: var(--accent-dark);
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+        .payment-banner p {
+            color: #666;
+            margin-bottom: 2rem;
+            font-size: 1.05rem;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        /* Opciones de Banco en Modal (Refinadas para evitar desbordamiento) */
+        .bank-option {
+            display: flex;
+            flex-direction: column; /* Cambiado a columna para mejor ajuste */
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(183, 110, 121, 0.2);
+            transition: 0.3s;
+            position: relative;
+            z-index: 2;
+        }
+        .bank-option:hover {
+            border-color: var(--danger);
+            box-shadow: 0 4px 15px rgba(183, 110, 121, 0.15);
+        }
+        .bank-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        .bank-info img {
+            height: 45px;
+            width: auto;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+        .bank-info div {
+            text-align: center;
+        }
+        .bank-info strong {
+            display: block;
+            color: var(--text-dark);
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        .bank-info span {
+            color: #555;
+            font-size: 1rem;
+            word-break: break-all; /* Evita desbordamiento en números muy largos */
+        }
+        .btn-copy {
+            background: linear-gradient(145deg, #e0c0c3, #b76e79);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            width: 100%;
+            max-width: 200px;
+            box-shadow: 0 4px 10px rgba(183, 110, 121, 0.3);
+        }
+        .btn-copy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(183, 110, 121, 0.5);
+        }
+        .payment-steps {
+            text-align: left;
+            margin-top: 25px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(183, 110, 121, 0.1);
+            position: relative;
+            z-index: 2;
+        }
+        .payment-steps h4 {
+            color: var(--danger);
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        .payment-steps ol {
+            padding-left: 20px;
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .payment-steps li {
+            margin-bottom: 8px;
+        }
+        .payment-steps li strong {
+            color: var(--text-dark);
+        }
+
+        /* Modal Rediseñado con Fondo */
+        .modal-content-premium {
+            background-image: linear-gradient(rgba(253, 250, 249, 0.85), rgba(253, 250, 249, 0.95)), url('https://mercacol.com.co/wp-content/uploads/2026/04/modal-scaled.webp');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            padding: 30px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 450px;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            border: 1px solid rgba(197, 169, 132, 0.3);
+        }
+        
+        @media (min-width: 480px) {
+            .bank-option {
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 15px 20px;
+            }
+            .bank-info {
+                flex-direction: row;
+                margin-bottom: 0;
+                text-align: left;
+                width: auto;
+            }
+            .bank-info div {
+                text-align: left;
+            }
+            .btn-copy {
+                width: auto;
+                padding: 8px 20px;
+                font-size: 0.9rem;
+            }
         }
 
         /* Categories Carousel */
@@ -322,7 +486,7 @@
             color: #fdfaf9;
             padding: 4rem 0 2rem;
             margin-top: 5rem;
-            border-top: 4px solid #b76e79; /* Acento Oro Rosa */
+            border-top: 4px solid #b76e79; 
         }
         .footer-container {
             display: grid;
@@ -332,10 +496,9 @@
         .footer-logo {
             max-width: 180px;
             margin-bottom: 1.5rem;
-            /* Filtro para que el logo se vea bien en fondo oscuro si es necesario, o lo deja original */
         }
         .footer-col h4 {
-            color: #e0bfb8; /* Oro Rosa claro */
+            color: #e0bfb8; 
             font-size: 1.2rem;
             margin-bottom: 1.5rem;
             text-transform: uppercase;
@@ -365,7 +528,7 @@
             color: #e0bfb8;
         }
         .footer-col ul li i {
-            color: #b76e79; /* Iconos en Oro Rosa */
+            color: #b76e79; 
             font-size: 1.2rem;
             width: 20px;
             text-align: center;
@@ -383,7 +546,7 @@
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 3000; padding: 20px; }
         .modal-overlay.active { display: flex; }
         .modal-content { background: white; padding: 25px; border-radius: 15px; width: 100%; max-width: 500px; max-height: 85vh; overflow-y: auto; position: relative; }
-        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+        .modal-close { position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer; z-index: 10; color: #333; }
         .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--primary-gold); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
@@ -468,7 +631,9 @@
         .wizard-footer { display: flex; justify-content: space-between; margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; }
         .btn-prev { background: #eee; color: #555; padding: 10px 25px; border-radius: 50px; border: none; cursor: pointer; }
         .btn-next { background: var(--primary-gold); color: white; padding: 10px 25px; border-radius: 50px; border: none; cursor: pointer; font-weight: bold; }
-        .btn-whatsapp { background: #25D366; color: white; width: 100%; padding: 15px; border-radius: 50px; text-align: center; display: block; text-decoration: none; font-weight: bold; margin-top: 10px; font-size: 1.1rem; }
+        
+        .btn-whatsapp { background: #25D366; color: white; width: 100%; padding: 15px; border-radius: 50px; text-align: center; display: block; text-decoration: none; font-weight: bold; margin-top: 10px; font-size: 1.1rem; transition: 0.3s; position: relative; z-index: 2;}
+        .btn-whatsapp:hover { background: #20BA56; box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3); }
 
         .summary-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
         .summary-total { font-size: 1.2rem; font-weight: bold; color: var(--primary-gold); text-align: right; margin-top: 15px; }
@@ -507,7 +672,7 @@
                 </section>
             </div>
 
-            <!-- CATEGORIES CAROUSEL (AHORA INMEDIATAMENTE DESPUÉS DEL HERO) -->
+            <!-- CATEGORIES CAROUSEL -->
             <div class="container animate-on-scroll" style="margin-top: 60px; margin-bottom: 30px;">
                 <h3 class="elegant-title">Nuestros Procedimientos</h3>
                 <section id="categories-carousel" class="splide" aria-label="Categorías">
@@ -520,7 +685,7 @@
             </div>
             
             <!-- SECCIÓN: TÍTULO DINÁMICO Y BENEFICIOS PREMIUM -->
-            <div class="container animate-on-scroll" style="margin-top: 30px; margin-bottom: 60px;">
+            <div class="container animate-on-scroll" style="margin-top: 30px; margin-bottom: 20px;">
                 <!-- Título que va cambiando (Oro Rosa) -->
                 <h2 class="elegant-title" id="dynamic-title">Tu Belleza Natural, Resaltada.</h2>
                 
@@ -546,6 +711,15 @@
                 <!-- Botón de Acción Principal CTA -->
                 <div style="text-align: center; margin-top: 3rem;">
                     <button class="hero-btn-animated" onclick="openBooking()">Descubre tu Mejor Versión</button>
+                </div>
+            </div>
+
+            <!-- SECCIÓN DE PAGOS / ABONOS (NUEVA) -->
+            <div class="container animate-on-scroll">
+                <div class="payment-banner">
+                    <h3>Asegura tu Cita con Confianza</h3>
+                    <p>Para brindarte la mejor experiencia y exclusividad, trabajamos con agenda limitada. Separa tu cupo realizando un abono de manera fácil y 100% segura. Tu bienestar es nuestra máxima prioridad.</p>
+                    <button class="hero-btn-animated" style="padding: 1rem 2rem; font-size: 1rem;" onclick="openPaymentModal()">Separar mi Cupo</button>
                 </div>
             </div>
 
@@ -584,7 +758,7 @@
         </section>
     </main>
 
-    <!-- FOOTER PROFESIONAL AÑADIDO -->
+    <!-- FOOTER PROFESIONAL -->
     <footer class="footer">
         <div class="container footer-container">
             <div class="footer-col">
@@ -616,14 +790,49 @@
 
     <section id="booking-section"></section>
 
-    <nav class="bottom-nav">
-        <a href="#home" class="bottom-nav-item active"><i class="fas fa-home"></i><span>Inicio</span></a>
-        <a href="#info-section" class="bottom-nav-item"><i class="fas fa-book"></i><span>Cuidados</span></a>
-        <a href="#gallery-section" class="bottom-nav-item"><i class="fas fa-camera"></i><span>Cambios</span></a>
-        <a href="#jornadas-section" class="bottom-nav-item"><i class="fas fa-map-marker-alt"></i><span>Jornadas</span></a>
-        <a href="javascript:void(0)" onclick="openBooking()" class="bottom-nav-item"><i class="fas fa-calendar-check"></i><span>Agendar</span></a>
-    </nav>
+    <!-- MODAL DE PAGOS / ABONOS (REDISEÑADO PREMIUM) -->
+    <div class="modal-overlay" id="payment-modal">
+        <div class="modal-content-premium">
+            <button class="modal-close" onclick="closePaymentModal()">&times;</button>
+            <h3 style="color:var(--danger); margin-bottom:10px; text-align:center; font-size:1.8rem; position:relative; z-index:2; text-shadow: 0 2px 4px rgba(255,255,255,0.8);">Medios de Pago</h3>
+            <p style="text-align:center; color:#555; margin-bottom:25px; font-size:0.95rem; position:relative; z-index:2; font-weight:500;">Realiza tu abono de forma segura. Selecciona y copia el número de tu cuenta preferida.</p>
+            
+            <div class="bank-option">
+                <div class="bank-info">
+                    <img src="https://mercacol.com.co/wp-content/uploads/2026/04/nequi-logo_brandlogos.net_ldrer.webp" alt="Nequi">
+                    <div>
+                        <strong>Nequi</strong>
+                        <span>305 425 5782</span>
+                    </div>
+                </div>
+                <button class="btn-copy" onclick="copyToClipboard('3054255782', this)">Copiar</button>
+            </div>
 
+            <div class="bank-option">
+                <div class="bank-info">
+                    <img src="https://mercacol.com.co/wp-content/uploads/2026/04/Bancolombia-logo-scaled.webp" alt="Bancolombia">
+                    <div>
+                        <strong>Bancolombia</strong>
+                        <span>Ahorros 24237670660</span>
+                    </div>
+                </div>
+                <button class="btn-copy" onclick="copyToClipboard('24237670660', this)">Copiar</button>
+            </div>
+
+            <div class="payment-steps">
+                <h4>Pasos para confirmar tu cita:</h4>
+                <ol>
+                    <li>Realiza el pago a la cuenta que copiaste.</li>
+                    <li>Toma una <strong>captura de pantalla</strong> del comprobante exitoso.</li>
+                    <li>Envíanos el comprobante por WhatsApp junto con tus datos.</li>
+                </ol>
+            </div>
+            
+            <a href="https://wa.me/573054255782?text=Hola,%20adjunto%20el%20comprobante%20de%20mi%20abono%20para%20confirmar%20mi%20cita%20en%20Viarmoni." target="_blank" class="btn-whatsapp" id="btn-whatsapp-modal" style="margin-top:25px;"><i class="fab fa-whatsapp"></i> Enviar Comprobante</a>
+        </div>
+    </div>
+
+    <!-- MODAL DINÁMICO (CUIDADOS) -->
     <div class="modal-overlay" id="dynamic-modal">
         <div class="modal-content">
             <button class="modal-close" onclick="document.getElementById('dynamic-modal').classList.remove('active')">&times;</button>
@@ -632,10 +841,39 @@
         </div>
     </div>
 
+    <nav class="bottom-nav">
+        <a href="#home" class="bottom-nav-item active"><i class="fas fa-home"></i><span>Inicio</span></a>
+        <a href="#info-section" class="bottom-nav-item"><i class="fas fa-book"></i><span>Cuidados</span></a>
+        <a href="#gallery-section" class="bottom-nav-item"><i class="fas fa-camera"></i><span>Cambios</span></a>
+        <a href="#jornadas-section" class="bottom-nav-item"><i class="fas fa-map-marker-alt"></i><span>Jornadas</span></a>
+        <a href="javascript:void(0)" onclick="openBooking()" class="bottom-nav-item"><i class="fas fa-calendar-check"></i><span>Agendar</span></a>
+    </nav>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, getDocs, getDoc, doc, setDoc, query, orderBy, where, addDoc, updateDoc, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Funciones Globales para el Modal de Pago
+        window.openPaymentModal = () => { document.getElementById('payment-modal').classList.add('active'); }
+        window.closePaymentModal = () => { document.getElementById('payment-modal').classList.remove('active'); }
+        
+        // Función de Copiado Ajustada
+        window.copyToClipboard = (text, btnElement) => {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = btnElement.innerText;
+                btnElement.innerText = '¡Copiado!';
+                // Mantener el estilo premium pero indicar éxito
+                btnElement.style.background = 'var(--success)';
+                btnElement.style.boxShadow = '0 4px 10px rgba(107, 161, 139, 0.4)';
+                
+                setTimeout(() => { 
+                    btnElement.innerText = originalText; 
+                    btnElement.style.background = 'linear-gradient(145deg, #e0c0c3, #b76e79)';
+                    btnElement.style.boxShadow = '0 4px 10px rgba(183, 110, 121, 0.3)';
+                }, 2000);
+            }).catch(err => console.error('Error al copiar: ', err));
+        }
 
         // --- INLINED WIZARD CLASS ---
         class BookingWizard {
@@ -717,8 +955,8 @@
                             <h3>Resumen de Reserva</h3>
                             <div id="booking-summary"></div>
                             <div style="margin-top:20px;">
-                                <button class="btn btn-primary" style="width:100%; margin-bottom:10px;" id="btn-deposit">Pagar Depósito</button>
-                                <a href="#" class="btn-whatsapp" id="btn-whatsapp" target="_blank"><i class="fab fa-whatsapp"></i> Confirmar por WhatsApp</a>
+                                <!-- Botón que abre el modal premium -->
+                                <button class="hero-btn-animated" style="width:100%; margin-bottom:10px; font-size:1.1rem;" id="btn-deposit">Pagar Depósito / Separar Cupo</button>
                             </div>
                         </div>
 
@@ -740,8 +978,9 @@
                     if(date) this.loadSlots(date);
                 });
 
+                // Integración del Botón con el Modal de Pagos
                 document.getElementById('btn-deposit').addEventListener('click', () => {
-                    alert('Para asegurar tu cita, por favor realiza una transferencia a Bancolombia Ahorros: 123-456-7890 a nombre de Viarmoni SAS y envía el comprobante por WhatsApp.');
+                    window.openPaymentModal();
                 });
             }
 
@@ -978,14 +1217,19 @@
                         });
                     });
 
+                    // Actualizamos el link del botón de comprobante del Modal para que lleve el contexto exacto de esta reserva.
                     const text = `Hola, quiero confirmar mi reserva en Viarmoni:%0A%0A` +
                                  `📍 Ciudad: ${this.bookingData.city.name}%0A` +
                                  `💆 Servicio: ${this.bookingData.service.name}%0A` +
                                  `📅 Fecha: ${this.bookingData.slot.date} - ${this.bookingData.slot.time}%0A` +
                                  `👤 Nombre: ${this.bookingData.client.name}%0A` +
-                                 `💰 Depósito Pendiente: $${this.bookingData.service.deposit}`;
+                                 `💰 Depósito a confirmar: $${this.bookingData.service.deposit}%0A%0A` +
+                                 `Adjunto mi comprobante de abono.`;
                     
-                    document.getElementById('btn-whatsapp').href = `https://wa.me/573001234567?text=${text}`; 
+                    const btnWhatsAppModal = document.getElementById('btn-whatsapp-modal');
+                    if(btnWhatsAppModal) {
+                        btnWhatsAppModal.href = `https://wa.me/573054255782?text=${text}`;
+                    }
 
                 } catch(e) {
                     console.error("Error finalizing booking:", e);
@@ -1218,7 +1462,7 @@
             document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
 
             const observeDynamicElements = () => {
-                document.querySelectorAll('.info-card, .transform-card, .jornada-card, .category-card, .benefit-card').forEach(el => {
+                document.querySelectorAll('.info-card, .transform-card, .jornada-card, .category-card, .benefit-card, .payment-banner').forEach(el => {
                     if(!el.classList.contains('animate-on-scroll')) {
                         el.classList.add('animate-on-scroll');
                         observer.observe(el);
