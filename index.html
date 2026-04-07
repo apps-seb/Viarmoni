@@ -84,19 +84,15 @@
         #main-carousel .splide__slide img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.85); }
 
         .hero-glass-wrapper {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-radius: 20px;
             padding: 2.5rem 2rem;
             text-align: center;
-            width: 85%;
-            max-width: 600px;
-            z-index: 5;
+            width: 90%;
+            max-width: 800px;
+            margin: 3rem auto;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.3);
             /* Animated Stroke */
@@ -137,10 +133,9 @@
         }
 
         .hero-glass-wrapper p {
-            color: var(--white);
+            color: var(--text-dark);
             font-size: 1.1rem;
             margin-bottom: 25px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
             font-weight: 500;
         }
 
@@ -218,6 +213,29 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
+        /* Shiny Text Animation */
+        .shiny-text {
+            background: linear-gradient(
+                120deg,
+                var(--primary-gold) 0%,
+                var(--primary-gold) 40%,
+                #fff 50%,
+                var(--primary-gold) 60%,
+                var(--primary-gold) 100%
+            );
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
         /* Info Cards */
         .info-cards-container { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 2rem; }
         .info-card { background: white; border-radius: var(--border-radius); padding: 1.5rem; text-align: center; box-shadow: var(--shadow-light); cursor: pointer; border: 1px solid rgba(0,0,0,0.05); }
@@ -271,6 +289,20 @@
         /* Booking iframe */
         #booking-section { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 2500; display: none; }
         body.booking-active #booking-section { display: block; }
+
+        @media (max-width: 768px) {
+            .hero-glass-wrapper {
+                width: 95%;
+                padding: 2rem 1.5rem;
+                margin: 2rem auto;
+            }
+            .hero-glass-wrapper h1 {
+                font-size: 1.8rem;
+            }
+            .container.animate-on-scroll {
+                margin-top: 40px !important;
+            }
+        }
 
         @media (min-width: 768px) {
             .nav-links { display: block; }
@@ -369,16 +401,10 @@
                 </div>
             </section>
 
-            <div class="hero-glass-wrapper" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10;">
-                <h1 id="typewriter-text"></h1>
-                <p>En Viarmoni, esculpimos tu belleza natural con procedimientos mínimamente invasivos.</p>
-                <button class="hero-btn-animated" onclick="openBooking()">Descubre tu Mejor Versión</button>
-            </div>
-
 
             <!-- CATEGORIES CAROUSEL -->
-            <div class="container animate-on-scroll" style="margin-bottom: 30px;">
-                <h3 style="text-align:center; color:var(--primary-gold); margin-bottom:15px; font-weight:600;">Nuestros Procedimientos</h3>
+            <div class="container animate-on-scroll" style="margin-top: 60px; margin-bottom: 40px;">
+                <h3 style="text-align:center; color:var(--primary-gold); margin-bottom:30px; font-weight:600;" class="shiny-text">Nuestros Procedimientos</h3>
                 <section id="categories-carousel" class="splide" aria-label="Categorías">
                     <div class="splide__track">
                         <ul class="splide__list" id="categories-list-public">
@@ -386,6 +412,12 @@
                         </ul>
                     </div>
                 </section>
+            </div>
+
+            <div class="hero-glass-wrapper">
+                <h1 id="typewriter-text"></h1>
+                <p>En Viarmoni, esculpimos tu belleza natural con procedimientos mínimamente invasivos.</p>
+                <button class="hero-btn-animated" onclick="openBooking()">Descubre tu Mejor Versión</button>
             </div>
 
         </section>
