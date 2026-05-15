@@ -46,6 +46,7 @@
             display: flex;
             flex-direction: column;
             animation: fadeIn 0.8s ease-out;
+            align-items: center;
         }
 
         @keyframes fadeIn {
@@ -60,6 +61,7 @@
             border-bottom: 1px solid rgba(197, 169, 132, 0.2);
             position: relative;
             flex-shrink: 0;
+            width: 100%;
         }
 
         .logo {
@@ -68,22 +70,33 @@
         }
 
         /* Hero Carousel (Slider) */
-        .hero-slider {
+        .hero-slider-wrapper {
             width: 100%;
             flex-grow: 1;
-            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
             min-height: 0;
+        }
+
+        .hero-slider {
+            width: 100%;
+            max-width: min(100%, 45vh);
+            aspect-ratio: 1 / 1;
+            position: relative;
             overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         }
 
         .splide {
-            display: flex;
-            flex-direction: column;
+            display: block;
             height: 100%;
         }
 
         .splide__track {
-            flex-grow: 1;
+            height: 100%;
         }
 
         .splide__list {
@@ -109,15 +122,17 @@
         }
 
         .card-body {
-            padding: 15px 20px;
+            padding: 10px 20px 20px;
             text-align: center;
             flex-shrink: 0;
+            width: 100%;
+            max-width: 500px;
         }
 
         .card-title {
             color: var(--danger);
-            font-size: 1.5rem;
-            margin-bottom: 5px;
+            font-size: 1.3rem;
+            margin-bottom: 2px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -125,15 +140,21 @@
 
         .card-subtitle {
             color: var(--text-dark);
-            font-size: 0.95rem;
-            margin-bottom: 15px;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
         }
 
         /* Botones Profesionales */
         .link-buttons {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 10px;
+        }
+
+        @keyframes pulseBorder {
+            0% { box-shadow: 0 0 0 0 rgba(224, 192, 195, 0.6); }
+            70% { box-shadow: 0 0 0 6px rgba(224, 192, 195, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(224, 192, 195, 0); }
         }
 
         .btn-link {
@@ -143,48 +164,48 @@
             gap: 8px;
             background: var(--white);
             color: var(--text-dark);
-            padding: 12px 15px;
+            padding: 10px 15px;
             border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
-            font-size: 0.95rem;
-            border: 1px solid rgba(197, 169, 132, 0.4);
+            font-size: 0.9rem;
+            border: 2px solid var(--secondary-rose);
             transition: all 0.3s ease;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             position: relative;
             overflow: hidden;
+            animation: pulseBorder 2s infinite;
         }
 
+        /* Delay the animations slightly so they don't all pulse at the exact same time,
+           creating a gentle rippling effect */
+        .btn-link:nth-child(1) { animation-delay: 0.0s; }
+        .btn-link:nth-child(2) { animation-delay: 0.2s; }
+        .btn-link:nth-child(3) { animation-delay: 0.4s; }
+        .btn-link:nth-child(4) { animation-delay: 0.6s; }
+        .btn-link:nth-child(5) { animation-delay: 0.8s; }
+
         .btn-link i {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             transition: transform 0.3s ease;
+            color: var(--primary-gold);
         }
 
         .btn-link:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(197, 169, 132, 0.2);
-            border-color: var(--primary-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(224, 192, 195, 0.4);
+            border-color: var(--danger);
+            animation: none; /* Stop pulsing on hover */
         }
 
         .btn-link:hover i {
             transform: scale(1.1);
+            color: var(--primary-gold);
         }
-
-        /* Colores específicos de íconos en hover (opcional, para toque profesional) */
-        .btn-website i { color: var(--accent-dark); }
-        .btn-whatsapp i { color: #25D366; }
-        .btn-instagram i { color: #E1306C; }
-        .btn-facebook i { color: #1877F2; }
-
-        .btn-link:hover.btn-whatsapp { border-color: #25D366; }
-        .btn-link:hover.btn-instagram { border-color: #E1306C; }
-        .btn-link:hover.btn-facebook { border-color: #1877F2; }
-        .btn-link:hover.btn-maps { border-color: #EA4335; }
 
         .btn-maps {
             grid-column: span 2;
         }
-        .btn-maps i { color: #EA4335; }
 
     </style>
 </head>
@@ -195,9 +216,10 @@
             <img src="https://mercacol.com.co/wp-content/uploads/2026/04/logo.webp" alt="Viarmoni Logo" class="logo">
         </div>
 
-        <section class="splide hero-slider" id="contact-carousel">
-            <div class="splide__track">
-                <ul class="splide__list">
+        <div class="hero-slider-wrapper">
+            <section class="splide hero-slider" id="contact-carousel">
+                <div class="splide__track">
+                    <ul class="splide__list">
                     <!-- Sliders (Placeholder images/videos can be replaced later) -->
                     <li class="splide__slide">
                         <img src="https://placehold.co/600x600/e0c0c3/ffffff?text=Viarmoni" alt="Imagen 1">
@@ -209,8 +231,9 @@
                         <img src="https://placehold.co/600x600/b76e79/ffffff?text=Belleza" alt="Imagen 3">
                     </li>
                 </ul>
-            </div>
-        </section>
+                </div>
+            </section>
+        </div>
 
         <div class="card-body">
             <h1 class="card-title">Contáctanos</h1>
