@@ -31,22 +31,18 @@
             font-family: var(--font-main);
             background: linear-gradient(135deg, var(--bg-light), var(--secondary-rose));
             color: var(--text-dark);
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 0;
         }
 
         .digital-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 450px;
-            overflow: hidden;
-            border: 1px solid rgba(197, 169, 132, 0.3);
+            background: var(--bg-light);
+            width: 100vw;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             animation: fadeIn 0.8s ease-out;
@@ -59,22 +55,43 @@
 
         .card-header {
             text-align: center;
-            padding: 20px;
+            padding: 10px 20px;
             background: var(--white);
             border-bottom: 1px solid rgba(197, 169, 132, 0.2);
             position: relative;
+            flex-shrink: 0;
         }
 
         .logo {
-            max-width: 180px;
+            max-width: 140px;
             height: auto;
         }
 
         /* Hero Carousel (Slider) */
         .hero-slider {
             width: 100%;
-            aspect-ratio: 1 / 1;
+            flex-grow: 1;
             position: relative;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .splide {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .splide__track {
+            flex-grow: 1;
+        }
+
+        .splide__list {
+            height: 100%;
+        }
+
+        .splide__slide {
+            height: 100%;
         }
 
         .splide__slide img, .splide__slide video {
@@ -92,8 +109,9 @@
         }
 
         .card-body {
-            padding: 30px 20px;
+            padding: 15px 20px;
             text-align: center;
+            flex-shrink: 0;
         }
 
         .card-title {
@@ -108,31 +126,31 @@
         .card-subtitle {
             color: var(--text-dark);
             font-size: 0.95rem;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
         }
 
         /* Botones Profesionales */
         .link-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
         }
 
         .btn-link {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            background: linear-gradient(145deg, var(--white), #f9f9f9);
+            gap: 8px;
+            background: var(--white);
             color: var(--text-dark);
-            padding: 15px 20px;
-            border-radius: 50px;
+            padding: 12px 15px;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
-            font-size: 1.05rem;
+            font-size: 0.95rem;
             border: 1px solid rgba(197, 169, 132, 0.4);
             transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
             position: relative;
             overflow: hidden;
         }
@@ -161,6 +179,12 @@
         .btn-link:hover.btn-whatsapp { border-color: #25D366; }
         .btn-link:hover.btn-instagram { border-color: #E1306C; }
         .btn-link:hover.btn-facebook { border-color: #1877F2; }
+        .btn-link:hover.btn-maps { border-color: #EA4335; }
+
+        .btn-maps {
+            grid-column: span 2;
+        }
+        .btn-maps i { color: #EA4335; }
 
     </style>
 </head>
@@ -189,7 +213,7 @@
         </section>
 
         <div class="card-body">
-            <h1 class="card-title">Viarmoni</h1>
+            <h1 class="card-title">Contáctanos</h1>
             <p class="card-subtitle">Conecta con nosotros</p>
 
             <div class="link-buttons">
@@ -204,6 +228,9 @@
                 </a>
                 <a href="https://www.facebook.com/share/18nrjcfZkU/?mibextid=wwXIfr" target="_blank" class="btn-link btn-facebook">
                     <i class="fab fa-facebook-f"></i> Facebook
+                </a>
+                <a href="https://maps.app.goo.gl/pJfpLvBL2g6DKWXBA" target="_blank" class="btn-link btn-maps">
+                    <i class="fas fa-map-marker-alt"></i> Visítanos
                 </a>
             </div>
         </div>
