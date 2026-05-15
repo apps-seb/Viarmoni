@@ -55,7 +55,7 @@
 
         .card-header {
             text-align: center;
-            padding: 10px 20px;
+            padding: 5px 10px;
             background: var(--white);
             border-bottom: 1px solid rgba(197, 169, 132, 0.2);
             position: relative;
@@ -63,17 +63,18 @@
         }
 
         .logo {
-            max-width: 140px;
-            height: auto;
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
         }
 
         /* Hero Carousel (Slider) */
         .hero-slider {
             width: 100%;
-            flex-grow: 1;
             position: relative;
-            min-height: 0;
+            height: 40vh; /* Adjust height to not take the full available space, but be a responsive square/rectangle */
             overflow: hidden;
+            flex-shrink: 0;
         }
 
         .splide {
@@ -83,7 +84,7 @@
         }
 
         .splide__track {
-            flex-grow: 1;
+            height: 100%;
         }
 
         .splide__list {
@@ -111,7 +112,10 @@
         .card-body {
             padding: 15px 20px;
             text-align: center;
-            flex-shrink: 0;
+            flex-grow: 1; /* Allow this space to grow */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center the buttons inside the remaining space */
         }
 
         .card-title {
@@ -157,6 +161,7 @@
 
         .btn-link i {
             font-size: 1.3rem;
+            color: var(--primary-gold);
             transition: transform 0.3s ease;
         }
 
@@ -168,23 +173,12 @@
 
         .btn-link:hover i {
             transform: scale(1.1);
+            color: var(--accent-dark);
         }
-
-        /* Colores específicos de íconos en hover (opcional, para toque profesional) */
-        .btn-website i { color: var(--accent-dark); }
-        .btn-whatsapp i { color: #25D366; }
-        .btn-instagram i { color: #E1306C; }
-        .btn-facebook i { color: #1877F2; }
-
-        .btn-link:hover.btn-whatsapp { border-color: #25D366; }
-        .btn-link:hover.btn-instagram { border-color: #E1306C; }
-        .btn-link:hover.btn-facebook { border-color: #1877F2; }
-        .btn-link:hover.btn-maps { border-color: #EA4335; }
 
         .btn-maps {
             grid-column: span 2;
         }
-        .btn-maps i { color: #EA4335; }
 
     </style>
 </head>
