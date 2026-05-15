@@ -45,6 +45,8 @@
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 450px;
+            height: 95vh;
+            max-height: 850px;
             overflow: hidden;
             border: 1px solid rgba(197, 169, 132, 0.3);
             display: flex;
@@ -59,21 +61,23 @@
 
         .card-header {
             text-align: center;
-            padding: 20px;
+            padding: 10px 20px;
             background: var(--white);
             border-bottom: 1px solid rgba(197, 169, 132, 0.2);
             position: relative;
+            flex-shrink: 0;
         }
 
         .logo {
-            max-width: 180px;
+            max-width: 160px;
             height: auto;
         }
 
         /* Hero Carousel (Slider) */
         .hero-slider {
             width: 100%;
-            aspect-ratio: 1 / 1;
+            flex-grow: 1;
+            min-height: 0;
             position: relative;
         }
 
@@ -92,13 +96,14 @@
         }
 
         .card-body {
-            padding: 30px 20px;
+            padding: 20px;
             text-align: center;
+            flex-shrink: 0;
         }
 
         .card-title {
             color: var(--danger);
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             margin-bottom: 5px;
             font-weight: 700;
             text-transform: uppercase;
@@ -107,60 +112,71 @@
 
         .card-subtitle {
             color: var(--text-dark);
-            font-size: 0.95rem;
-            margin-bottom: 25px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
         }
 
         /* Botones Profesionales */
         .link-buttons {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 15px;
         }
 
         .btn-link {
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            background: linear-gradient(145deg, var(--white), #f9f9f9);
+            gap: 8px;
+            background: linear-gradient(145deg, var(--white), #fafafa);
             color: var(--text-dark);
-            padding: 15px 20px;
-            border-radius: 50px;
+            padding: 15px 10px;
+            border-radius: 16px;
             text-decoration: none;
             font-weight: 600;
-            font-size: 1.05rem;
+            font-size: 0.95rem;
             border: 1px solid rgba(197, 169, 132, 0.4);
             transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
             position: relative;
             overflow: hidden;
         }
 
+        .btn-link::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(to right, var(--secondary-rose), var(--primary-gold));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
         .btn-link i {
-            font-size: 1.3rem;
+            font-size: 1.6rem;
             transition: transform 0.3s ease;
+            margin-bottom: 2px;
         }
 
         .btn-link:hover {
             transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(197, 169, 132, 0.2);
+            box-shadow: 0 10px 25px rgba(197, 169, 132, 0.15);
             border-color: var(--primary-gold);
+        }
+
+        .btn-link:hover::before {
+            opacity: 1;
         }
 
         .btn-link:hover i {
             transform: scale(1.1);
         }
 
-        /* Colores específicos de íconos en hover (opcional, para toque profesional) */
+        /* Colores específicos de íconos para toque profesional */
         .btn-website i { color: var(--accent-dark); }
         .btn-whatsapp i { color: #25D366; }
         .btn-instagram i { color: #E1306C; }
         .btn-facebook i { color: #1877F2; }
-
-        .btn-link:hover.btn-whatsapp { border-color: #25D366; }
-        .btn-link:hover.btn-instagram { border-color: #E1306C; }
-        .btn-link:hover.btn-facebook { border-color: #1877F2; }
 
     </style>
 </head>
@@ -189,21 +205,25 @@
         </section>
 
         <div class="card-body">
-            <h1 class="card-title">Viarmoni</h1>
+            <h1 class="card-title">Contáctanos</h1>
             <p class="card-subtitle">Conecta con nosotros</p>
 
             <div class="link-buttons">
                 <a href="https://www.viarmoni.com" target="_blank" class="btn-link btn-website">
-                    <i class="fas fa-globe"></i> Sitio Web
+                    <i class="fas fa-globe"></i>
+                    <span>Sitio Web</span>
                 </a>
                 <a href="https://wa.me/573054255782" target="_blank" class="btn-link btn-whatsapp">
-                    <i class="fab fa-whatsapp"></i> WhatsApp
+                    <i class="fab fa-whatsapp"></i>
+                    <span>WhatsApp</span>
                 </a>
                 <a href="https://www.instagram.com/viarmoni?igsh=MWVhcmQ4c2hwdDdqdQ==" target="_blank" class="btn-link btn-instagram">
-                    <i class="fab fa-instagram"></i> Instagram
+                    <i class="fab fa-instagram"></i>
+                    <span>Instagram</span>
                 </a>
                 <a href="https://www.facebook.com/share/18nrjcfZkU/?mibextid=wwXIfr" target="_blank" class="btn-link btn-facebook">
-                    <i class="fab fa-facebook-f"></i> Facebook
+                    <i class="fab fa-facebook-f"></i>
+                    <span>Facebook</span>
                 </a>
             </div>
         </div>
