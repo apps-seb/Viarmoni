@@ -45,14 +45,36 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            animation: fadeIn 0.8s ease-out;
             align-items: center;
+            opacity: 0;
+            animation: fadeInPage 1s ease forwards;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes fadeInPage {
+            to { opacity: 1; }
         }
+
+        .animate-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+        }
+
+        @keyframes slideUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+        .delay-6 { animation-delay: 0.6s; }
+        .delay-7 { animation-delay: 0.7s; }
+        .delay-8 { animation-delay: 0.8s; }
 
         .card-header {
             text-align: center;
@@ -187,16 +209,311 @@
             grid-column: span 2;
         }
 
+        /* Botón Agendar Consulta */
+        .btn-booking {
+            grid-column: span 2;
+            background: linear-gradient(135deg, #f3e5ab, var(--primary-gold));
+            color: #4a4a4a;
+            border: none;
+            padding: 16px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(197, 169, 132, 0.4);
+            animation: pulse-gold 2s infinite;
+        }
+
+        .btn-booking:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(197, 169, 132, 0.6);
+            background: linear-gradient(135deg, var(--primary-gold), #f3e5ab);
+        }
+
+        @keyframes pulse-gold {
+            0% { box-shadow: 0 0 0 0 rgba(197, 169, 132, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(197, 169, 132, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(197, 169, 132, 0); }
+        }
+
+        /* Modales */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-light);
+            padding: 30px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            border: 1px solid rgba(197, 169, 132, 0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-dark);
+        }
+
+        .modal-title {
+            text-align: center;
+            color: var(--primary-gold);
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .location-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .location-card {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(197, 169, 132, 0.2);
+        }
+
+        .location-card:hover {
+            border-color: var(--primary-gold);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(197, 169, 132, 0.1);
+        }
+
+        .location-card i {
+            font-size: 1.5rem;
+            color: var(--primary-gold);
+        }
+
+        .location-card h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Formulario y Tarjetas de Procedimiento */
+        .procedure-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .procedure-card {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-light);
+        }
+
+        .procedure-card img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+        }
+
+        .procedure-card h5 {
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-dark);
+        }
+
+        .procedure-card.selected {
+            border-color: var(--primary-gold);
+            transform: scale(1.05);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(197, 169, 132, 0.4);
+            font-family: var(--font-main);
+            background: var(--white);
+        }
+
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .time-slot {
+            padding: 12px 5px;
+            text-align: center;
+            background: var(--white);
+            border: 1.5px solid rgba(197, 169, 132, 0.3);
+            border-radius: 10px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 600;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .time-slot:hover {
+            border-color: var(--primary-gold);
+            transform: translateY(-2px);
+        }
+
+        .time-slot.selected {
+            background: linear-gradient(135deg, var(--primary-gold), var(--accent-dark));
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 10px rgba(197, 169, 132, 0.4);
+        }
+
+        .btn-confirm {
+            width: 100%;
+            background: var(--primary-gold);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .btn-confirm:hover {
+            background: var(--accent-dark);
+        }
+
     </style>
 </head>
 <body>
 
+    <div class="modal-overlay" id="location-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('location-modal')">&times;</button>
+            <h3 class="modal-title">Selecciona tu Ubicación</h3>
+            <div class="location-grid">
+                <div class="location-card" onclick="selectLocation('Popayán')">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h4>Popayán</h4>
+                </div>
+                <div class="location-card" onclick="selectLocation('Cali')">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h4>Cali</h4>
+                </div>
+                <div class="location-card" onclick="selectLocation('Pereira')">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <h4>Pereira</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="details-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('details-modal')">&times;</button>
+            <h3 class="modal-title">Detalles de tu Cita</h3>
+
+            <div class="procedure-grid">
+                <div class="procedure-card" onclick="selectProcedure('Lipopapada', this)">
+                    <img src="https://viarmoni.com/IMAGENES_VIARMONI/WEB-05.webp" alt="Lipopapada">
+                    <h5>Lipopapada</h5>
+                </div>
+                <div class="procedure-card" onclick="selectProcedure('Bichectomía', this)">
+                    <img src="https://viarmoni.com/IMAGENES_VIARMONI/WEB-07.webp" alt="Bichectomía">
+                    <h5>Bichectomía</h5>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Nombre Completo</label>
+                <input type="text" id="user-name" placeholder="Tu nombre">
+            </div>
+            <div class="form-group">
+                <label>WhatsApp</label>
+                <input type="tel" id="user-phone" placeholder="Tu número">
+            </div>
+            <div class="form-group">
+                <label>Correo Electrónico</label>
+                <input type="email" id="user-email" placeholder="tu@correo.com">
+            </div>
+
+            <div class="form-group">
+                <label>Fecha</label>
+                <input type="date" id="booking-date">
+            </div>
+            <div class="form-group">
+                <label>Selecciona la Hora</label>
+                <div class="time-slots">
+                    <div class="time-slot" onclick="selectTime('09:00 AM', this)">09:00 AM</div>
+                    <div class="time-slot" onclick="selectTime('10:00 AM', this)">10:00 AM</div>
+                    <div class="time-slot" onclick="selectTime('11:00 AM', this)">11:00 AM</div>
+                    <div class="time-slot" onclick="selectTime('02:00 PM', this)">02:00 PM</div>
+                    <div class="time-slot" onclick="selectTime('03:00 PM', this)">03:00 PM</div>
+                    <div class="time-slot" onclick="selectTime('04:00 PM', this)">04:00 PM</div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-confirm" style="background: #ccc; color: #4a4a4a;" onclick="closeModal('details-modal'); openBookingModal();">Atrás</button>
+                <button class="btn-confirm" onclick="confirmBooking()">Confirmar y Agendar</button>
+            </div>
+        </div>
+    </div>
+
     <div class="digital-card">
-        <div class="card-header">
+        <div class="card-header animate-in">
             <img src="https://mercacol.com.co/wp-content/uploads/2026/04/logo.webp" alt="Viarmoni Logo" class="logo">
         </div>
 
-        <div class="hero-slider-wrapper">
+        <div class="hero-slider-wrapper animate-in delay-1">
             <section class="splide hero-slider" id="contact-carousel">
                 <div class="splide__track">
                     <ul class="splide__list">
@@ -219,23 +536,26 @@
         </div>
 
         <div class="card-body">
-            <h1 class="card-title">Contáctanos</h1>
-            <p class="card-subtitle">Conecta con nosotros</p>
+            <h1 class="card-title animate-in delay-2">Contáctanos</h1>
+            <p class="card-subtitle animate-in delay-2">Conecta con nosotros</p>
 
             <div class="link-buttons">
-                <a href="https://www.viarmoni.com" target="_blank" class="btn-link btn-website">
+                <a href="javascript:void(0)" class="btn-link btn-booking animate-in delay-3" onclick="openBookingModal()">
+                    <i class="fas fa-calendar-check"></i> Agendar Consulta
+                </a>
+                <a href="https://www.viarmoni.com" target="_blank" class="btn-link btn-website animate-in delay-4">
                     <i class="fas fa-globe"></i> Sitio Web
                 </a>
-                <a href="https://wa.me/573054255782" target="_blank" class="btn-link btn-whatsapp">
+                <a href="https://wa.me/573054255782" target="_blank" class="btn-link btn-whatsapp animate-in delay-5">
                     <i class="fab fa-whatsapp"></i> WhatsApp
                 </a>
-                <a href="https://www.instagram.com/viarmoni?igsh=MWVhcmQ4c2hwdDdqdQ==" target="_blank" class="btn-link btn-instagram">
+                <a href="https://www.instagram.com/viarmoni?igsh=MWVhcmQ4c2hwdDdqdQ==" target="_blank" class="btn-link btn-instagram animate-in delay-6">
                     <i class="fab fa-instagram"></i> Instagram
                 </a>
-                <a href="https://www.facebook.com/share/18nrjcfZkU/?mibextid=wwXIfr" target="_blank" class="btn-link btn-facebook">
+                <a href="https://www.facebook.com/share/18nrjcfZkU/?mibextid=wwXIfr" target="_blank" class="btn-link btn-facebook animate-in delay-7">
                     <i class="fab fa-facebook-f"></i> Facebook
                 </a>
-                <a href="https://maps.app.goo.gl/pJfpLvBL2g6DKWXBA" target="_blank" class="btn-link btn-maps">
+                <a href="https://maps.app.goo.gl/pJfpLvBL2g6DKWXBA" target="_blank" class="btn-link btn-maps animate-in delay-8">
                     <i class="fas fa-map-marker-alt"></i> Visítanos
                 </a>
             </div>
@@ -243,6 +563,65 @@
     </div>
 
     <script>
+        let bookingData = {
+            location: '',
+            procedure: '',
+            date: '',
+            time: '',
+            name: '',
+            phone: '',
+            email: ''
+        };
+
+        function openBookingModal() {
+            document.getElementById('location-modal').classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function selectLocation(loc) {
+            bookingData.location = loc;
+            closeModal('location-modal');
+            document.getElementById('details-modal').classList.add('active');
+        }
+
+        function selectProcedure(proc, element) {
+            bookingData.procedure = proc;
+            document.querySelectorAll('.procedure-card').forEach(card => card.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        function selectTime(time, element) {
+            bookingData.time = time;
+            document.querySelectorAll('.time-slot').forEach(slot => slot.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        function confirmBooking() {
+            bookingData.name = document.getElementById('user-name').value;
+            bookingData.phone = document.getElementById('user-phone').value;
+            bookingData.email = document.getElementById('user-email').value;
+            bookingData.date = document.getElementById('booking-date').value;
+
+            if(!bookingData.procedure || !bookingData.name || !bookingData.phone || !bookingData.date || !bookingData.time) {
+                alert('Por favor completa todos los campos obligatorios');
+                return;
+            }
+
+            const message = `Hola Viarmoni! Deseo agendar una consulta:%0A%0A` +
+                `📍 Ubicación: ${bookingData.location}%0A` +
+                `💆 Procedimiento: ${bookingData.procedure}%0A` +
+                `📅 Fecha: ${bookingData.date}%0A` +
+                `⏰ Hora: ${bookingData.time}%0A%0A` +
+                `👤 Nombre: ${bookingData.name}%0A` +
+                `📞 WhatsApp: ${bookingData.phone}%0A` +
+                `📧 Correo: ${bookingData.email}`;
+
+            window.open(`https://wa.me/573054255782?text=${message}`, '_blank');
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             new Splide('#contact-carousel', {
                 type: 'loop',
