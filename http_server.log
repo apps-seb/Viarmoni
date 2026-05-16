@@ -1,6 +1,6 @@
-127.0.0.1 - - [07/Apr/2026 17:39:37] "GET /index.html HTTP/1.1" 200 -
-127.0.0.1 - - [07/Apr/2026 17:39:37] code 404, message File not found
-127.0.0.1 - - [07/Apr/2026 17:39:37] "GET /PRELOADER.png HTTP/1.1" 404 -
-127.0.0.1 - - [07/Apr/2026 17:40:56] "GET /index.html HTTP/1.1" 200 -
-127.0.0.1 - - [07/Apr/2026 17:40:56] code 404, message File not found
-127.0.0.1 - - [07/Apr/2026 17:40:56] "GET /PRELOADER.png HTTP/1.1" 404 -
+127.0.0.1 - - [16/May/2026 09:20:50] "GET /contacto.html HTTP/1.1" 200 -
+127.0.0.1 - - [16/May/2026 09:27:27] "GET /contacto.html HTTP/1.1" 200 -
+127.0.0.1 - - [16/May/2026 09:29:21] "GET /contacto.html HTTP/1.1" 200 -
+127.0.0.1 - - [16/May/2026 09:32:26] "GET /contacto.html HTTP/1.1" 200 -
+127.0.0.1 - - [16/May/2026 09:35:14] "GET /contacto.html HTTP/1.1" 200 -
+127.0.0.1 - - [16/May/2026 09:38:17] "GET /contacto.html HTTP/1.1" 200 -
