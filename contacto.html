@@ -31,8 +31,8 @@
             font-family: var(--font-main);
             background: linear-gradient(135deg, var(--bg-light), var(--secondary-rose));
             color: var(--text-dark);
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            overflow-y: auto;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -42,10 +42,11 @@
         .digital-card {
             background: var(--bg-light);
             width: 100vw;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             animation: fadeIn 0.8s ease-out;
+            align-items: center;
         }
 
         @keyframes fadeIn {
@@ -60,6 +61,7 @@
             border-bottom: 1px solid rgba(197, 169, 132, 0.2);
             position: relative;
             flex-shrink: 0;
+            width: 100%;
         }
 
         .logo {
@@ -68,22 +70,31 @@
         }
 
         /* Hero Carousel (Slider) */
+        .hero-slider-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            flex-shrink: 0;
+        }
+
         .hero-slider {
             width: 100%;
-            flex-grow: 1;
+            max-width: 320px;
+            aspect-ratio: 1 / 1;
             position: relative;
-            min-height: 0;
             overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         }
 
         .splide {
-            display: flex;
-            flex-direction: column;
+            display: block;
             height: 100%;
         }
 
         .splide__track {
-            flex-grow: 1;
+            height: 100%;
         }
 
         .splide__list {
@@ -158,6 +169,7 @@
         .btn-link i {
             font-size: 1.3rem;
             transition: transform 0.3s ease;
+            color: var(--primary-gold);
         }
 
         .btn-link:hover {
@@ -168,23 +180,12 @@
 
         .btn-link:hover i {
             transform: scale(1.1);
+            color: var(--primary-gold);
         }
-
-        /* Colores específicos de íconos en hover (opcional, para toque profesional) */
-        .btn-website i { color: var(--accent-dark); }
-        .btn-whatsapp i { color: #25D366; }
-        .btn-instagram i { color: #E1306C; }
-        .btn-facebook i { color: #1877F2; }
-
-        .btn-link:hover.btn-whatsapp { border-color: #25D366; }
-        .btn-link:hover.btn-instagram { border-color: #E1306C; }
-        .btn-link:hover.btn-facebook { border-color: #1877F2; }
-        .btn-link:hover.btn-maps { border-color: #EA4335; }
 
         .btn-maps {
             grid-column: span 2;
         }
-        .btn-maps i { color: #EA4335; }
 
     </style>
 </head>
@@ -195,22 +196,27 @@
             <img src="https://mercacol.com.co/wp-content/uploads/2026/04/logo.webp" alt="Viarmoni Logo" class="logo">
         </div>
 
-        <section class="splide hero-slider" id="contact-carousel">
-            <div class="splide__track">
-                <ul class="splide__list">
+        <div class="hero-slider-wrapper">
+            <section class="splide hero-slider" id="contact-carousel">
+                <div class="splide__track">
+                    <ul class="splide__list">
                     <!-- Sliders (Placeholder images/videos can be replaced later) -->
                     <li class="splide__slide">
-                        <img src="https://placehold.co/600x600/e0c0c3/ffffff?text=Viarmoni" alt="Imagen 1">
+                        <img src="https://viarmoni.com/IMAGENES_VIARMONI/WEB-05.webp" alt="Imagen 1">
                     </li>
                     <li class="splide__slide">
-                        <img src="https://placehold.co/600x600/c5a984/ffffff?text=Armonizacion" alt="Imagen 2">
+                        <img src="https://viarmoni.com/IMAGENES_VIARMONI/WEB-07.webp" alt="Imagen 1">
                     </li>
                     <li class="splide__slide">
-                        <img src="https://placehold.co/600x600/b76e79/ffffff?text=Belleza" alt="Imagen 3">
+                        <img src="https://viarmoni.com/IMAGENES_VIARMONI/WEB-06.webp" alt="Imagen 2">
+                    </li>
+                    <li class="splide__slide">
+                        <img src="https://viarmoni.com/IMAGENES_VIARMONI/WEB-08.webp" alt="Imagen 3">
                     </li>
                 </ul>
-            </div>
-        </section>
+                </div>
+            </section>
+        </div>
 
         <div class="card-body">
             <h1 class="card-title">Contáctanos</h1>
