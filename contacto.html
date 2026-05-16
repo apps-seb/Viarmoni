@@ -220,7 +220,8 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             box-shadow: 0 4px 15px rgba(197, 169, 132, 0.4);
-            animation: pulse-gold 2s infinite;
+            /* Combined animation: first slide up, then start pulsing */
+            animation: slideUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.3s forwards, pulse-gold 2s infinite 1.1s;
         }
 
         .btn-booking:hover {
@@ -463,11 +464,11 @@
 
             <div class="procedure-grid">
                 <div class="procedure-card" onclick="selectProcedure('Lipopapada', this)">
-                    <img src="https://viarmoni.com/IMAGENES_VIARMONI/WEB-05.webp" alt="Lipopapada">
+                    <img src="https://viarmoni.com/IMAGENES_VIARMONI/WEB-07.webp" alt="Lipopapada">
                     <h5>Lipopapada</h5>
                 </div>
                 <div class="procedure-card" onclick="selectProcedure('Bichectomía', this)">
-                    <img src="https://viarmoni.com/IMAGENES_VIARMONI/WEB-07.webp" alt="Bichectomía">
+                    <img src="https://viarmoni.com/IMAGENES_VIARMONI/WEB-05.webp" alt="Bichectomía">
                     <h5>Bichectomía</h5>
                 </div>
             </div>
